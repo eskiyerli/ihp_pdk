@@ -77,6 +77,7 @@ wirePen = QPen(wireLayer.pcolor, wireLayer.pwidth, wireLayer.pstyle)
 selectedWirePen = QPen(selectedWireLayer.pcolor,
                        selectedWireLayer.pwidth,
                        selectedWireLayer.pstyle)
+errorWirePen = QPen(wireErrorLayer.pcolor, wireErrorLayer.pwidth, wireErrorLayer.pstyle)
 ignoreSymbolPen = QPen(ignoreSymbolLayer.pcolor,
                        ignoreSymbolLayer.pwidth,
                        ignoreSymbolLayer.pstyle)
@@ -85,8 +86,11 @@ hilightPen = QPen(wireHilightLayer.pcolor, wireHilightLayer.pwidth,
 otherPen = QPen(otherLayer.pcolor, otherLayer.pwidth, otherLayer.pstyle)
 draftPen = QPen(draftLayer.pcolor, draftLayer.pwidth, draftLayer.pstyle)
 
+
 # schematic brushes
 schematicPinBrush = QBrush(schematicPinLayer.bcolor, schematicPinLayer.bstyle)
+wireBrush = QBrush(wireLayer.bcolor, wireLayer.bstyle)
+selectedWireBrush = QBrush(selectedWireLayer.bcolor, selectedWireLayer.bstyle)
 selectedSchematicPinBrush = QBrush(selectedSchematicPinLayer.bcolor,
                                    selectedSchematicPinLayer.bstyle)
 otherBrush = QBrush(otherLayer.bcolor, otherLayer.bstyle)
