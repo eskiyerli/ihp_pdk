@@ -260,7 +260,7 @@ via1Layer_txt = ddef.layLayer(
     selectable=True,
     gdsLayer=5,
 )
-pdkLayoutLayers = [
+pdkDrawingLayers = [
     odLayer_drw,
     activeLayer_drw,
     contactLayer_drw,
@@ -285,4 +285,4 @@ pdkTextLayers = [
     m1layer_txt,
     m2Layer_txt,
 ]
-pdkAllLayers = pdkLayoutLayers + pdkPinLayers + pdkTextLayers + pdkViaLayers
+pdkAllLayers = pdkDrawingLayers + pdkPinLayers + pdkTextLayers + pdkViaLayers
