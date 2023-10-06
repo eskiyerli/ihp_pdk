@@ -52,7 +52,7 @@ import revedaEditor.backend.dataDefinitions as ddef
 
 odLayer_drw = ddef.layLayer(
     name="od",
-    purpose="drawing",
+    purpose="drw",
     pcolor=QColor(255, 0, 0, 127),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -79,7 +79,7 @@ odLayer_pin = ddef.layLayer(
 )
 odLayer_txt = ddef.layLayer(
     name="od",
-    purpose="text",
+    purpose="txt",
     pcolor=QColor(255, 0, 0, 255),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -92,7 +92,7 @@ odLayer_txt = ddef.layLayer(
 )
 activeLayer_drw = ddef.layLayer(
     name="active",
-    purpose="drawing",
+    purpose="drw",
     pcolor=QColor(0, 0, 255, 127),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -118,7 +118,7 @@ activeLayer_pin = ddef.layLayer(
 )
 activeLayer_txt = ddef.layLayer(
     name="active",
-    purpose="text",
+    purpose="txt",
     pcolor=QColor(0, 0, 255, 255),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -131,7 +131,7 @@ activeLayer_txt = ddef.layLayer(
 )
 contactLayer_drw = ddef.layLayer(
     name="contact",
-    purpose="drawing",
+    purpose="drw",
     pcolor=QColor(0, 255, 0, 127),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -157,7 +157,7 @@ contactLayer_pin = ddef.layLayer(
 )
 contactLayer_txt = ddef.layLayer(
     name="contact",
-    purpose="text",
+    purpose="txt",
     pcolor=QColor(50, 0, 255, 255),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -170,7 +170,7 @@ contactLayer_txt = ddef.layLayer(
 )
 m1Layer_drw = ddef.layLayer(
     name="m1",
-    purpose="drawing",
+    purpose="drw",
     pcolor=QColor(255, 255, 0, 127),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -196,7 +196,7 @@ m1layer_pin = ddef.layLayer(
 )
 m1layer_txt = ddef.layLayer(
     name="m1",
-    purpose="text",
+    purpose="txt",
     pcolor=QColor(246, 190, 0, 255),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -209,7 +209,7 @@ m1layer_txt = ddef.layLayer(
 )
 m2Layer_drw = ddef.layLayer(
     name="m2",
-    purpose="drawing",
+    purpose="drw",
     pcolor=QColor(255, 0, 255, 127),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -235,7 +235,7 @@ m2Layer_pin = ddef.layLayer(
 )
 m2Layer_txt = ddef.layLayer(
     name="m2",
-    purpose="text",
+    purpose="txt",
     pcolor=QColor(255, 0, 255, 255),
     pwidth=1,
     pstyle=Qt.SolidLine,
@@ -248,7 +248,7 @@ m2Layer_txt = ddef.layLayer(
 )
 via1Layer_drw = ddef.layLayer(
     name="via1",
-    purpose="drawing",
+    purpose="drw",
     pcolor=QColor(180, 0, 180, 127),
     pwidth=2,
     pstyle=Qt.SolidLine,
@@ -274,7 +274,7 @@ via1Layer_pin = ddef.layLayer(
 )
 via1Layer_txt = ddef.layLayer(
     name="via1",
-    purpose="text",
+    purpose="txt",
     pcolor=QColor(180, 0, 180, 255),
     pwidth=1,
     pstyle=Qt.SolidLine,
