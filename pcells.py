@@ -22,15 +22,17 @@
 #    License: Mozilla Public License 2.0
 #    Licensor: Revolution Semiconductor (Registered in the Netherlands)
 #
-import pdk.layoutLayers as laylyr
+# import pdk.layoutLayers as laylyr
 import pdk.process as fabproc
 import revedaEditor.common.layoutShapes as lshp
 import pdk.layoutLayers as laylyr
 
-from PySide6.QtCore import (QPoint, )
+from PySide6.QtCore import (
+    QPoint,
+)
 
 
-class nmos(lshp.pcell):
+class nmos(lshp.layoutPcell):
     cut = int(0.17 * fabproc.dbu)
     poly_to_cut = int(0.055 * fabproc.dbu)
     diff_ovlp_cut = int(0.06 * fabproc.dbu)
@@ -40,48 +42,52 @@ class nmos(lshp.pcell):
     sa = poly_to_cut + cut + diff_ovlp_cut
     sd = 2 * (max(poly_to_cut, diff_ovlp_cut)) + cut
 
-    def __init__(self, gridTuple: tuple[int, int], width: int = 4, length: int = 0.13,
-                 nf: int = 1):
+    def __init__(
+        self, gridTuple: tuple[int, int], width: int = 4, length: int = 0.13, nf: int = 1
+    ):
         self._gridTuple = gridTuple
-        self._width =  int(float(width) * fabproc.dbu)
-        self._length = int(float(length)*fabproc.dbu)
+        self._width = int(float(width) * fabproc.dbu)
+        self._length = int(float(length) * fabproc.dbu)
         self._nf = int(float(nf))
         self._widthPerFinger = int(self._width / self._nf)
-        self.activeRect = lshp.layoutRect(QPoint(0, 0), QPoint(self._widthPerFinger,
-                                                               int(self._nf * length + 2 * nmos.sa + (self._nf - 1) * nmos.sd)),
-                                          laylyr.odLayer, self._gridTuple)
+        self.activeRect = lshp.layoutRect(
+            QPoint(0, 0),
+            QPoint(
+                self._widthPerFinger,
+                int(self._nf * length + 2 * nmos.sa + (self._nf - 1) * nmos.sd),
+            ),
+            laylyr.odLayer_drw,
+            self._gridTuple,
+        )
 
         super().__init__([self.activeRect], self._gridTuple)
 
-
     def __call__(self, width: int, length: int, nf: int = 1):
-        self._width = int(float(width)*fabproc.dbu)
-        self._length = int(float(length)*fabproc.dbu)
+        self._width = int(float(width) * fabproc.dbu)
+        self._length = int(float(length) * fabproc.dbu)
         self._nf = int(float(nf))
         self._widthPerFinger = int(self._width / self._nf)
         # start = self.activeRect.start
-        self.activeRect.end = QPoint(self._widthPerFinger,
-                        int(self._nf * self._length + 2 * nmos.sa + (self._nf - 1) * nmos.sd))
-
+        self.activeRect.end = QPoint(
+            self._widthPerFinger,
+            int(self._nf * self._length + 2 * nmos.sa + (self._nf - 1) * nmos.sd),
+        )
 
     @property
     def width(self):
-        return (self._width/fabproc.dbu)
-
+        return self._width / fabproc.dbu
 
     @width.setter
     def width(self, value: str):
-        self._width = int(float(value)*fabproc.dbu)
-
+        self._width = int(float(value) * fabproc.dbu)
 
     @property
     def length(self):
-        return (self._length/fabproc.dbu)
-
+        return self._length / fabproc.dbu
 
     @length.setter
     def length(self, value: str):
-        self._length = int(float(value)*fabproc.dbu)
+        self._length = int(float(value) * fabproc.dbu)
 
     @property
     def nf(self):
@@ -92,5 +98,5 @@ class nmos(lshp.pcell):
         self._nf = int(float(value))
 
 
-class pmos(lshp.pcell):
+class pmos(lshp.layoutPcell):
     pass

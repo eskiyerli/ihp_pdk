@@ -168,6 +168,45 @@ contactLayer_txt = ddef.layLayer(
     selectable=True,
     gdsLayer=2,
 )
+poLayer_drw = ddef.layLayer(
+    name="po",
+    purpose="drw",
+    pcolor=QColor(42, 170, 138, 127),
+    pwidth=1,
+    pstyle=Qt.SolidLine,
+    bcolor=QColor(42, 170, 138, 127),
+    btexture="pdk/stipple7.png",
+    z=4,
+    visible=True,
+    selectable=True,
+    gdsLayer=3,
+)
+poLayer_pin = ddef.layLayer(
+    name="po",
+    purpose="pin",
+    pcolor=QColor(42, 170, 138, 180),
+    pwidth=1,
+    pstyle=Qt.SolidLine,
+    bcolor=QColor(42, 170, 138, 180),
+    btexture="pdk/stipple7.png",
+    z=4,
+    visible=True,
+    selectable=True,
+    gdsLayer=3,
+)
+poLayer_txt = ddef.layLayer(
+    name="po",
+    purpose="txt",
+    pcolor=QColor(42, 170, 138, 255),
+    pwidth=1,
+    pstyle=Qt.SolidLine,
+    bcolor=QColor(42, 170, 138, 255),
+    btexture="pdk/stipple7.png",
+    z=4,
+    visible=True,
+    selectable=True,
+    gdsLayer=3,
+)
 m1Layer_drw = ddef.layLayer(
     name="m1",
     purpose="drw",
@@ -287,6 +326,7 @@ via1Layer_txt = ddef.layLayer(
 )
 pdkDrawingLayers = [
     odLayer_drw,
+    poLayer_drw,
     activeLayer_drw,
     contactLayer_drw,
     m1Layer_drw,
@@ -294,6 +334,7 @@ pdkDrawingLayers = [
 ]
 pdkPinLayers = [
     odLayer_pin,
+    poLayer_pin,
     activeLayer_pin,
     contactLayer_pin,
     m1layer_pin,
@@ -305,6 +346,7 @@ pdkViaLayers = [
 ]
 pdkTextLayers = [
     odLayer_txt,
+    poLayer_txt,
     activeLayer_txt,
     contactLayer_txt,
     m1layer_txt,
