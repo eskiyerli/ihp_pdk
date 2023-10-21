@@ -43,7 +43,7 @@ class nmos(lshp.layoutPcell):
     sd = 2 * (max(poly_to_cut, diff_ovlp_cut)) + cut
 
     def __init__(
-        self, gridTuple: tuple[int, int], width: int = 4, length: int = 0.13, nf: int = 1
+        self, gridTuple: tuple[int, int], width: float = 4.0, length: float = 0.13, nf: int = 1
     ):
         self._gridTuple = gridTuple
         self._width = int(float(width) * fabproc.dbu)
@@ -62,7 +62,7 @@ class nmos(lshp.layoutPcell):
 
         super().__init__([self.activeRect], self._gridTuple)
 
-    def __call__(self, width: int, length: int, nf: int = 1):
+    def __call__(self, width: str, length: str, nf: str = '1'):
         self._width = int(float(width) * fabproc.dbu)
         self._length = int(float(length) * fabproc.dbu)
         self._nf = int(float(nf))
