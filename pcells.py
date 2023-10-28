@@ -92,7 +92,7 @@ class nmos(lshp.layoutPcell):
             QPoint(self._widthPerFinger + nmos.poly_ovlp_diff,
             nmos.sa + finger * (self._drawnLength + nmos.sd) + self._drawnLength), laylyr.poLayer_drw,
             self._gridTuple
-        ) for finger in range(1, self._nf)]
+        ) for finger in range(self._nf)]
         return [activeRect, *polyFingers]
 
     @property
@@ -118,76 +118,6 @@ class nmos(lshp.layoutPcell):
     @nf.setter
     def nf(self, value: int):
         self._nf = value
-
-# class nmos(lshp.layoutPcell):
-
-
-#     def __init__(
-#             self,
-#             gridTuple: tuple[int, int],
-#             width: float = 4.0,
-#             length: float = 0.13,
-#             nf: int = 1,
-#     ):
-#         self._gridTuple = gridTuple
-#         self._width = int(float(width) * fabproc.dbu)
-#         self._length = int(float(length) * fabproc.dbu)
-#         self._nf = int(float(nf))
-#         self._widthPerFinger = int(self._width / self._nf)
-#         self.shapes = self.createGeometry()
-#         super().__init__(self._shapes, self._gridTuple)
-#
-#     def createGeometry(self) -> list[lshp.layoutShape]:
-#         self._activeRect = lshp.layoutRect(
-#             QPoint(0, 0),
-#             QPoint(
-#                 self._widthPerFinger,
-#                 int(self._nf * self._length + 2 * nmos.sa + (self._nf - 1) * nmos.sd),
-#             ),
-#             laylyr.odLayer_drw,
-#             self._gridTuple,
-#         )
-#         self._polyFingers = [lshp.layoutRect(
-#             QPoint(-nmos.poly_ovlp_diff,
-#             nmos.sa + finger * (self._length + nmos.sd)),
-#             QPoint(self._widthPerFinger + nmos.poly_ovlp_diff,
-#             nmos.sa + finger * (self._length + nmos.sd) + self._length), laylyr.poLayer_drw,
-#             self._gridTuple
-#         ) for finger in range(1, self._nf)]
-#         return [self._activeRect, *self._polyFingers]
-#
-#     def __call__(self, width: float, length: float, nf: int = 1):
-#         self._width = int(float(width) * fabproc.dbu)
-#         self._length = int(float(length) * fabproc.dbu)
-#         self._nf = int(float(nf)) if nf else self._nf
-#         self._widthPerFinger = int(self._width / self._nf)
-#         super().__init__(self._shapes, self._gridTuple)
-#
-#
-#     @property
-#     def width(self):
-#         return self._width / fabproc.dbu
-#
-#     @width.setter
-#     def width(self, value: str):
-#         self._width = int(float(value) * fabproc.dbu)
-#
-#     @property
-#     def length(self):
-#         return self._length / fabproc.dbu
-#
-#     @length.setter
-#     def length(self, value: str):
-#         self._length = int(float(value) * fabproc.dbu)
-#
-#     @property
-#     def nf(self):
-#         return self._nf
-#
-#     @nf.setter
-#     def nf(self, value: str):
-#         self._nf = int(float(value))
-
 
 class pmos(lshp.layoutPcell):
     pass
