@@ -44,18 +44,18 @@ class nmos(lshp.layoutPcell):
     def __init__(
             self,
             gridTuple: tuple[int, int],
-            width: float = 4.0,
-            length: float = 0.13,
-            nf: int = 1,
+            width: str = 4.0,
+            length: str = 0.13,
+            nf: str = 1,
     ):
         self._shapes = []
         self._gridTuple = gridTuple
         # define the device parameters here but set them to zero
-        self._deviceWidth = width # device width
+        self._deviceWidth = float(width) # device width
         self._drawnWidth: int = int(fabproc.dbu * self._deviceWidth) # width in grid points
-        self._deviceLength = length
+        self._deviceLength = float(length) # gate length
         self._drawnLength: int = int(fabproc.dbu * self._deviceLength)
-        self._nf = int(nf) # number of fingers.
+        self._nf = int(float(nf)) # number of fingers.
         self._widthPerFinger = int(self._drawnWidth / self._nf)
         super().__init__(self._shapes, self._gridTuple)
     #
@@ -64,17 +64,18 @@ class nmos(lshp.layoutPcell):
         '''
         When pcell instance is called, it removes all the shapes and recreates them and adds them as child items to pcell.
         '''
-        self._deviceWidth = width
-        self._drawnWidth = int(self._deviceWidth * fabproc.dbu)
-        self._deviceLength = length
-        self._drawnLength = int(self._deviceLength * fabproc.dbu)
-        self._nf = int(nf)
+        self._deviceWidth = float(width) # total gate width
+        self._drawnWidth = int(self._deviceWidth * fabproc.dbu) # drawn gate width in grid points
+        self._deviceLength = float(length) # gate length
+        self._drawnLength = int(self._deviceLength * fabproc.dbu) # drawn gate length in grid points
+        self._nf = int(float(nf)) # number of fingers
         self._widthPerFinger = self._drawnWidth / self._nf
-        for shape in self._shapes:
-            self.scene().removeItem(shape)
-            del shape
-        self._shapes = self.createGeometry()
-        [shape.setParentItem(self) for shape in self._shapes]
+        # for shape in self._shapes:
+        #     self.scene().removeItem(shape)
+        #     del shape
+        # self._shapes = self.createGeometry()
+        # [shape.setParentItem(self) for shape in self._shapes]
+        self.shapes = self.createGeometry()
 
     def createGeometry(self) -> list[lshp.layoutShape]:
         activeRect = lshp.layoutRect(
