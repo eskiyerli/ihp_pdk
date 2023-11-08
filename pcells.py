@@ -43,13 +43,13 @@ class nmos(lshp.layoutPcell):
     # when initialized it has no shapes. 
     def __init__(
             self,
-            gridTuple: tuple[int, int],
+            snapTuple: tuple[int, int],
             width: str = 4.0,
             length: str = 0.13,
             nf: str = 1,
     ):
         self._shapes = []
-        self._gridTuple = gridTuple
+        self._snapTuple = snapTuple
         # define the device parameters here but set them to zero
         self._deviceWidth = float(width) # device width
         self._drawnWidth: int = int(fabproc.dbu * self._deviceWidth) # width in grid points
@@ -57,7 +57,7 @@ class nmos(lshp.layoutPcell):
         self._drawnLength: int = int(fabproc.dbu * self._deviceLength)
         self._nf = int(float(nf)) # number of fingers.
         self._widthPerFinger = int(self._drawnWidth / self._nf)
-        super().__init__(self._shapes, self._gridTuple)
+        super().__init__(self._shapes, self._snapTuple)
     #
 
     def __call__(self, width:float, length:float, nf:int):
@@ -70,11 +70,6 @@ class nmos(lshp.layoutPcell):
         self._drawnLength = int(self._deviceLength * fabproc.dbu) # drawn gate length in grid points
         self._nf = int(float(nf)) # number of fingers
         self._widthPerFinger = self._drawnWidth / self._nf
-        # for shape in self._shapes:
-        #     self.scene().removeItem(shape)
-        #     del shape
-        # self._shapes = self.createGeometry()
-        # [shape.setParentItem(self) for shape in self._shapes]
         self.shapes = self.createGeometry()
 
     def createGeometry(self) -> list[lshp.layoutShape]:
@@ -85,15 +80,18 @@ class nmos(lshp.layoutPcell):
                 int(self._nf * self._drawnLength + 2 * nmos.sa + (self._nf - 1) * nmos.sd),
             ),
             laylyr.odLayer_drw,
-            self._gridTuple,
+            self._snapTuple,
         )
         polyFingers = [lshp.layoutRect(
             QPoint(-nmos.poly_ovlp_diff,
             nmos.sa + finger * (self._drawnLength + nmos.sd)),
             QPoint(self._widthPerFinger + nmos.poly_ovlp_diff,
             nmos.sa + finger * (self._drawnLength + nmos.sd) + self._drawnLength), laylyr.poLayer_drw,
-            self._gridTuple
+            self._snapTuple
         ) for finger in range(self._nf)]
+        # contacts = [lshp.layoutRect(
+            
+        # )]
         return [activeRect, *polyFingers]
 
     @property
