@@ -81,6 +81,7 @@ wirePen = QPen(wireLayer.pcolor, wireLayer.pwidth, wireLayer.pstyle)
 selectedWirePen = QPen(selectedWireLayer.pcolor,
                        selectedWireLayer.pwidth,
                        selectedWireLayer.pstyle)
+stretchWirePen = QPen(QColor('red'), wireLayer.pwidth, wireLayer.pstyle)
 errorWirePen = QPen(wireErrorLayer.pcolor, wireErrorLayer.pwidth, wireErrorLayer.pstyle)
 ignoreSymbolPen = QPen(ignoreSymbolLayer.pcolor,
                        ignoreSymbolLayer.pwidth,
