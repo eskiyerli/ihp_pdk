@@ -24,7 +24,6 @@
 #
 
 
-
 from dataclasses import replace
 
 from PySide6.QtCore import (Qt)
@@ -39,7 +38,8 @@ import revedaEditor.backend.dataDefinitions as ddef
 symbolLayer = ddef.edLayer(name="symbol", pcolor=QColor("green"), pwidth=2, z=2,
                            pstyle=Qt.SolidLine, visible=True, selectable=True)
 stretchSymbolLayer = replace(symbolLayer, name="stretchSymbol", pcolor=QColor("red"), z=2)
-selectedSymbolLayer = replace(symbolLayer, name="selectedSymbol", pcolor=QColor("blue"), z=3)
+selectedSymbolLayer = replace(symbolLayer, name="selectedSymbol", pcolor=QColor("blue"),
+                              z=3)
 
 symbolPinLayer = ddef.edLayer(name="symbolPin", pcolor=QColor("red"), pwidth=1, z=2,
                               bcolor=QColor("red"), bstyle=Qt.SolidPattern, visible=True,
@@ -48,10 +48,13 @@ symbolPinLayer = ddef.edLayer(name="symbolPin", pcolor=QColor("red"), pwidth=1, 
 selectedSymbolPinLayer = replace(symbolPinLayer, name="selectedSymbolPin",
                                  pcolor=QColor("yellow"), z=4)
 
-labelLayer = ddef.edLayer(name="label", pcolor=QColor("yellow"), pwidth=1, z=5, visible=True,
+labelLayer = ddef.edLayer(name="label", pcolor=QColor(255, 255, 153), pwidth=1, z=5,
+                          bcolor=QColor(Qt.yellow), bstyle=Qt.SolidPattern,
+                          visible=True,
                           selectable=True)
-selectedLabelLayer = replace(labelLayer, name="selectedLabel", pcolor=QColor("yellow"), z=6)
-draftLayer = replace(symbolLayer, pcolor= QColor("gray"), bcolor=QColor("gray"), z=0)
+selectedLabelLayer = replace(labelLayer, name="selectedLabel", pcolor=QColor("yellow"), z=6,
+                             bcolor=QColor(204, 204, 0))
+draftLayer = replace(symbolLayer, pcolor=QColor("gray"), bcolor=QColor("gray"), z=0)
 
 # Symbol Pens
 symbolPen = QPen(symbolLayer.pcolor, symbolLayer.pwidth, symbolLayer.pstyle)
@@ -77,5 +80,8 @@ symbolPinBrush = QBrush(symbolPinLayer.bcolor, symbolPinLayer.bstyle)
 
 selectedSymbolBrush = QBrush(selectedSymbolLayer.bcolor, selectedSymbolLayer.bstyle)
 
-selectedSymbolPinBrush = QBrush(selectedSymbolPinLayer.bcolor, selectedSymbolPinLayer.bstyle)
+selectedSymbolPinBrush = QBrush(selectedSymbolPinLayer.bcolor,
+                                selectedSymbolPinLayer.bstyle)
 draftBrush = QBrush(draftLayer.bcolor, draftLayer.bstyle)
+labelBrush = QBrush(labelLayer.bcolor, labelLayer.bstyle)
+selectedLabelBrush = QBrush(selectedLabelLayer.bcolor, selectedLabelLayer.bstyle)

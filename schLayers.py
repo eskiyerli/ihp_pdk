@@ -58,12 +58,13 @@ selectedSchematicPinLayer = replace(schematicPinLayer,
 selectedTextLayer = replace(textLayer, name="selectedText", pcolor=QColor("yellow"), z=5)
 ignoreSymbolLayer = ddef.edLayer(name='ignoreLayer', pcolor=QColor('red'), pwidth=5,
                                  z=6, visible=True, selectable=False)
-otherLayer = ddef.edLayer(name='otherLayer', pcolor=QColor('gray'), bcolor=QColor('gray'), pwidth=1, z=0, visible=True,
+otherLayer = ddef.edLayer(name='otherLayer', pcolor=QColor('gray'), bcolor=QColor('gray'),
+                          pwidth=1, z=0, visible=True,
                           selectable=False)
 
 draftLayer = ddef.edLayer(name='draftLayer', pcolor=QColor('gray'), pwidth=1, z=0,
                           bcolor=QColor('gray'),
-                          bstyle= Qt.DiagCrossPattern,
+                          bstyle=Qt.DiagCrossPattern,
                           visible=True, selectable=True)
 # schematic pens
 schematicPinPen = QPen(schematicPinLayer.pcolor, schematicPinLayer.pwidth,
@@ -91,7 +92,6 @@ hilightPen = QPen(wireHilightLayer.pcolor, wireHilightLayer.pwidth,
 otherPen = QPen(otherLayer.pcolor, otherLayer.pwidth, otherLayer.pstyle)
 draftPen = QPen(draftLayer.pcolor, draftLayer.pwidth, draftLayer.pstyle)
 
-
 # schematic brushes
 schematicPinBrush = QBrush(schematicPinLayer.bcolor, schematicPinLayer.bstyle)
 wireBrush = QBrush(wireLayer.bcolor, wireLayer.bstyle)
@@ -100,3 +100,6 @@ selectedSchematicPinBrush = QBrush(selectedSchematicPinLayer.bcolor,
                                    selectedSchematicPinLayer.bstyle)
 otherBrush = QBrush(otherLayer.bcolor, otherLayer.bstyle)
 draftBrush = QBrush(draftLayer.bcolor, draftLayer.bstyle)
+
+# crossing dot diameter
+crossingDotDiameter = 5
