@@ -31,6 +31,7 @@ import pdk.layoutLayers as laylyr
 import pdk.process as fabproc
 import revedaEditor.common.layoutShapes as lshp
 
+
 class nmos(lshp.layoutPcell):
     cut = int(0.17 * fabproc.dbu)
     poly_to_cut = int(0.055 * fabproc.dbu)
@@ -40,33 +41,41 @@ class nmos(lshp.layoutPcell):
     li_ovlp_cut = int(0.06 * fabproc.dbu)
     sa = poly_to_cut + cut + diff_ovlp_cut
     sd = 2 * (max(poly_to_cut, diff_ovlp_cut)) + cut
-    # when initialized it has no shapes. 
+
+    # when initialized it has no shapes.
     def __init__(
-            self,
-            width: str = 4.0,
-            length: str = 0.13,
-            nf: str = 1,
+        self,
+        width: str = 4.0,
+        length: str = 0.13,
+        nf: str = 1,
     ):
         self._shapes = []
         # define the device parameters here but set them to zero
-        self._deviceWidth = float(width) # device width
-        self._drawnWidth: int = int(fabproc.dbu * self._deviceWidth) # width in grid points
-        self._deviceLength = float(length) # gate length
+        self._deviceWidth = float(width)  # device width
+        self._drawnWidth: int = int(
+            fabproc.dbu * self._deviceWidth
+        )  # width in grid points
+        self._deviceLength = float(length)  # gate length
         self._drawnLength: int = int(fabproc.dbu * self._deviceLength)
-        self._nf = int(float(nf)) # number of fingers.
+        self._nf = int(float(nf))  # number of fingers.
         self._widthPerFinger = int(self._drawnWidth / self._nf)
         super().__init__(self._shapes)
+
     #
 
-    def __call__(self, width:float, length:float, nf:int):
-        '''
+    def __call__(self, width: float, length: float, nf: int):
+        """
         When pcell instance is called, it removes all the shapes and recreates them and adds them as child items to pcell.
-        '''
-        self._deviceWidth = float(width) # total gate width
-        self._drawnWidth = int(self._deviceWidth * fabproc.dbu) # drawn gate width in grid points
-        self._deviceLength = float(length) # gate length
-        self._drawnLength = int(self._deviceLength * fabproc.dbu) # drawn gate length in grid points
-        self._nf = int(float(nf)) # number of fingers
+        """
+        self._deviceWidth = float(width)  # total gate width
+        self._drawnWidth = int(
+            self._deviceWidth * fabproc.dbu
+        )  # drawn gate width in grid points
+        self._deviceLength = float(length)  # gate length
+        self._drawnLength = int(
+            self._deviceLength * fabproc.dbu
+        )  # drawn gate length in grid points
+        self._nf = int(float(nf))  # number of fingers
         self._widthPerFinger = self._drawnWidth / self._nf
         self.shapes = self.createGeometry()
 
@@ -75,18 +84,32 @@ class nmos(lshp.layoutPcell):
             QPoint(0, 0),
             QPoint(
                 self._widthPerFinger,
-                int(self._nf * self._drawnLength + 2 * nmos.sa + (self._nf - 1) * nmos.sd),
+                int(
+                    self._nf * self._drawnLength
+                    + 2 * nmos.sa
+                    + (self._nf - 1) * nmos.sd
+                ),
             ),
             laylyr.odLayer_drw,
         )
-        polyFingers = [lshp.layoutRect(
-            QPoint(-nmos.poly_ovlp_diff,
-            nmos.sa + finger * (self._drawnLength + nmos.sd)),
-            QPoint(self._widthPerFinger + nmos.poly_ovlp_diff,
-            nmos.sa + finger * (self._drawnLength + nmos.sd) + self._drawnLength), laylyr.poLayer_drw,
-        ) for finger in range(self._nf)]
+        polyFingers = [
+            lshp.layoutRect(
+                QPoint(
+                    -nmos.poly_ovlp_diff,
+                    nmos.sa + finger * (self._drawnLength + nmos.sd),
+                ),
+                QPoint(
+                    self._widthPerFinger + nmos.poly_ovlp_diff,
+                    nmos.sa
+                    + finger * (self._drawnLength + nmos.sd)
+                    + self._drawnLength,
+                ),
+                laylyr.poLayer_drw,
+            )
+            for finger in range(self._nf)
+        ]
         # contacts = [lshp.layoutRect(
-            
+
         # )]
         return [activeRect, *polyFingers]
 
@@ -113,6 +136,7 @@ class nmos(lshp.layoutPcell):
     @nf.setter
     def nf(self, value: int):
         self._nf = value
+
 
 class pmos(lshp.layoutPcell):
     pass
