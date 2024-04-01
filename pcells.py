@@ -49,6 +49,14 @@ class nmos(lshp.layoutPcell):
         length: str = 0.13,
         nf: str = 1,
     ):
+        """
+        Initialize a new instance of the nmos pcell.
+
+        Args:
+            width (str, optional): total gate width. Defaults to 4.0.
+            length (str, optional): gate length. Defaults to 0.13.
+            nf (str, optional): number of fingers. Defaults to 1.
+        """
         self._shapes = []
         # define the device parameters here but set them to zero
         self._deviceWidth = float(width)  # device width
@@ -61,11 +69,18 @@ class nmos(lshp.layoutPcell):
         self._widthPerFinger = int(self._drawnWidth / self._nf)
         super().__init__(self._shapes)
 
-    #
-
     def __call__(self, width: float, length: float, nf: int):
         """
-        When pcell instance is called, it removes all the shapes and recreates them and adds them as child items to pcell.
+        When pcell instance is called, it removes all the shapes and recreates them
+        and adds them as child items to pcell.
+
+        Args:
+            width (float): total gate width
+            length (float): gate length
+            nf (int): number of fingers
+
+        Returns:
+            list[layoutShape]: list of shapes in the pcell
         """
         self._deviceWidth = float(width)  # total gate width
         self._drawnWidth = int(
@@ -80,6 +95,14 @@ class nmos(lshp.layoutPcell):
         self.shapes = self.createGeometry()
 
     def createGeometry(self) -> list[lshp.layoutShape]:
+        """
+        This function creates the geometry of the nmos pcell.
+        It consists of an active region and poly fingers.
+        Args:
+            self (nmos): instance of the nmos pcell
+        Returns:
+            list[layoutShape]: list of shapes in the pcell
+        """
         activeRect = lshp.layoutRect(
             QPoint(0, 0),
             QPoint(
