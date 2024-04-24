@@ -29,10 +29,30 @@ from PySide6.QtCore import (
 
 import pdk.layoutLayers as laylyr
 import pdk.process as fabproc
+# import pdk.utilityFunctions as uf
 import revedaEditor.common.layoutShapes as lshp
+from pdk.sg13_tech import SG13_Tech as sg13
+from quantiphy import Quantity
 
+class baseCell(lshp.layoutPcell):
 
-class nmos(lshp.layoutPcell):
+    """
+    Base class for all layout parametric cells.
+    """
+    scale = fabproc.dbu
+    def __init__(self, shapes = list):
+        super().__init__(shapes)
+        techClass = sg13()
+        self._techParams = techClass.techParams
+
+    @staticmethod
+    def zerop(value):
+        if value == 0:
+            return 1
+        else:
+            return 0
+#
+class nmos(baseCell):
     cut = int(0.17 * fabproc.dbu)
     poly_to_cut = int(0.055 * fabproc.dbu)
     diff_ovlp_cut = int(0.06 * fabproc.dbu)
@@ -45,9 +65,9 @@ class nmos(lshp.layoutPcell):
     # when initialized it has no shapes.
     def __init__(
         self,
-        width: str = 4.0,
-        length: str = 0.13,
-        nf: str = 1,
+        width: str = "4.0",
+        length: str = "0.13",
+        nf: str = "1",
     ):
         """
         Initialize a new instance of the nmos pcell.
@@ -69,7 +89,7 @@ class nmos(lshp.layoutPcell):
         self._widthPerFinger = int(self._drawnWidth / self._nf)
         super().__init__(self._shapes)
 
-    def __call__(self, width: float, length: float, nf: int):
+    def __call__(self, width: str, length: str, nf: str):
         """
         When pcell instance is called, it removes all the shapes and recreates them
         and adds them as child items to pcell.
@@ -92,7 +112,7 @@ class nmos(lshp.layoutPcell):
         )  # drawn gate length in grid points
         self._nf = int(float(nf))  # number of fingers
         self._widthPerFinger = self._drawnWidth / self._nf
-        self.shapes = self.createGeometry()
+        self.shapes = self.createGeometry() # check shapes property of layoutInstance class
 
     def createGeometry(self) -> list[lshp.layoutShape]:
         """
@@ -113,7 +133,7 @@ class nmos(lshp.layoutPcell):
                     + (self._nf - 1) * nmos.sd
                 ),
             ),
-            laylyr.odLayer_drw,
+            laylyr.Activ_drw,
         )
         polyFingers = [
             lshp.layoutRect(
@@ -127,7 +147,7 @@ class nmos(lshp.layoutPcell):
                     + finger * (self._drawnLength + nmos.sd)
                     + self._drawnLength,
                 ),
-                laylyr.poLayer_drw,
+                laylyr.GatPoly_drw,
             )
             for finger in range(self._nf)
         ]
@@ -160,6 +180,87 @@ class nmos(lshp.layoutPcell):
     def nf(self, value: int):
         self._nf = value
 
+class nmos_ihp(baseCell):
+    def __init__(self, w: str = '4u', l:str = '0.13u', ng: str = '1'):
 
-class pmos(lshp.layoutPcell):
-    pass
+        self.w= Quantity(w).real
+        self.l = Quantity(l).real
+        self.ng = int(float(ng))
+        self._shapes = []
+        super().__init__(self._shapes)
+
+    def __call__(self, w: str, l:str, ng: str):
+        tempShapesList = []
+        self.w= Quantity(w).real
+        self.l = Quantity(l).real
+        self.ng = int(float(ng))
+        defL       = Quantity(self._techParams['nmos_defL']).real
+        defW       = Quantity(self._techParams['nmos_defW']).real
+        defNG      = Quantity(self._techParams['nmos_defNG']).real
+        minL       = Quantity(self._techParams['nmos_minL']).real
+        minW       = Quantity(self._techParams['nmos_minW']).real
+        # layers
+        metall_layer = laylyr.Metal1_drw
+        metall_layer_pin = laylyr.Metal1_pin
+        ndiff_layer = laylyr.Activ_drw
+        poly_layer = laylyr.GatPoly_drw
+        poly_layer_pin = laylyr.GatPoly_pin
+        locint_layer = laylyr.Cont_drw
+
+        #
+        epsilon = Quantity(self._techParams['epsilon1']).real
+        endcap = self._techParams['M1_c1']
+        cont_size = self._techParams['Cnt_a']
+        cont_dist = self._techParams['Cnt_b']
+        cont_Activ_overRec = self._techParams['Cnt_c']
+        cont_metall_over = self._techParams['M1_c']
+        gatpoly_Activ_over = self._techParams['Gat_c']
+        gatpoly_cont_dist = self._techParams['Cnt_f']
+        smallw_gatpoly_cont_dist = cont_Activ_overRec+self._techParams['Gat_d']
+        contActMin = 2*cont_Activ_overRec+cont_size
+
+        wf = self.w/self.ng
+        if endcap < cont_metall_over :
+            endcap = cont_metall_over
+        if wf < contActMin-epsilon :   #  adjust size of Gate to S/D contact region due to
+            # corner
+            gatpoly_cont_dist = smallw_gatpoly_cont_dist
+
+        xdiff_beg = 0
+        ydiff_beg = 0
+        ydiff_end = wf
+        if wf < contActMin :
+            xoffset = 0
+            diffoffset = (contActMin-wf)/2
+        else:
+            diffoffset = 0 # Need to check
+
+        # get the number of contacts
+        lcon = wf-2*cont_Activ_overRec
+        distc = cont_size+cont_dist
+        ncont = (wf-2*cont_Activ_overRec+cont_dist)/(cont_size+cont_dist)+epsilon
+        if self.zerop(ncont) :
+            ncont = 1
+        diff_cont_offset = (wf - 2 * cont_Activ_overRec - ncont * cont_size - (ncont - 1) *
+                            cont_dist) / 2
+        # draw the cont row
+        xcont_beg = xdiff_beg + cont_Activ_overRec
+        ycont_beg = ydiff_beg + cont_Activ_overRec
+        ycont_cnt = ycont_beg + diffoffset + diff_cont_offset
+        xcont_end = xcont_beg + cont_size
+        # draw Metal rect
+        # calculate bot and top cont position
+        yMet1 = ycont_cnt-endcap
+        yMet2 = ycont_cnt+cont_size+(ncont-1)*distc+endcap
+        # is metal1 overlapping Activ?
+        yMet1 = min(yMet1, ydiff_beg+diffoffset)
+        yMet2 = max(yMet2, ydiff_end+diffoffset)
+        point1 = QPoint(baseCell.scale*(xcont_beg - cont_metall_over), baseCell.scale*yMet1)
+        point2 = QPoint(baseCell.scale*(xcont_end + cont_metall_over), baseCell.scale*yMet2)
+
+        tempShapesList.append(lshp.layoutRect(
+            point1, point2,
+            metall_layer
+        ))
+        self.shapes = tempShapesList
+
