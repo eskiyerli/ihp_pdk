@@ -26,13 +26,13 @@ import revedaEditor.backend.dataDefinitions as ddef
 import pdk.layoutLayers as laylyr
 
 # common process parameters
-dbu = 100  # grid points per micron
+dbu = 1000  # grid points per micron
 
 # Some predefined rules
 # via defintions
-# con = ddef.viaDefTuple(
-#     "con", laylyr.contactLayer_drw, "", "0.1", "10", "0.1", "10", "0.1", "10"
-# )
+cont = ddef.viaDefTuple(
+    "cont", laylyr.Cont_drw, "", "0.16", "0.16", "0.16", "0.16", "0.18", "10"
+)
 # v1 = ddef.viaDefTuple(
 #     "v1", laylyr.via1Layer_drw, "", "0.2", "10", "0.2", "10", "0.1", "10"
 # )
