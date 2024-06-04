@@ -29,6 +29,7 @@ from PySide6.QtGui import (
 )
 from dotenv import load_dotenv
 from quantiphy import Quantity
+from functools import lru_cache
 
 import revedaEditor.backend.dataDefinitions as ddef
 import revedaEditor.common.layoutShapes as lshp
@@ -265,6 +266,7 @@ class rsil(baseCell):
 
         super().__init__(self._shapes)
 
+    @lru_cache
     def __call__(self, length: str, width: str, b: str, ps: str):
         self.length = Quantity(length).real
         self.width = Quantity(width).real
@@ -359,8 +361,6 @@ class rsil(baseCell):
         point1 = self.toSceneCoord(QPointF(xpos1, ypos1))
         point2 = self.toSceneCoord(QPointF(xpos2, ypos2 + poly_cont_len * Dir))
         tempShapeList.append(lshp.layoutRect(point1, point2, rsil.contpolylayer))
-        #        dbCreateRect(self, contpolylayer, Box(xpos1, ypos1, xpos2, ypos2 + poly_cont_len *
-        #        Dir))
         # number parallel conts: ncont, distance: distc:
         wcon = wcontact - 2.0 * polyover
         distc = consize + conspace
@@ -383,9 +383,7 @@ class rsil(baseCell):
                 )
             )
             tempShapeList.append(lshp.layoutRect(point1, point2, rsil.locintlayer))
-            # dbCreateRect(self, locintlayer,
-            #              Box(xpos1 + contbar_poly_over, ypos2 + li_poly_over * Dir,
-            #                  xpos2 - contbar_poly_over, ypos2 + (consize + li_poly_over) * Dir))
+
         else:
             for i in range(ncont):
                 point1 = self.toSceneCoord(
@@ -400,22 +398,16 @@ class rsil(baseCell):
                     )
                 )
                 tempShapeList.append(lshp.layoutRect(point1, point2, rsil.locintlayer))
-                # dbCreateRect(self, locintlayer, Box(xpos1 + polyover + distr + i * distc,
-                #                                     ypos2 + li_poly_over * Dir,
-                #                                     xpos1 + polyover + distr + i * distc + consize,
-                #                                     ypos2 + (consize + li_poly_over) * Dir))
+
         # **************************************************************
         # draw MetalRect and Pin of bottom Contact Area
         ypos1 = ypos2 + (li_poly_over - metover) * Dir
         ypos2 = ypos2 + (consize + li_poly_over + metover) * Dir
         point1 = self.toSceneCoord(QPointF(xpos1 + contbar_poly_over - endcap, ypos1))
         point2 = self.toSceneCoord(QPointF(xpos2 - contbar_poly_over + endcap, ypos2))
-        # dbCreateRect(self, metlayer, Box(xpos1 + contbar_poly_over - endcap, ypos1,
-        #                                  xpos2 - contbar_poly_over + endcap, ypos2))
+
         tempShapeList.append(lshp.layoutRect(point1, point2, rsil.metlayer))
-        # MkPin(self, 'PLUS', 1,
-        #       Box(xpos1 + contbar_poly_over - endcap, ypos1, xpos2 - contbar_poly_over + endcap,
-        #           ypos2), metlayer)
+
         centre = QRectF(point1, point2).center()
         tempShapeList.append(
             lshp.layoutPin(
@@ -466,11 +458,7 @@ class rsil(baseCell):
             point2 = self.toSceneCoord(QPointF(xpos2, ypos2))
             tempShapeList.append(lshp.layoutRect(point1, point2, rsil.bodypolylayer))
             tempShapeList.append(lshp.layoutRect(point1, point2, rsil.reslayer))
-            # dbCreateRect(self, bodypolylayer, Box(xpos1, ypos1, xpos2, ypos2))
-            # dbCreateRect(self, reslayer, Box(xpos1, ypos1, xpos2, ypos2))
-            # not yet implemented
-            # ihpAddThermalResLayer(self, Box(xpos1, ypos1, xpos2, ypos2), True, Cell)
-            # **************************************************************
+
             # EXTBlock
             if i == 1:
                 point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos1))
@@ -486,8 +474,6 @@ class rsil(baseCell):
                 tempShapeList.append(
                     lshp.layoutRect(point1, point2, rsil.extBlocklayer)
                 )
-                # dbCreateRect(self, extBlocklayer,
-                #              Box(xpos1 - ext_over, ypos1, xpos2 + ext_over, ypos2))
 
             # **************************************************************
             # hor connection parts
@@ -503,8 +489,7 @@ class rsil(baseCell):
                     lshp.layoutRect(point1, point2, rsil.bodypolylayer)
                 )
                 tempShapeList.append(lshp.layoutRect(point1, point2, rsil.reslayer))
-                # dbCreateRect(self, bodypolylayer, Box(xpos1, ypos1, xpos2, ypos2))
-                # dbCreateRect(self, reslayer, Box(xpos1, ypos1, xpos2, ypos2))
+
                 # decide in which direction the part is drawn
                 if self.oddp(i):
                     point1 = self.toSceneCoord(
@@ -517,9 +502,7 @@ class rsil(baseCell):
                         lshp.layoutRect(point1, point2, rsil.extBlocklayer)
                     )
 
-                    # dbCreateRect(self, extBlocklayer,
-                    #              Box(xpos1 - ext_over, ypos1 + ext_over, xpos2 + ext_over,
-                    #                  ypos2 - ext_over))
+
                 else:
                     point1 = self.toSceneCoord(
                         QPointF(xpos1 - ext_over, ypos1 - ext_over)
@@ -552,7 +535,7 @@ class rsil(baseCell):
         point1 = self.toSceneCoord(QPointF(xpos1, ypos2))
         point2 = self.toSceneCoord(QPointF(xpos2, ypos2 + poly_cont_len * Dir))
         tempShapeList.append(lshp.layoutRect(point1, point2, rsil.contpolylayer))
-        # dbCreateRect(self, contpolylayer, Box(xpos1, ypos2, xpos2, ypos2 + poly_cont_len * Dir))
+
 
         # draw contacts
         # LI and Metal
@@ -769,6 +752,7 @@ class cmim(baseCell):
         self._shapes = []
         super().__init__(self._shapes)
 
+    @lru_cache
     def __call__(self, width: str, length: str):
         self.width = Quantity(width).real
         self.length = Quantity(length).real
@@ -972,6 +956,7 @@ class nmos(baseCell):
         tempShapeList = []
         super().__init__(tempShapeList)
 
+    @lru_cache
     def __call__(self, width: str, length: str, ng: str):
         tempShapesList = []
         self.width = Quantity(width).real
@@ -1156,22 +1141,46 @@ class nmos(baseCell):
             point1 = self.toSceneCoord(QPointF(xcont_beg-cont_metall_over, yMet1))
             point2 = self.toSceneCoord(QPointF(xcont_end+cont_metall_over, yMet2))
             # center = QRectF(point1, point2).center()
-            tempShapesList.append(lshp.layoutRect(point1,point2,nmos.metal1_layer))
-
-        #     contactArray(self, 0, locint_layer, xcont_beg, ydiff_beg, xcont_end, ydiff_end+diffoffset*2, 0, cont_Activ_overRec, cont_size, cont_dist)
-            
-        #     if onep(i) :
-        #         MkPin(self, 'D', 1, Box(xcont_beg-cont_metall_over, yMet1, xcont_end+cont_metall_over, yMet2), metall_layer_pin)
-            
+            tempShapesList.append(lshp.layoutRect(point1,point2, nmos.metal1_layer))
+            contactList = self.contactArray(0,nmos.locint_layer, xcont_beg, ydiff_beg,
+                                                xcont_end, ydiff_end + diffoffset*2, 0,
+                                                cont_Activ_overRec, cont_size, cont_dist)
+            tempShapesList.extend(contactList)
+            if i == 1:
+                point1 = self.toSceneCoord(QPointF(xcont_beg-cont_metall_over, yMet1))
+                point2 = self.toSceneCoord(QPointF(xcont_end+cont_metall_over, yMet2))
+                tempShapesList.append(lshp.layoutPin(
+                    point1,
+                    point2,
+                    "D",
+                    lshp.layoutPin.pinDirs[2],
+                    lshp.layoutPin.pinTypes[0],
+                    nmos.metal1_layer_pin,
+                    ))
+                tempShapesList.append(
+                    lshp.layoutLabel(
+                        center,
+                        "D",
+                        *self._labelFontTuple,
+                        lshp.layoutLabel.labelAlignments[0],
+                        lshp.layoutLabel.labelOrients[0],
+                        nmos.metal1_layer_lbl,
+                    )
+                )
         #     # draw drain diffusion
         #     dbCreateRect(self, ndiff_layer, Box(xcont_beg-cont_Activ_overRec, ycont_beg-cont_Activ_overRec,
         #                                         xcont_end+cont_Activ_overRec, ycont_beg+cont_size+cont_Activ_overRec))
+            point1 = self.toSceneCoord(QPointF(xcont_beg-cont_Activ_overRec, ycont_beg-cont_Activ_overRec))
+            point2 = self.toSceneCoord(QPointF(xcont_end+cont_Activ_overRec, ycont_beg+cont_size+cont_Activ_overRec))
             
+            tempShapesList.append(lshp.layoutRect(point1, point2, nmos.ndiff_layer ))
         # # now finish drawing the diffusion
-        # xdiff_end = xcont_end+cont_Activ_overRec
+        xdiff_end = xcont_end+cont_Activ_overRec
+        point1 = self.toSceneCoord(QPointF(xdiff_beg, ydiff_beg+diffoffset))
+        point2 = self.toSceneCoord(QPointF(xdiff_end, ydiff_end+diffoffset))
         # dbCreateRect(self, ndiff_layer, Box(xdiff_beg, ydiff_beg+diffoffset, xdiff_end, ydiff_end+diffoffset))
             
-
+        tempShapesList.append(lshp.layoutRect(point1,point2, nmos.ndiff_layer ))
         self.shapes = tempShapesList
 
 
