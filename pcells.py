@@ -1183,4 +1183,4 @@ class nmos(baseCell):
         tempShapesList.append(lshp.layoutRect(point1,point2, nmos.ndiff_layer ))
         self.shapes = tempShapesList
 
-
+pcells = {'rsil': rsil, 'cmim': cmim, 'nmos': nmos}

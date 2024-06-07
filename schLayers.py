@@ -98,8 +98,8 @@ otherLayer = ddef.edLayer(
 draftLayer = ddef.edLayer(
     name="draftLayer",
     pcolor=QColor("gray"),
-    pwidth=1,
-    z=0,
+    pwidth=2,
+    z=10,
     bcolor=QColor("gray"),
     bstyle=Qt.DiagCrossPattern,
     visible=True,
@@ -134,6 +134,7 @@ hilightPen = QPen(
 )
 otherPen = QPen(otherLayer.pcolor, otherLayer.pwidth, otherLayer.pstyle)
 draftPen = QPen(draftLayer.pcolor, draftLayer.pwidth, draftLayer.pstyle)
+draftPen.setCosmetic(True)
 
 # schematic brushes
 schematicPinBrush = QBrush(schematicPinLayer.bcolor, schematicPinLayer.bstyle)
