@@ -40,9 +40,7 @@ load_dotenv()
 if os.environ.get("REVEDA_PDK_PATH"):
     import pdk.layoutLayers as laylyr
     import pdk.process as fabproc
-else:
-    import defaultPdk.layoutLayers as laylyr
-    import defaultPdk.process as fabproc
+
 
 
 class baseCell(lshp.layoutPcell):
