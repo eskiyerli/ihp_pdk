@@ -44,13 +44,16 @@ wireLayer = ddef.edLayer(
     visible=True,
     selectable=True,
 )
-wireErrorLayer = replace(wireLayer, name="wireError", pcolor=QColor("red"), z=1)
-selectedWireLayer = replace(wireLayer, name="selectedWire", pcolor=QColor("blue"), z=2)
+wireErrorLayer = replace(wireLayer, name="wireError", pcolor=QColor("red"), bcolor= QColor("red"), z=1)
+selectedWireLayer = replace(wireLayer, name="selectedWire", pcolor=QColor("blue"), bcolor =
+QColor("blue"), z=2)
 wireHilightLayer = ddef.edLayer(
     name="wireHilightLayer",
     pcolor=QColor("darkMagenta"),
     pwidth=5,
     z=6,
+    bcolor=QColor("darkMagenta"),
+    bstyle=Qt.SolidPattern,
     visible=True,
     selectable=False,
 )
@@ -77,6 +80,9 @@ selectedSchematicPinLayer = replace(
 selectedTextLayer = replace(
     textLayer, name="selectedText", pcolor=QColor("yellow"), z=5
 )
+schematicPinNameLayer = replace(schematicPinLayer, name="schematicPin", pcolor = QColor(
+    'yellow'), bcolor = QColor('yellow'))
+
 ignoreSymbolLayer = ddef.edLayer(
     name="ignoreLayer",
     pcolor=QColor("red"),
@@ -140,6 +146,7 @@ draftPen.setCosmetic(True)
 schematicPinBrush = QBrush(schematicPinLayer.bcolor, schematicPinLayer.bstyle)
 wireBrush = QBrush(wireLayer.bcolor, wireLayer.bstyle)
 selectedWireBrush = QBrush(selectedWireLayer.bcolor, selectedWireLayer.bstyle)
+errorWireBrush = QBrush(wireErrorLayer.bcolor, wireErrorLayer.bstyle)
 selectedSchematicPinBrush = QBrush(
     selectedSchematicPinLayer.bcolor, selectedSchematicPinLayer.bstyle
 )

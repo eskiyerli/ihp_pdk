@@ -66,6 +66,14 @@ selectedSymbolPinLayer = replace(
     symbolPinLayer, name="selectedSymbolPin", pcolor=QColor("yellow"), z=4
 )
 
+hilightLayer = ddef.edLayer(
+    name="hilightLayer",
+    pcolor=QColor("darkMagenta"),
+    pwidth=5,
+    z=6,
+    visible=True,
+    selectable=False,
+)
 labelLayer = ddef.edLayer(
     name="label",
     pcolor=QColor(255, 255, 153),
@@ -101,7 +109,9 @@ selectedSymbolPinPen = QPen(
     selectedSymbolPinLayer.pwidth,
     selectedSymbolPinLayer.pstyle,
 )
-
+highlightedSymbolPinPen = QPen(
+    hilightLayer.pcolor, hilightLayer.pwidth, hilightLayer.pstyle
+)
 labelPen = QPen(labelLayer.pcolor, labelLayer.pwidth, labelLayer.pstyle)
 selectedLabelPen = QPen(
     selectedLabelLayer.pcolor, selectedLabelLayer.pwidth, selectedLabelLayer.pstyle
@@ -117,6 +127,9 @@ selectedSymbolBrush = QBrush(selectedSymbolLayer.bcolor, selectedSymbolLayer.bst
 
 selectedSymbolPinBrush = QBrush(
     selectedSymbolPinLayer.bcolor, selectedSymbolPinLayer.bstyle
+)
+highlightedSymbolPinBrush = QBrush(
+    hilightLayer.bcolor, hilightLayer.bstyle
 )
 draftBrush = QBrush(draftLayer.bcolor, draftLayer.bstyle)
 labelBrush = QBrush(labelLayer.bcolor, labelLayer.bstyle)
