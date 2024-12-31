@@ -52,11 +52,12 @@ class rsil(baseInst):
 
     def Rparm(self):
         returnValue = (
-            9.0e-6 / self.W
-            + 7.0
-            * ((self.b + 1) * self.L + (1.081 * (self.W + 1.0e-8) + 0.18e-6) * self.b)
-            / (self.W + 1.0e-8)
-        ) / self.m
+                              9.0e-6 / self.W
+                              + 7.0
+                              * ((self.b + 1) * self.L + (
+                                  1.081 * (self.W + 1.0e-8) + 0.18e-6) * self.b)
+                              / (self.W + 1.0e-8)
+                      ) / self.m
         return returnValue
 
 
@@ -87,7 +88,7 @@ class cap_cmim(baseInst):
 
     def Cparm(self):
         returnValue = self.MF * (
-            self.W * self.L * 1.5e-3 + 2 * (self.W + self.L) * 40e-12
+                self.W * self.L * 1.5e-3 + 2 * (self.W + self.L) * 40e-12
         )
         return returnValue
 
@@ -182,11 +183,12 @@ class rhigh(baseInst):
 
     def Rparm(self):
         returnValue = (
-            1.6e-4 / self.W
-            + 1360.0
-            * ((self.b + 1) * self.L + (1.081 * (self.W - 0.04e-6) + 0.18e-6) * self.b)
-            / (self.W - 0.04e-6)
-        ) / self.m
+                              1.6e-4 / self.W
+                              + 1360.0
+                              * ((self.b + 1) * self.L + (
+                                  1.081 * (self.W - 0.04e-6) + 0.18e-6) * self.b)
+                              / (self.W - 0.04e-6)
+                      ) / self.m
         return returnValue
 
 
@@ -199,12 +201,11 @@ class rppd(baseInst):
         self.m = Quantity(self._labelsDict["@m"].labelValue)
 
     def Rparm(self):
-        print("i am in rparm")
         return (
-            70.0e-6 / self.W
-            + 260.0
-            * ((self.b + 1) * self.L + (1.081 * (self.W + 6.0e-9) + 0.18e-6) * self.b)
-            / (self.W + 6.0e-9)
+                70.0e-6 / self.W
+                + 260.0
+                * ((self.b + 1) * self.L + (1.081 * (self.W + 6.0e-9) + 0.18e-6) * self.b)
+                / (self.W + 6.0e-9)
         ) / self.m
 
 

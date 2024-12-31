@@ -17,8 +17,9 @@
 ########################################################################
 
 
-import os
 import json
+import os
+
 
 class SG13_Tech():
 
@@ -52,4 +53,3 @@ class SG13_Tech():
     @property
     def layers(self):
         return self._layers
-

@@ -23,11 +23,12 @@
 #    Licensor: Revolution Semiconductor (Registered in the Netherlands)
 #
 import revedaEditor.backend.dataDefinitions as ddef
-import pdk.layoutLayers as laylyr
-from pdk.sg13_tech import SG13_Tech as sg13
-from quantiphy import Quantity
+from revedaEditor.backend.pdkPaths import importPDKModule
 
-techClass = sg13()
+laylyr = importPDKModule('layoutLayers')
+sg13_tech = importPDKModule('sg13_tech')
+
+techClass = sg13_tech.SG13_Tech()
 techParams = techClass.techParams
 
 # common process parameters
