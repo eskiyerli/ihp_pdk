@@ -34,7 +34,6 @@ import revedaEditor.common.layoutShapes as lshp
 from revedaEditor.backend.pdkPaths import importPDKModule
 
 sg13_tech = importPDKModule('sg13_tech')
-
 laylyr = importPDKModule('layoutLayers')
 fabproc = importPDKModule('process')
 
@@ -52,7 +51,6 @@ class baseCell(lshp.layoutPcell):
 
     @classmethod
     def GridFix(cls, x):
-
         return cls.fix(x / cls._sg13grid + cls._epsilon) * cls._sg13grid
 
     @staticmethod

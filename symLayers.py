@@ -38,7 +38,7 @@ import revedaEditor.backend.dataDefinitions as ddef
 symbolLayer = ddef.edLayer(
     name="symbol",
     pcolor=QColor("green"),
-    pwidth=2,
+    pwidth=4,
     z=2,
     pstyle=Qt.SolidLine,
     visible=True,
