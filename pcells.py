@@ -21,7 +21,7 @@
 
 import math
 from functools import lru_cache
-
+from typing import List
 from PySide6.QtCore import QPoint, QPointF, QRectF
 from PySide6.QtGui import (
     QFontDatabase,
@@ -47,7 +47,7 @@ class baseCell(lshp.layoutPcell):
     _techParams = techClass.techParams
     _sg13grid = Quantity(_techParams["grid"]).real
     _epsilon = _techParams["epsilon1"]
-    heatTransLayer = laylyr.HeatTrans_drw
+    heatTransLayer = laylyr.HeatTrans_drawing
 
     @classmethod
     def GridFix(cls, x):
@@ -180,8 +180,8 @@ class baseCell(lshp.layoutPcell):
                 center,
                 labelText,
                 *self._labelFontTuple,
-                lshp.layoutLabel.labelAlignments[0],
-                lshp.layoutLabel.labelOrients[0],
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
                 heatLayer,
             ))
 
@@ -193,7 +193,7 @@ class baseCell(lshp.layoutPcell):
                                     label))
 
     @staticmethod
-    def toLayoutCoord(point: [QPoint]) -> QPointF:
+    def toLayoutCoord(point: List[QPoint]) -> QPointF:
         """
         Converts a point in scene coordinates to layout coordinates by dividing it to
         fabproc.dbu.
@@ -202,7 +202,7 @@ class baseCell(lshp.layoutPcell):
         return point.toPointF()
 
     @staticmethod
-    def toSceneCoord(point: [QPointF]) -> QPoint:
+    def toSceneCoord(point: List[QPointF]) -> QPoint:
         """
         Converts a point in layout coordinates to scene coordinates by multiplying it with
         fabproc.dbu.
@@ -235,15 +235,15 @@ class baseCell(lshp.layoutPcell):
 
 
 class rsil(baseCell):
-    contpolylayer = laylyr.GatPoly_drw
-    bodypolylayer = laylyr.PolyRes_drw
-    reslayer = laylyr.RES_drw
-    extBlocklayer = laylyr.EXTBlock_drw
-    locintlayer = laylyr.Cont_drw
-    metlayer = laylyr.Metal1_drw
+    contpolylayer = laylyr.GatPoly_drawing
+    bodypolylayer = laylyr.PolyRes_drawing
+    reslayer = laylyr.RES_drawing
+    extBlocklayer = laylyr.EXTBlock_drawing
+    locintlayer = laylyr.Cont_drawing
+    metlayer = laylyr.Metal1_drawing
     metlayer_pin = laylyr.Metal1_pin
-    metlayer_lbl = laylyr.Metal1_lbl
-    textlayer = laylyr.TEXT_drw
+    metlayer_label = laylyr.Metal1_label
+    textlayer = laylyr.TEXT_drawing
 
     def __init__(
             self,
@@ -268,15 +268,15 @@ class rsil(baseCell):
         self.ps = Quantity(ps).real
         # Cell = self.__class__.__name__
         tempShapeList = []
-        # contpolylayer = laylyr.GatPoly_drw
-        # bodypolylayer = laylyr.PolyRes_drw
-        # reslayer = laylyr.RES_drw
-        # extBlocklayer = laylyr.EXTBlock_drw
-        # locintlayer = laylyr.Cont_drw
-        # metlayer = laylyr.Metal1_drw
+        # contpolylayer = laylyr.GatPoly_drawing
+        # bodypolylayer = laylyr.PolyRes_drawing
+        # reslayer = laylyr.RES_drawing
+        # extBlocklayer = laylyr.EXTBlock_drawing
+        # locintlayer = laylyr.Cont_drawing
+        # metlayer = laylyr.Metal1_drawing
         # metlayer_pin = laylyr.Metal1_pin
-        # metlayer_lbl = laylyr.Metal1_lbl
-        # textlayer = laylyr.TEXT_drw
+        # metlayer_label = laylyr.Metal1_label
+        # textlayer = laylyr.TEXT_drawing
         Cell = self.__class__.__name__
         metover = baseCell._techParams[Cell + "_met_over_cont"]
         consize = baseCell._techParams["Cnt_a"]  # min and max size of Cont
@@ -418,9 +418,9 @@ class rsil(baseCell):
                 centre,
                 "PLUS",
                 *self._labelFontTuple,
-                lshp.layoutLabel.labelAlignments[0],
-                lshp.layoutLabel.labelOrients[0],
-                rsil.metlayer_lbl,
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
+                rsil.metlayer_label,
             )
         )
         # **************************************************************
@@ -605,9 +605,9 @@ class rsil(baseCell):
                 centre,
                 "MINUS",
                 *self._labelFontTuple,
-                lshp.layoutLabel.labelAlignments[0],
-                lshp.layoutLabel.labelOrients[0],
-                rsil.metlayer_lbl,
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
+                rsil.metlayer_label,
             )
         )
         # MkPin(self, 'MINUS', 2, Box(xpos1+contbar_poly_over-endcap, ypos1, xpos2-contbar_poly_over+endcap, ypos2), metlayer)
@@ -626,8 +626,8 @@ class rsil(baseCell):
                 labelpos,
                 labeltext,
                 *rlabeltuple,
-                lshp.layoutLabel.labelAlignments[0],
-                lshp.layoutLabel.labelOrients[0],
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
                 rsil.textlayer,
             )
         )
@@ -730,13 +730,13 @@ class rsil(baseCell):
 
 
 class cmim(baseCell):
-    mimLayer = laylyr.MIM_drw
-    topMetal1 = laylyr.TopMetal1_drw
-    metal5 = laylyr.Metal5_drw
+    mimLayer = laylyr.MIM_drawing
+    topMetal1 = laylyr.TopMetal1_drawing
+    metal5 = laylyr.Metal5_drawing
     topMetal1pin = laylyr.TopMetal1_pin
     metal5pin = laylyr.Metal5_pin
-    metal5lbl = laylyr.Metal5_txt
-
+    metal5lbl = laylyr.Metal5_text
+    cont = laylyr.Cont_drawing
     def __init__(self, width: str = "1.14u", length: str = "1.14u"):
         # process parameter values entered by user
         self.width = width
@@ -789,8 +789,8 @@ class cmim(baseCell):
                 centre,
                 "PLUS",
                 *self._labelFontTuple,
-                lshp.layoutLabel.labelAlignments[0],
-                lshp.layoutLabel.labelOrients[0],
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
                 cmim.metal5lbl,
             )
         )
@@ -819,8 +819,8 @@ class cmim(baseCell):
                 centre,
                 "MINUS",
                 *self._labelFontTuple,
-                lshp.layoutLabel.labelAlignments[0],
-                lshp.layoutLabel.labelOrients[0],
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
                 cmim.metal5lbl,
             )
         )
@@ -828,7 +828,7 @@ class cmim(baseCell):
         self.shapes = tempShapesList
 
     def generateVias(self, w, l):
-        vmimlyr = laylyr.Vmim_drw
+        vmimlyr = laylyr.Vmim_drawing
         viasList = []
         cont_over = baseCell._techParams["Mim_d"]
         cont_dist = 0.84
@@ -923,19 +923,19 @@ class nmos(baseCell):
     minW = Quantity(baseCell._techParams["nmos_minW"]).real
 
     # layers
-    metal1_layer = laylyr.Metal1_drw
+    metal1_layer = laylyr.Metal1_drawing
     metal1_layer_pin = laylyr.Metal1_pin
-    metal1_layer_lbl = laylyr.Metal1_txt
-    ndiff_layer = laylyr.Activ_drw
-    pdiff_layer = laylyr.Activ_drw
-    pdiffx_layer = laylyr.pSD_drw
-    poly_layer = laylyr.GatPoly_drw
+    metal1_layer_label = laylyr.Metal1_text
+    ndiff_layer = laylyr.Activ_drawing
+    pdiff_layer = laylyr.Activ_drawing
+    pdiffx_layer = laylyr.pSD_drawing
+    poly_layer = laylyr.GatPoly_drawing
     poly_layer_pin = laylyr.GatPoly_pin
-    well_layer = laylyr.NWell_drw
-    well2_layer = laylyr.nBuLay_drw
-    textlayer = laylyr.TEXT_drw
-    locint_layer = laylyr.Cont_drw
-    tgo_layer = laylyr.ThickGateOx_drw
+    well_layer = laylyr.NWell_drawing
+    well2_layer = laylyr.nBuLay_drawing
+    textlayer = laylyr.TEXT_drawing
+    locint_layer = laylyr.Cont_drawing
+    tgo_layer = laylyr.ThickGateOx_drawing
 
     def __init__(self, width: str = "4u", length: str = "0.13u", ng: str = "1"):
 
@@ -1077,9 +1077,9 @@ class nmos(baseCell):
                 center,
                 "S",
                 *self._labelFontTuple,
-                lshp.layoutLabel.labelAlignments[0],
-                lshp.layoutLabel.labelOrients[0],
-                nmos.metal1_layer_lbl,
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
+                nmos.metal1_layer_label,
             )
         )
         point1 = self.toSceneCoord(
@@ -1121,9 +1121,9 @@ class nmos(baseCell):
                         center,
                         "G",
                         *self._labelFontTuple,
-                        lshp.layoutLabel.labelAlignments[0],
-                        lshp.layoutLabel.labelOrients[0],
-                        nmos.metal1_layer_lbl,
+                        lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                        lshp.layoutLabel.LABEL_ORIENTS[0],
+                        nmos.metal1_layer_label,
                     ))
 
             # draw the second cont row
@@ -1155,9 +1155,9 @@ class nmos(baseCell):
                         center,
                         "D",
                         *self._labelFontTuple,
-                        lshp.layoutLabel.labelAlignments[0],
-                        lshp.layoutLabel.labelOrients[0],
-                        nmos.metal1_layer_lbl,
+                        lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                        lshp.layoutLabel.LABEL_ORIENTS[0],
+                        nmos.metal1_layer_label,
                     )
                 )
             #     # draw drain diffusion

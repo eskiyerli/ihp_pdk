@@ -33,11 +33,13 @@ techParams = techClass.techParams
 
 # common process parameters
 dbu = 1000  # grid points per micron
+snapGrid = 50 # 0.05
+majorGrid = 100 # 0.1 micron
 
 # Some predefined rules
 # via defintions
-cont = ddef.viaDefTuple("cont", laylyr.Cont_drw, "", 0.16, 0.16, 0.16, 0.16, 0.18, 10)
-viamim = ddef.viaDefTuple('viamim', laylyr.Vmim_drw, "", techParams['TV1_a'], 10,
+cont = ddef.viaDefTuple("cont", laylyr.Cont_drawing, "", 0.16, 0.16, 0.16, 0.16, 0.18, 10)
+viamim = ddef.viaDefTuple('viamim', laylyr.Vmim_drawing, "", techParams['TV1_a'], 10,
                           techParams['TV1_a'], 10, 0.84, 10)
 # v1 = ddef.viaDefTuple(
 #     "v1", laylyr.via1Layer_drw, "", "0.2", "10", "0.2", "10", "0.1", "10"
