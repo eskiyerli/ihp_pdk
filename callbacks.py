@@ -81,8 +81,7 @@ class cap_cmim(baseInst):
         self.MF = Quantity(self._labelsDict["@MF"].labelValue)
 
     def Cparm(self):
-        returnValue = self.MF * (self.W * self.L * 1.5e-3 + 2 * (self.W + self.L) * 40e-12)
-        return returnValue
+        return self.MF * (self.W * self.L * 1.5e-3 + 2 * (self.W + self.L) * 40e-12)
 
 
 class cap_cpara(baseInst):
