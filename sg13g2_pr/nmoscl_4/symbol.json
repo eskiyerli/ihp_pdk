@@ -11,11 +11,71 @@
     {
         "type": "line",
         "st": [
-            0,
-            -120
+            40,
+            20
         ],
         "end": [
             0,
+            -20
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            -40,
+            20
+        ],
+        "end": [
+            40,
+            20
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            0,
+            -20
+        ],
+        "end": [
+            -40,
+            20
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            -40,
+            -20
+        ],
+        "end": [
+            40,
             -20
         ],
         "loc": [
@@ -51,11 +111,11 @@
     {
         "type": "line",
         "st": [
-            -40,
-            -20
+            0,
+            -120
         ],
         "end": [
-            40,
+            0,
             -20
         ],
         "loc": [
@@ -69,62 +129,12 @@
         ]
     },
     {
-        "type": "polygon",
-        "ps": [
-            [
-                0.0,
-                -20.0
-            ],
-            [
-                -40.0,
-                20.0
-            ],
-            [
-                40.0,
-                20.0
-            ],
-            [
-                0.0,
-                -20.0
-            ]
-        ],
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            -120
-        ],
-        "nam": "@instName",
-        "def": "[@instName]",
-        "txt": "[@instName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            40.0,
-            -120.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
         "type": "pin",
         "st": [
             0,
-            120
+            -120
         ],
-        "nam": "d0",
+        "nam": "vdd",
         "pd": "Inout",
         "pt": "Signal",
         "loc": [
@@ -141,9 +151,9 @@
         "type": "pin",
         "st": [
             0,
-            -120
+            120
         ],
-        "nam": "d1",
+        "nam": "vss",
         "pd": "Inout",
         "pt": "Signal",
         "loc": [
@@ -159,12 +169,12 @@
     {
         "type": "attr",
         "nam": "XyceSymbolNetlistLine",
-        "def": "%spiceprefix@instName @pinList %modelName l=@l w=@w"
+        "def": "%spiceprefix@instName @pinList %modelName m=@m"
     },
     {
         "type": "attr",
         "nam": "modelName",
-        "def": "dpantenna"
+        "def": "nmoscl_4"
     },
     {
         "type": "attr",
@@ -174,6 +184,6 @@
     {
         "type": "attr",
         "nam": "pinOrder",
-        "def": "d0, d1"
+        "def": "vss, vdd"
     }
 ]

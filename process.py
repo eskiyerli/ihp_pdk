@@ -31,6 +31,8 @@ techParams = importPDKModule('sg13_tech').SG13_Tech().techParams
 dbu = 1000  # grid points per micron
 snapGrid = 50 # 0.05
 majorGrid = 100 # 0.1 micron
+gdsUnit = "1 um"
+gdsPrecision = "1 nm"
 
 # via definitions
 processVias = [

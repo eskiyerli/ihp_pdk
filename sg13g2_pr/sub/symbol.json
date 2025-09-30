@@ -1,0 +1,145 @@
+[
+    {
+        "cellView": "symbol"
+    },
+    {
+        "snapGrid": [
+            10,
+            10
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            40,
+            8
+        ],
+        "nam": "@[@instName]",
+        "def": "[@instName]",
+        "txt": "[@instName]",
+        "val": "[@instName]",
+        "vis": true,
+        "lt": "Normal",
+        "ht": 16,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            0.0,
+            8.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            0,
+            0
+        ],
+        "end": [
+            0,
+            50
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            -20,
+            50
+        ],
+        "end": [
+            20,
+            50
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            0,
+            70
+        ],
+        "end": [
+            20,
+            50
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            -20,
+            50
+        ],
+        "end": [
+            0,
+            70
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            0,
+            0
+        ],
+        "nam": "sub!",
+        "pd": "Inout",
+        "pt": "Signal",
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "attr",
+        "nam": "XyceSymbolNetlistLine",
+        "def": "*.alias @lab"
+    },
+    {
+        "type": "attr",
+        "nam": "pinOrder",
+        "def": "p"
+    }
+]

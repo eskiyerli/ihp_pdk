@@ -9,81 +9,13 @@
         ]
     },
     {
-        "type": "polygon",
-        "ps": [
-            [
-                80.0,
-                10.0
-            ],
-            [
-                60.0,
-                0.0
-            ],
-            [
-                80.0,
-                -10.0
-            ],
-            [
-                80.0,
-                10.0
-            ]
-        ],
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "polygon",
-        "ps": [
-            [
-                60.0,
-                80.0
-            ],
-            [
-                80.0,
-                70.0
-            ],
-            [
-                60.0,
-                60.0
-            ],
-            [
-                60.0,
-                80.0
-            ]
-        ],
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "rect",
-        "rect": [
-            4.0,
-            -64.0,
-            12.0,
-            64.0
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
         "type": "line",
         "st": [
-            -80,
+            -70,
             0
         ],
         "end": [
-            8,
+            70,
             0
         ],
         "loc": [
@@ -99,12 +31,12 @@
     {
         "type": "line",
         "st": [
-            30,
-            -70
+            -70,
+            -40
         ],
         "end": [
-            80,
-            -70
+            -70,
+            40
         ],
         "loc": [
             0.0,
@@ -119,12 +51,12 @@
     {
         "type": "line",
         "st": [
-            30,
-            70
+            70,
+            -40
         ],
         "end": [
-            80,
-            70
+            70,
+            40
         ],
         "loc": [
             0.0,
@@ -139,11 +71,31 @@
     {
         "type": "line",
         "st": [
-            80,
-            70
+            0,
+            -120
         ],
         "end": [
-            80,
+            0,
+            0
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            0,
+            0
+        ],
+        "end": [
+            0,
             120
         ],
         "loc": [
@@ -160,11 +112,11 @@
         "type": "line",
         "st": [
             80,
-            -120
+            0
         ],
         "end": [
-            80,
-            -70
+            160,
+            0
         ],
         "loc": [
             0.0,
@@ -179,70 +131,13 @@
     {
         "type": "line",
         "st": [
-            30,
-            -90
-        ],
-        "end": [
-            30,
-            90
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            79,
+            -160,
             0
         ],
-        "nam": "B",
-        "pd": "In",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            80,
-            120
-        ],
-        "nam": "S",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
+        "end": [
             -80,
             0
         ],
-        "nam": "G",
-        "pd": "In",
-        "pt": "Signal",
         "loc": [
             0.0,
             0.0
@@ -254,154 +149,128 @@
         ]
     },
     {
-        "type": "pin",
+        "type": "arc",
         "st": [
-            80,
-            -120
+            60,
+            -50
         ],
-        "nam": "D",
-        "pd": "Inout",
-        "pt": "Signal",
+        "end": [
+            100,
+            28
+        ],
         "loc": [
-            0.0,
-            0.0
+            -180.0,
+            10.0
         ],
         "ang": 0.0,
         "fl": [
             1.0,
             1.0
-        ]
+        ],
+        "at": 3
     },
     {
-        "type": "label",
+        "type": "arc",
         "st": [
-            90,
-            -130
+            140,
+            40
         ],
-        "nam": "@instName",
-        "def": "[@instName]",
-        "txt": "[@instName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
+        "end": [
+            180,
+            120
+        ],
         "loc": [
-            90.0,
-            -130.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            90,
-            -60
-        ],
-        "nam": "@l",
-        "def": "[@l:l=%:l=0.45u]",
-        "txt": "[@l:l=%:l=0.45u]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            90.0,
+            -60.0,
             -80.0
         ],
+        "ang": 0.0,
         "fl": [
-            1,
-            1
-        ]
+            1.0,
+            1.0
+        ],
+        "at": 1
     },
     {
-        "type": "label",
+        "type": "pin",
         "st": [
-            90,
-            -100
+            0,
+            120
         ],
-        "nam": "@w",
-        "def": "[@w:w=%:w=1.0u]",
-        "txt": "[@w:w=%:w=1.0u]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
+        "nam": "NW",
+        "pd": "Inout",
+        "pt": "Signal",
         "loc": [
-            90.0,
-            -100.0
+            0.0,
+            0.0
         ],
+        "ang": 0.0,
         "fl": [
-            1,
-            1
+            1.0,
+            1.0
         ]
     },
     {
-        "type": "label",
+        "type": "pin",
         "st": [
-            100,
-            -30
+            160,
+            0
         ],
-        "nam": "@ng",
-        "def": "[@ng:ng=%:ng=1]",
-        "txt": "[@ng:ng=%:ng=1]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
+        "nam": "G1",
+        "pd": "Inout",
+        "pt": "Signal",
         "loc": [
-            90.0,
-            -60.0
+            0.0,
+            0.0
         ],
+        "ang": 0.0,
         "fl": [
-            1,
-            1
+            1.0,
+            1.0
         ]
     },
     {
-        "type": "label",
+        "type": "pin",
         "st": [
-            80,
-            -20
+            0,
+            -120
         ],
-        "nam": "@m",
-        "def": "[@m:m=%:m=1]",
-        "txt": "[@m:m=%:m=1]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
+        "nam": "bn",
+        "pd": "Inout",
+        "pt": "Signal",
         "loc": [
-            90.0,
-            -40.0
+            0.0,
+            0.0
         ],
+        "ang": 0.0,
         "fl": [
-            1,
-            1
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            -160,
+            0
+        ],
+        "nam": "G2",
+        "pd": "Inout",
+        "pt": "Signal",
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
         ]
     },
     {
         "type": "label",
         "st": [
-            -10,
-            -20
+            60,
+            80
         ],
         "nam": "@modelName",
         "def": "[@modelName]",
@@ -414,8 +283,108 @@
         "or": "R0",
         "use": "Normal",
         "loc": [
-            -70.0,
-            -30.0
+            -50.0,
+            -60.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            40,
+            8
+        ],
+        "nam": "@[@instName]",
+        "def": "[@instName]",
+        "txt": "[@instName]",
+        "val": "[@instName]",
+        "vis": true,
+        "lt": "Normal",
+        "ht": 16,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            20.0,
+            -132.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            40,
+            -60
+        ],
+        "nam": "@Nx",
+        "def": "[@Nx:Nx=%:Nx=1]",
+        "txt": "[@Nx:Nx=%:Nx=1]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            20.0,
+            -70.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            50,
+            -90
+        ],
+        "nam": "@l",
+        "def": "[@l:l=%:l=0.3u]",
+        "txt": "[@l:l=%:l=0.3u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            20.0,
+            -90.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            60,
+            -90
+        ],
+        "nam": "@w",
+        "def": "[@w:w=%:w=3.74u]",
+        "txt": "[@w:w=%:w=3.74u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            20.0,
+            -110.0
         ],
         "fl": [
             1,
@@ -425,12 +394,12 @@
     {
         "type": "attr",
         "nam": "XyceSymbolNetlistLine",
-        "def": "%spiceprefix@instName @pinList %modelName w=@w l=@l ng=@ng m=@m"
+        "def": "%spiceprefix@instName @pinList %modelName w=@w l=@l Nx=@Nx"
     },
     {
         "type": "attr",
         "nam": "modelName",
-        "def": "sg13_hv_nmos"
+        "def": "sg13_hv_svaricap"
     },
     {
         "type": "attr",
@@ -440,6 +409,6 @@
     {
         "type": "attr",
         "nam": "pinOrder",
-        "def": "D, G, S, B"
+        "def": "G2, bn, G1, NW"
     }
 ]

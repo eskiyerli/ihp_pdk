@@ -4,57 +4,9 @@
     },
     {
         "snapGrid": [
-            5,
-            5
+            10,
+            10
         ]
-    },
-    {
-        "type": "arc",
-        "st": [
-            -40,
-            10
-        ],
-        "end": [
-            35,
-            -10
-        ],
-        "loc": [
-            0.0,
-            10.0
-        ],
-        "ang": 0.0
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            10
-        ],
-        "end": [
-            0,
-            120
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            -120
-        ],
-        "end": [
-            0,
-            -20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0
     },
     {
         "type": "line",
@@ -70,22 +22,71 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
-        "type": "pin",
+        "type": "line",
         "st": [
             0,
             -120
         ],
-        "nam": "c0",
-        "pd": "Inout",
-        "pt": "Signal",
+        "end": [
+            0,
+            -20
+        ],
         "loc": [
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            0,
+            0
+        ],
+        "end": [
+            0,
+            120
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "arc",
+        "st": [
+            -30,
+            10
+        ],
+        "end": [
+            50,
+            -20
+        ],
+        "loc": [
+            -10.0,
+            20.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "pin",
@@ -100,7 +101,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "pin",
@@ -112,79 +117,39 @@
         "pd": "Inout",
         "pt": "Signal",
         "loc": [
+            60.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            0,
+            -120
+        ],
+        "nam": "c0",
+        "pd": "Inout",
+        "pt": "Signal",
+        "loc": [
             0.0,
             0.0
         ],
-        "ang": 0.0
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            16
-        ],
-        "nam": "@W",
-        "def": "[@W:w=%:w=10.0e-6]",
-        "txt": "[@W:w=%:w=10.0e-6]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            16.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
         ]
     },
     {
         "type": "label",
         "st": [
             40,
-            -16
-        ],
-        "nam": "@L",
-        "def": "[@L:l=%:l=10.0e-6]",
-        "txt": "[@L:l=%:l=10.0e-6]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            -16.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            -48
-        ],
-        "nam": "@wfeed",
-        "def": "[@wfeed:wfeed=%:wfeed=5.0e-6]",
-        "txt": "[@wfeed:wfeed=%:wfeed=5.0e-6]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            -48.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            -80
+            -120
         ],
         "nam": "@instName",
         "def": "[@instName]",
@@ -195,32 +160,145 @@
         "ht": 16,
         "al": "Left",
         "or": "R0",
-        "use": "Instance",
+        "use": "Normal",
         "loc": [
             40.0,
-            -80.0
+            -120.0
+        ],
+        "fl": [
+            1,
+            1
         ]
     },
     {
         "type": "label",
         "st": [
-            0,
-            0
+            140,
+            30
+        ],
+        "nam": "@wfeed",
+        "def": "[@wfeed:wfeed=%:wfeed=5u]",
+        "txt": "[@wfeed:wfeed=%:wfeed=5u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            40.0,
+            -70.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            -10,
+            -50
+        ],
+        "nam": "@modelName",
+        "def": "[@modelName]",
+        "txt": "[@modelName]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            -50.0,
+            -50.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            70,
+            -40
+        ],
+        "nam": "@w",
+        "def": "[@w:w=%:w=10u]",
+        "txt": "[@w:w=%:w=10u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            40.0,
+            -110.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            40,
+            -80
+        ],
+        "nam": "@l",
+        "def": "[@l:l=%:l=10u]",
+        "txt": "[@l:l=%:l=10u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            40.0,
+            -90.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            80,
+            30
         ],
         "nam": "@C",
-        "def": "C = Cparm",
-        "txt": "C = Cparm",
+        "def": "C=C_parm",
+        "txt": "C = C_parm",
         "val": "",
         "vis": true,
         "lt": "PyLabel",
-        "ht": 16,
+        "ht": 12,
         "al": "Left",
         "or": "R0",
-        "use": "Instance",
+        "use": "Normal",
         "loc": [
             40.0,
-            40.0
+            -20.0
+        ],
+        "fl": [
+            1,
+            1
         ]
+    },
+    {
+        "type": "attr",
+        "nam": "XyceSymbolNetlistLine",
+        "def": "%spiceprefix@instName @pinList %modelName w=@w l=@l wfeed=@wfeed"
     },
     {
         "type": "attr",
@@ -231,11 +309,6 @@
         "type": "attr",
         "nam": "spiceprefix",
         "def": "X"
-    },
-    {
-        "type": "attr",
-        "nam": "XyceSymbolNetlistLine",
-        "def": "%spiceprefix@instName @pinList %modelName W=@W L=@L wfeed=@wfeed"
     },
     {
         "type": "attr",
