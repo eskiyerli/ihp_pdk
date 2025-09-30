@@ -172,21 +172,21 @@
         "type": "label",
         "st": [
             40,
-            8
+            -120
         ],
-        "nam": "@[@instName]",
+        "nam": "@instName",
         "def": "[@instName]",
         "txt": "[@instName]",
-        "val": "[@instName]",
+        "val": "",
         "vis": true,
-        "lt": "Normal",
+        "lt": "NLPLabel",
         "ht": 16,
         "al": "Left",
         "or": "R0",
         "use": "Normal",
         "loc": [
-            30.0,
-            -132.0
+            40.0,
+            -120.0
         ],
         "fl": [
             1,
