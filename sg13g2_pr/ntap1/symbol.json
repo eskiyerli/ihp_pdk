@@ -4,123 +4,9 @@
     },
     {
         "snapGrid": [
-            5,
-            5
+            10,
+            10
         ]
-    },
-    {
-        "type": "label",
-        "st": [
-            0,
-            0
-        ],
-        "nam": "@R",
-        "def": " R =  Rparm",
-        "txt": "R = Rparm",
-        "val": "",
-        "vis": true,
-        "lt": "PyLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            0.0,
-            0.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            -48
-        ],
-        "nam": "@instName",
-        "def": "[@instName]",
-        "txt": "[@instName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            -48.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            -16
-        ],
-        "nam": "@Imax",
-        "def": "[@Imax:imax=%:imax=0.3e-6]",
-        "txt": "[@Imax:imax=%:imax=0.3e-6]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            -16.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            16
-        ],
-        "nam": "@R",
-        "def": "[@R:r=%:r=262.847.0]",
-        "txt": "[@R:r=%:r=262.847.0]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            16.0
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            0,
-            -120
-        ],
-        "nam": "P",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0
-    },
-    {
-        "type": "pin",
-        "st": [
-            0,
-            120
-        ],
-        "nam": "M",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0
     },
     {
         "type": "line",
@@ -136,7 +22,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -152,7 +42,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -168,7 +62,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -184,7 +82,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -200,7 +102,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -216,7 +122,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -232,7 +142,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -248,7 +162,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -264,7 +182,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -280,7 +202,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -296,7 +222,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -312,7 +242,179 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            30,
+            -120
+        ],
+        "nam": "@instName",
+        "def": "[@instName]",
+        "txt": "[@instName]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 16,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -120.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            0,
+            120
+        ],
+        "nam": "M",
+        "pd": "Inout",
+        "pt": "Signal",
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            0,
+            -120
+        ],
+        "nam": "P",
+        "pd": "Inout",
+        "pt": "Signal",
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            80,
+            -70
+        ],
+        "nam": "@w",
+        "def": "[@w:w=%:w=0.78u]",
+        "txt": "[@w:w=%:w=0.78u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -90.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            0,
+            10
+        ],
+        "nam": "@modelName",
+        "def": "[@modelName]",
+        "txt": "[@modelName]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            -40.0,
+            -10.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            60,
+            -50
+        ],
+        "nam": "@l",
+        "def": "[@l:l=%:l=0.78u]",
+        "txt": "[@l:l=%:l=0.78u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -60.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            80,
+            -20
+        ],
+        "nam": "@R",
+        "def": "R=R_parm",
+        "txt": "R = R_parm",
+        "val": "",
+        "vis": true,
+        "lt": "PyLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -30.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "attr",
+        "nam": "XyceSymbolNetlistLine",
+        "def": "%spiceprefix@instName @pinlist %modelName R=@R w=@w l=@l"
     },
     {
         "type": "attr",
@@ -326,12 +428,7 @@
     },
     {
         "type": "attr",
-        "nam": "XyceSymbolNetlistLine",
-        "def": "%spiceprefix@instName @pinList %modelName"
-    },
-    {
-        "type": "attr",
         "nam": "pinOrder",
-        "def": "M, P"
+        "def": "P, M"
     }
 ]

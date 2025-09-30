@@ -4,8 +4,8 @@
     },
     {
         "snapGrid": [
-            5,
-            5
+            10,
+            10
         ]
     },
     {
@@ -22,7 +22,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -38,7 +42,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "line",
@@ -54,7 +62,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "polygon",
@@ -75,6 +87,35 @@
                 0.0,
                 -20.0
             ]
+        ],
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            40,
+            8
+        ],
+        "nam": "@[@instName]",
+        "def": "[@instName]",
+        "txt": "[@instName]",
+        "val": "[@instName]",
+        "vis": true,
+        "lt": "Normal",
+        "ht": 16,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            40.0,
+            8.0
+        ],
+        "fl": [
+            1,
+            1
         ]
     },
     {
@@ -90,7 +131,11 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
     },
     {
         "type": "pin",
@@ -105,70 +150,16 @@
             0.0,
             0.0
         ],
-        "ang": 0.0
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            16
-        ],
-        "nam": "@l",
-        "def": "[@l:l=%:l=780n]",
-        "txt": "[@l:l=%:l=780n]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            16.0
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
         ]
     },
     {
-        "type": "label",
-        "st": [
-            40,
-            -16
-        ],
-        "nam": "@w",
-        "def": "[@w:w=%:w=780n]",
-        "txt": "[@w:w=%:w=780n]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            -16.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            -48
-        ],
-        "nam": "@instName",
-        "def": "[@instName]",
-        "txt": "[@instName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Instance",
-        "loc": [
-            40.0,
-            -48.0
-        ]
+        "type": "attr",
+        "nam": "XyceSymbolNetlistLine",
+        "def": "%spiceprefix@instName @pinList %modelName l=@l w=@w"
     },
     {
         "type": "attr",
@@ -177,8 +168,8 @@
     },
     {
         "type": "attr",
-        "nam": "XyceSymbolNetlistLine",
-        "def": "@instName @pinList %modelName l=@l w=@w"
+        "nam": "spiceprefix",
+        "def": "X"
     },
     {
         "type": "attr",
