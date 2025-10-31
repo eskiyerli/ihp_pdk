@@ -424,7 +424,7 @@
     },
     {
         "type": "attr",
-        "nam": "XyceSymbolNetlistLine",
+        "nam": "SpiceNetlistLine",
         "def": "%spiceprefix@instName @pinList %modelName w=@w l=@l ng=@ng m=@m"
     },
     {
