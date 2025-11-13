@@ -299,7 +299,7 @@
     {
         "type": "attr",
         "nam": "SpiceNetlistLine",
-        "def": "%spiceprefix@instName @pinList %modelName m=@m"
+        "def": "%spiceprefix@instName %pinOrder %modelName m=@m"
     },
     {
         "type": "attr",

@@ -470,7 +470,7 @@
     {
         "type": "attr",
         "nam": "SpiceNetlistLine",
-        "def": "@instName @pinList %modelName w=@w l=@l ng=@ng m=@m rfmode=@rfmode"
+        "def": "@instName %pinOrder %modelName w=@w l=@l ng=@ng m=@m rfmode=@rfmode"
     },
     {
         "type": "attr",

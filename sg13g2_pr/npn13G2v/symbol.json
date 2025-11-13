@@ -292,7 +292,7 @@
     {
         "type": "attr",
         "nam": "SpiceNetlistLine",
-        "def": "tcleval(@instName @pinList %modelName le=[ev \\{ @El * 1.0e-6 \\} ] we=70.0n m=@Nx )"
+        "def": "tcleval(@instName %pinOrder %modelName le=[ev \\{ @El * 1.0e-6 \\} ] we=70.0n m=@Nx )"
     },
     {
         "type": "attr",

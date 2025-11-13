@@ -267,7 +267,7 @@
     {
         "type": "attr",
         "nam": "SpiceNetlistLine",
-        "def": "%spiceprefix@instName @pinList %modelName le=900e-9 we=70.0n m=@Nx"
+        "def": "%spiceprefix@instName %pinOrder %modelName le=900e-9 we=70.0n m=@Nx"
     },
     {
         "type": "attr",

@@ -414,7 +414,7 @@
     {
         "type": "attr",
         "nam": "SpiceNetlistLine",
-        "def": "%spiceprefix@instName @pinlist %modelName R=@R w=@w l=@l"
+        "def": "%spiceprefix@instName %pinOrder %modelName R=@R w=@w l=@l"
     },
     {
         "type": "attr",
