@@ -23,18 +23,29 @@
 #
 import revedaEditor.backend.dataDefinitions as ddef
 from revedaEditor.backend.pdkPaths import importPDKModule
+from quantiphy import Quantity
 
 laylyr = importPDKModule('layoutLayers')
 techParams = importPDKModule('sg13_tech').SG13_Tech().techParams
 
 # common process parameters
-dbu = 1000  # grid points per micron
-snapGrid = 50 # 0.05
-majorGrid = 100 # 0.1 micron
-gdsUnit = "1 um"
-gdsPrecision = "1 nm"
+dbu = 1000  # distance between two points, 1um/1000=1n
+snapGrid = 50 # 50nm
+majorGrid = 100 # 100nm
+gdsUnit = Quantity("1 um")
+gdsPrecision = Quantity("1 num")
 
-# via definitions
+# via definitions, all distances are in um.
+# class viaDefTuple(NamedTuple):
+#     name: str
+#     layer: layLayer
+#     type: str
+#     minWidth: float
+#     maxWidth: float
+#     minHeight: float
+#     maxHeight: float
+#     minSpacing: float
+#     maxSpacing: float
 processVias = [
     ddef.viaDefTuple("cont", laylyr.Cont_drawing, "", 0.16, 0.16, 0.16, 0.16, 0.18, 10.0),
     ddef.viaDefTuple('viamim', laylyr.Vmim_drawing, "", techParams['TV1_a'], 10,
