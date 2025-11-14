@@ -1,0 +1,608 @@
+########################################################################
+#
+# Copyright 2023 IHP PDK Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+########################################################################
+
+import math
+from functools import lru_cache
+from PySide6.QtCore import QPointF, QRectF
+from quantiphy import Quantity
+
+import revedaEditor.common.layoutShapes as lshp
+from revedaEditor.backend.pdkPaths import importPDKModule
+from .base import baseCell
+
+laylyr = importPDKModule('layoutLayers')
+
+
+class rsil(baseCell):
+    contpolylayer = laylyr.GatPoly_drawing
+    bodypolylayer = laylyr.PolyRes_drawing
+    reslayer = laylyr.RES_drawing
+    extBlocklayer = laylyr.EXTBlock_drawing
+    locintlayer = laylyr.Cont_drawing
+    metlayer = laylyr.Metal1_drawing
+    metlayer_pin = laylyr.Metal1_pin
+    metlayer_label = laylyr.Metal1_label
+    textlayer = laylyr.TEXT_drawing
+
+    def __init__(
+            self,
+            length: str = "4u",
+            width: str = "1u",
+            b: str = "1",  # bends
+            ps: str = "0.18u",  # poly space
+    ):
+        self.length = length
+        self.width = width
+        self.b = b
+        self.ps = ps
+        super().__init__([])
+
+    @lru_cache
+    def __call__(self, length: str, width: str, b: str, ps: str):
+        self.length, self.width, self.b, self.ps = (
+            Quantity(length).real, Quantity(width).real,
+            Quantity(b).real, Quantity(ps).real
+        )
+        tempShapeList = []
+        Cell = self.__class__.__name__
+        tp = baseCell._techParams
+        metover = tp[Cell + "_met_over_cont"]
+        consize = tp["Cnt_a"]
+        conspace = tp["Cnt_b"]
+        polyover = tp["Cnt_d"]
+        li_poly_over = tp["Rsil_b"]
+        ext_over = tp["Rsil_e"]
+        endcap = tp["M1_c1"]
+        poly_cont_len = li_poly_over + consize + polyover
+        contbar_poly_over = tp["CntB_d"]
+        contbar_min_len = tp["CntB_a1"]
+
+        wmin = Quantity(tp[Cell + "_minW"]).real * 1e6
+        lmin = Quantity(tp[Cell + "_minL"]).real * 1e6
+        psmin = Quantity(tp[Cell + "_minPS"]).real * 1e6
+
+        lg, wg, ps = self.length * 1e6, self.width * 1e6, self.ps * 1e6
+        b = baseCell.fix(self.b + self._epsilon)
+        wcontact = wg
+        drawbar = internalCode = False
+
+        if internalCode and wcontact - 2 * contbar_poly_over + self._epsilon >= contbar_min_len:
+            drawbar = True
+
+        metover = max(metover, endcap)
+
+        contoverlay = max(0, (wcontact - wg) / 2)
+        if contoverlay > 0:
+            gridnumber = round(contoverlay / self._sg13grid + self._epsilon)
+            if gridnumber * self._sg13grid * 100 < contoverlay:
+                gridnumber += 1
+            contoverlay = gridnumber * self._sg13grid
+            wcontact = wg + 2 * contoverlay
+
+        # insertion point is at (0,0) - contoverlay
+        xpos1 = 0 - contoverlay
+        ypos1 = 0
+        xpos2 = xpos1 + wcontact
+        ypos2 = 0
+        Dir = -1
+        stripes = b + 1
+        if wg < wmin - self._epsilon:
+            wg = wmin
+            print("Width < " + str(wmin))
+
+        if lg < lmin - self._epsilon:
+            lg = lmin
+            print("Length < " + str(lmin))
+
+        if ps < psmin - self._epsilon:
+            ps = psmin
+            print("poly space < " + str(psmin))
+
+        # **************************************************************
+        # draw res contact  #1 (bottom)
+        # **************************************************************
+
+        # set xpos1/xpos2 to left for contacts
+        xpos1 = xpos1 - contoverlay
+        xpos2 = xpos2 - contoverlay
+        # Gat PolyPart of bottom ContactArea
+        point1 = self.toSceneCoord(QPointF(xpos1, ypos1))
+        point2 = self.toSceneCoord(QPointF(xpos2, ypos2 + poly_cont_len * Dir))
+        tempShapeList.append(lshp.layoutRect(point1, point2, rsil.contpolylayer))
+        # number parallel conts: ncont, distance: distc:
+        wcon = wcontact - 2.0 * polyover
+        distc = consize + conspace
+        ncont = baseCell.fix((wcon + conspace) / distc + self._epsilon)
+        if ncont < 1:
+            ncont = 1
+
+        distr = self.GridFix((wcon - ncont * distc + conspace) * 0.5)
+        # **************************************************************
+        # draw Cont squares or bars of bottom ContactArea
+        # LI and Metal
+        # always dot contacts, autogenerated LI
+        if drawbar:
+            point1 = self.toSceneCoord(
+                QPointF(xpos1 + contbar_poly_over, ypos2 + li_poly_over * Dir)
+            )
+            point2 = self.toSceneCoord(
+                QPointF(
+                    xpos2 - contbar_poly_over, ypos2 + (consize + li_poly_over) * Dir
+                )
+            )
+            tempShapeList.append(lshp.layoutRect(point1, point2, rsil.locintlayer))
+
+        else:
+            for i in range(ncont):
+                point1 = self.toSceneCoord(
+                    QPointF(
+                        xpos1 + polyover + distr + i * distc, ypos2 + li_poly_over * Dir
+                    )
+                )
+                point2 = self.toSceneCoord(
+                    QPointF(
+                        xpos1 + polyover + distr + i * distc + consize,
+                        ypos2 + (consize + li_poly_over) * Dir,
+                    )
+                )
+                tempShapeList.append(lshp.layoutRect(point1, point2, rsil.locintlayer))
+
+        # **************************************************************
+        # draw MetalRect and Pin of bottom Contact Area
+        ypos1 = ypos2 + (li_poly_over - metover) * Dir
+        ypos2 = ypos2 + (consize + li_poly_over + metover) * Dir
+        point1 = self.toSceneCoord(QPointF(xpos1 + contbar_poly_over - endcap, ypos1))
+        point2 = self.toSceneCoord(QPointF(xpos2 - contbar_poly_over + endcap, ypos2))
+
+        tempShapeList.append(lshp.layoutRect(point1, point2, rsil.metlayer))
+
+        centre = QRectF(point1, point2).center()
+        tempShapeList.append(
+            lshp.layoutPin(
+                point1,
+                point2,
+                "PLUS",
+                lshp.layoutPin.pinDirs[2],
+                lshp.layoutPin.pinTypes[0],
+                rsil.metlayer_pin,
+            )
+        )
+        tempShapeList.append(
+            lshp.layoutLabel(
+                centre,
+                "PLUS",
+                *self._labelFontTuple,
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
+                rsil.metlayer_label,
+            )
+        )
+        # **************************************************************
+        # Resistorbody
+        # **************************************************************
+        Dir = 1
+        # set xpos1 & xpos2 correct with contoverlay
+        xpos1 = xpos1 + contoverlay
+        ypos1 = 0
+        xpos2 = xpos1 + wg - contoverlay
+        ypos2 = ypos1 + lg * Dir
+
+        # **************************************************************
+        # GatPoly and PolyRes
+        # major structures ahead -> here: not applicable
+        for i in range(1, int(stripes) + 1):
+            xpos2 = xpos1 + wg
+            ypos2 = ypos1 + lg * Dir
+            # draw long res line
+            # when dogbone and bends>0 shift long res line to inner contactline
+            if stripes > 1:
+                if i == 1:
+                    # fist stripe move to right
+                    xpos1 = xpos1 + contoverlay
+                    xpos2 = xpos2 + contoverlay
+
+            # all vertical ResPoly and GatPoly Parts
+            point1 = self.toSceneCoord(QPointF(xpos1, ypos1))
+            point2 = self.toSceneCoord(QPointF(xpos2, ypos2))
+            tempShapeList.append(lshp.layoutRect(point1, point2, rsil.bodypolylayer))
+            tempShapeList.append(lshp.layoutRect(point1, point2, rsil.reslayer))
+
+            # EXTBlock
+            if i == 1:
+                point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos1))
+                point2 = self.toSceneCoord(QPointF(xpos2 + ext_over, ypos2))
+                tempShapeList.append(
+                    lshp.layoutRect(point1, point2, rsil.extBlocklayer)
+                )
+                # dbCreateRect(self, extBlocklayer,
+                #              Box(xpos1 - ext_over, ypos1, xpos2 + ext_over, ypos2))
+            else:
+                point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos1))
+                point2 = self.toSceneCoord(QPointF(xpos2 + ext_over, ypos2))
+                tempShapeList.append(
+                    lshp.layoutRect(point1, point2, rsil.extBlocklayer)
+                )
+
+            # **************************************************************
+            # hor connection parts
+            if i < stripes:  # Connections parts
+                ypos1 = ypos2 + wg * Dir
+                xpos2 = xpos1 + 2 * wg + ps
+                ypos2 = ypos1 - wg * Dir
+                Dir *= -1
+                # draw res bend
+                point1 = self.toSceneCoord(QPointF(xpos1, ypos1))
+                point2 = self.toSceneCoord(QPointF(xpos2, ypos2))
+                tempShapeList.append(
+                    lshp.layoutRect(point1, point2, rsil.bodypolylayer)
+                )
+                tempShapeList.append(lshp.layoutRect(point1, point2, rsil.reslayer))
+
+                # decide in which direction the part is drawn
+                if self.oddp(i):
+                    point1 = self.toSceneCoord(
+                        QPointF(xpos1 - ext_over, ypos1 + ext_over)
+                    )
+                    point2 = self.toSceneCoord(
+                        QPointF(xpos2 + ext_over, ypos2 - ext_over)
+                    )
+                    tempShapeList.append(
+                        lshp.layoutRect(point1, point2, rsil.extBlocklayer)
+                    )
+
+
+                else:
+                    point1 = self.toSceneCoord(
+                        QPointF(xpos1 - ext_over, ypos1 - ext_over)
+                    )
+                    point2 = self.toSceneCoord(
+                        QPointF(xpos2 + ext_over, ypos2 + ext_over)
+                    )
+                    tempShapeList.append(
+                        lshp.layoutRect(point1, point2, rsil.extBlocklayer)
+                    )
+                    # dbCreateRect(self, extBlocklayer,
+                    #              Box(xpos1 - ext_over, ypos1 - ext_over, xpos2 + ext_over,
+                    #                  ypos2 + ext_over))
+
+                xpos1 = xpos1 + wg + ps
+                ypos1 = ypos2
+        # x1,y1,x2,y2,dir are updated, use code from first contact, only pin is different
+        # **************************************************************
+        # draw res contact (Top)
+        # **************************************************************
+        # set x1 x2 to dogbone,:
+        if stripes > 1:
+            xpos1 = xpos1
+            xpos2 = xpos2 + contoverlay + contoverlay
+        else:
+            xpos1 = xpos1 - contoverlay
+            xpos2 = xpos2 + contoverlay
+        # **************************************************************
+        #  GatPoly Part
+        point1 = self.toSceneCoord(QPointF(xpos1, ypos2))
+        point2 = self.toSceneCoord(QPointF(xpos2, ypos2 + poly_cont_len * Dir))
+        tempShapeList.append(lshp.layoutRect(point1, point2, rsil.contpolylayer))
+
+        # draw contacts
+        # LI and Metal
+        # always dot contacts with auto-generated LI
+
+        # **************************************************************
+        # EXTBlock
+        # draw ExtBlock for bottom Cont Area
+        point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos1))
+        point2 = self.toSceneCoord(
+            QPointF(xpos2 + ext_over, ypos2 + ext_over * Dir + poly_cont_len * Dir)
+        )
+        tempShapeList.append(lshp.layoutRect(point1, point2, rsil.extBlocklayer))
+
+        # dbCreateRect(self, extBlocklayer, Box(xpos1 - ext_over, ypos1, xpos2 + ext_over,
+        #                                       ypos2 + ext_over * Dir + poly_cont_len * Dir))
+        # **************************************************************
+        #  ExtBlock Part
+        # added internal code
+        if drawbar:
+            # can only be in internal PCell
+            point1 = self.toSceneCoord(
+                QPointF(xpos1 + contbar_poly_over, ypos2 + li_poly_over * Dir)
+            )
+            point2 = self.toSceneCoord(
+                QPointF(
+                    xpos2 - contbar_poly_over, ypos2 + (consize + li_poly_over) * Dir
+                )
+            )
+            tempShapeList.append(lshp.layoutRect(point1, point2, rsil.locintlayer))
+            # dbCreateRect(self, locintlayer,
+            #              Box(xpos1 + contbar_poly_over, ypos2 + li_poly_over * Dir,
+            #                  xpos2 - contbar_poly_over, ypos2 + (consize + li_poly_over) * Dir))
+        else:
+            for i in range(ncont):
+                point1 = self.toSceneCoord(
+                    QPointF(
+                        xpos1 + polyover + distr + i * distc, ypos2 + li_poly_over * Dir
+                    )
+                )
+                point2 = self.toSceneCoord(
+                    QPointF(
+                        xpos1 + polyover + distr + i * distc + consize,
+                        ypos2 + (consize + li_poly_over) * Dir,
+                    )
+                )
+                tempShapeList.append(lshp.layoutRect(point1, point2, rsil.locintlayer))
+                # dbCreateRect(self, locintlayer, Box(xpos1 + polyover + distr + i * distc,
+                #                                     ypos2 + li_poly_over * Dir,
+                #                                     xpos1 + polyover + distr + i * distc + consize,
+                #                                     ypos2 + (consize + li_poly_over) * Dir))
+        # **************************************************************
+        #  Metal ans Pin Part
+        # new metal block
+        ypos1 = ypos2 + (li_poly_over - metover) * Dir
+        ypos2 = ypos2 + (consize + li_poly_over + metover) * Dir
+        point1 = self.toSceneCoord(QPointF(xpos1 + contbar_poly_over - endcap, ypos1))
+        point2 = self.toSceneCoord(QPointF(xpos2 - contbar_poly_over + endcap, ypos2))
+        tempShapeList.append(lshp.layoutRect(point1, point2, rsil.metlayer))
+        # dbCreateRect(self, metlayer, Box(xpos1+contbar_poly_over-endcap, ypos1, xpos2-contbar_poly_over+endcap, ypos2))
+        centre = QRectF(point1, point2).center()
+        tempShapeList.append(
+            lshp.layoutPin(
+                point1,
+                point2,
+                "MINUS",
+                lshp.layoutPin.pinDirs[2],
+                lshp.layoutPin.pinTypes[0],
+                rsil.metlayer_pin,
+            )
+        )
+        tempShapeList.append(
+            lshp.layoutLabel(
+                centre,
+                "MINUS",
+                *self._labelFontTuple,
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
+                rsil.metlayer_label,
+            )
+        )
+        # MkPin(self, 'MINUS', 2, Box(xpos1+contbar_poly_over-endcap, ypos1, xpos2-contbar_poly_over+endcap, ypos2), metlayer)
+        resistance = self.CbResCalc("R", 0, lg * 1e-6, wg * 1e-6, b, ps * 1e-6, Cell)
+        labeltext = "{0} r={1:.3f}".format(Cell, resistance)
+        labelpos = self.toSceneCoord(QPointF(wg / 2, lg / 2))
+        rlabeltuple = (
+            self._labelFontTuple[0],
+            self._labelFontTuple[1],
+            4 * self._labelFontTuple[2],
+        )
+
+        # lbl
+        tempShapeList.append(
+            lshp.layoutLabel(
+                labelpos,
+                labeltext,
+                *rlabeltuple,
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
+                rsil.textlayer,
+            )
+        )
+        # lbl = dbCreateLabel(self, Layer(textlayer, 'drawing'), labelpos, labeltext,
+        #                     'centerCenter', rot, Font.EURO_STYLE, labelheight)
+        self.shapes = tempShapeList
+
+    @lru_cache
+    def _get_res_calc_params(self, cell: str):
+        """Helper to fetch and cache resistance calculation parameters."""
+        suffix = "G2"
+        params = {
+            "rspec": Quantity(baseCell._techParams[cell + suffix + "_rspec"]).real,
+            "rzspec": Quantity(baseCell._techParams[cell + "_rzspec"]).real * 1e6,
+            "lwd": Quantity(baseCell._techParams[cell + suffix + "_lwd"]).real * 1e6,
+            "kappa": 1.85,
+            "minW": Quantity(baseCell._techParams[cell + "_minW"]).real,
+        }
+        if cell + "_kappa" in baseCell._techParams:
+            params["kappa"] = Quantity(baseCell._techParams[cell + "_kappa"]).real
+        return params
+
+    # ****************************************************************************************************
+    # CbResCalc
+    # ****************************************************************************************************
+    def CbResCalc(self, calc: str, r: float, l: float, w: float, b: int, ps: float, cell: str) -> float:
+        """
+        Calculates resistance, length, or width for a resistor.
+        Args:
+            calc (str): Calculation to perform ('R', 'l', or 'w').
+            r (float): Resistance value.
+            l (float): Length value.
+            w (float): Width value.
+            b (int): Number of bends.
+            ps (float): Poly space.
+            cell (str): The cell type.
+        Returns:
+            float: The calculated result.
+        """
+        params = self._get_res_calc_params(cell)
+        rspec, rzspec, lwd, kappa, minW = (params["rspec"], params["rzspec"], params["lwd"], params["kappa"], params["minW"])
+
+        if w >= (minW - self._epsilon):
+            w = minW
+
+        # Convert to um for calculation
+        w = w * 1e6  # um (needed for contact calculation);HS 4.10.2004
+        l = l * 1e6
+        ps = ps * 1e6
+
+        # here: all dimensions given in [um]!
+        if calc == "R":
+            weff = w + lwd
+            return (l / weff * (b + 1) * rspec
+                    + (2.0 / kappa * weff + ps) * b / weff * rspec
+                    + 2.0 / w * rzspec)
+        elif calc == "l":
+            weff = w + lwd
+            # in [m]
+            return ((weff * r - b * (2.0 / kappa * weff + ps) * rspec - 2.0 * weff / w * rzspec)
+                    / (rspec * (b + 1)) * 1.0e-6)
+        elif calc == "w":
+            tmp = r - 2 * b * rspec / kappa
+            p = (
+                        r * lwd
+                        - l * (b + 1) * rspec
+                        - (2 * lwd / kappa + ps) * b * rspec
+                        - 2 * rzspec
+                ) / tmp
+            q = -2 * lwd * rzspec / tmp
+            w = -p / 2 + math.sqrt(p * p / 4 - q)
+            return self.GridFix(w) * 1e-6  # -> [m]
+
+        return 0.0
+
+class cmim(baseCell):
+    mimLayer = laylyr.MIM_drawing
+    topMetal1 = laylyr.TopMetal1_drawing
+    metal5 = laylyr.Metal5_drawing
+    topMetal1pin = laylyr.TopMetal1_pin
+    metal5pin = laylyr.Metal5_pin
+    metal5lbl = laylyr.Metal5_text
+    cont = laylyr.Cont_drawing
+    def __init__(self, width: str = "1.14u", length: str = "1.14u"):
+        # process parameter values entered by user
+        self.width = width
+        self.length = length
+        self._shapes = []
+        super().__init__(self._shapes)
+
+    @lru_cache
+    def __call__(self, width: str, length: str):
+        self.width = Quantity(width).real
+        self.length = Quantity(length).real
+
+        self.xoffset = 0.0
+        self.yoffset = 0.0
+        self.xcont_cnt = 0.0
+        self.ycont_cnt = 0.0
+        w = self.width * 1e6
+        l = self.length * 1e6
+        tempShapesList = []
+        tempShapesList.extend(self.generateVias(w, l))
+
+        # generate rectangle layout
+        x1 = (
+                baseCell._techParams["Mim_d"] - baseCell._techParams["TV1_d"] + self.xoffset
+        )
+        x2 = self.xcont_cnt
+        y1 = (
+                baseCell._techParams["Mim_d"] - baseCell._techParams["TV1_d"] + self.yoffset
+        )
+        y2 = self.ycont_cnt
+        point1 = self.toSceneCoord(QPointF(0, 0))  # not strictly necessary
+        point2 = self.toSceneCoord(QPointF(w, l))
+        tempShapesList.append(lshp.layoutRect(point1, point2, cmim.mimLayer))
+        point1 = self.toSceneCoord(QPointF(x1, y1))
+        point2 = self.toSceneCoord(QPointF(x2, y2))
+        centre = QRectF(point1, point2).center()
+        tempShapesList.append(lshp.layoutRect(point1, point2, cmim.topMetal1))
+        tempShapesList.append(
+            lshp.layoutPin(
+                point1,
+                point2,
+                "PLUS",
+                lshp.layoutPin.pinDirs[2],
+                lshp.layoutPin.pinTypes[0],
+                cmim.topMetal1pin,
+            )
+        )
+        tempShapesList.append(
+            lshp.layoutLabel(
+                centre,
+                "PLUS",
+                *self._labelFontTuple,
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
+                cmim.metal5lbl,
+            )
+        )
+        point1 = self.toSceneCoord(
+            QPointF(-baseCell._techParams["Mim_c"], -baseCell._techParams["Mim_c"])
+        )
+        point2 = self.toSceneCoord(
+            QPointF(
+                w + baseCell._techParams["Mim_c"], l + baseCell._techParams["Mim_c"]
+            )
+        )
+        tempShapesList.append(lshp.layoutRect(point1, point2, cmim.metal5))
+        centre = QRectF(point1, point2).center()
+        tempShapesList.append(
+            lshp.layoutPin(
+                point1,
+                point2,
+                "MINUS",
+                lshp.layoutPin.pinDirs[2],
+                lshp.layoutPin.pinTypes[0],
+                cmim.metal5pin,
+            )
+        )
+        tempShapesList.append(
+            lshp.layoutLabel(
+                centre,
+                "MINUS",
+                *self._labelFontTuple,
+                lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                lshp.layoutLabel.LABEL_ORIENTS[0],
+                cmim.metal5lbl,
+            )
+        )
+
+        self.shapes = tempShapesList
+
+    def generateVias(self, w, l):
+        vmimlyr = laylyr.Vmim_drawing
+        viasList = []
+        cont_over = baseCell._techParams["Mim_d"]
+        cont_dist = 0.84
+        cont_size = baseCell._techParams["TV1_a"]
+
+        xanz = (w - cont_over - cont_over + cont_dist) // (
+                cont_size + cont_dist
+        ) + self._epsilon
+        w1 = xanz * (cont_size + cont_dist) - cont_dist + cont_over + cont_over
+        self.xoffset = self.GridFix((w - w1) / 2)
+
+        yanz = (l - cont_over - cont_over + cont_dist) // (
+                cont_size + cont_dist
+        ) + self._epsilon
+        l1 = yanz * (cont_size + cont_dist) - cont_dist + cont_over + cont_over
+        self.yoffset = self.GridFix((l - l1) / 2)
+
+        xcont_cnt = cont_over + self.xoffset
+        ycont_cnt = cont_over + self.yoffset
+        while ycont_cnt + cont_size + cont_over <= l + self._epsilon:
+
+            while xcont_cnt + cont_size + cont_over <= w + self._epsilon:
+                point1 = self.toSceneCoord(QPointF(xcont_cnt, ycont_cnt))
+                point2 = self.toSceneCoord(
+                    QPointF(xcont_cnt + cont_size, ycont_cnt + cont_size)
+                )
+                viasList.append(lshp.layoutRect(point1, point2, vmimlyr))
+
+                xcont_cnt = xcont_cnt + cont_size + cont_dist
+
+            ycont_cnt = ycont_cnt + cont_size + cont_dist
+        self.xcont_cnt = xcont_cnt + baseCell._techParams["TV1_d"] - cont_dist
+        self.ycont_cnt = ycont_cnt + baseCell._techParams["TV1_d"] - cont_dist
+        return viasList
