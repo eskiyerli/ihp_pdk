@@ -286,8 +286,8 @@
         ],
         "nam": "@R",
         "def": "R=R_parm",
-        "txt": "R = R_parm",
-        "val": "",
+        "txt": "R=?",
+        "val": "?",
         "vis": true,
         "lt": "PyLabel",
         "ht": 12,
@@ -444,7 +444,7 @@
     {
         "type": "attr",
         "nam": "SpiceNetlistLine",
-        "def": "%spiceprefix@instName %pinOrder @body %modelName w=@w l=@l m=@m b=@b"
+        "def": "%spiceprefix@instName %pinOrder %body %modelName w=@w l=@l m=@m b=@b"
     },
     {
         "type": "attr",
@@ -460,5 +460,10 @@
         "type": "attr",
         "nam": "pinOrder",
         "def": "M, P"
+    },
+    {
+        "type": "attr",
+        "nam": "body",
+        "def": "gnd!"
     }
 ]

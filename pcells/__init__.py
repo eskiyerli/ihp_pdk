@@ -19,7 +19,7 @@
 # This file contains the implementation of the IHP PDK in Revolution EDA.
 # Therefore, it complies with the license assigned by the IHP.
 
-from .base import baseCell, baseMosfet, baseRfMosfet
+from .base import baseCell, baseMosfet
 from .passive import rsil, cmim
 from .mosfet import nmos, pmos
 from .rf_mosfet import rfnmos, rfpmos
