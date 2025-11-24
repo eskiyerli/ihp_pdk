@@ -25,6 +25,7 @@ import revedaEditor.backend.dataDefinitions as ddef
 from revedaEditor.backend.pdkPaths import importPDKModule
 from quantiphy import Quantity
 
+
 laylyr = importPDKModule('layoutLayers')
 techParams = importPDKModule('sg13_tech').SG13_Tech().techParams
 
@@ -47,10 +48,23 @@ gdsPrecision = Quantity("1 num")
 #     minSpacing: float
 #     maxSpacing: float
 processVias = [
+    ddef.viaDefTuple("contBar", laylyr.Cont_drawing, "", 0.34, 0.34, 0.16, 0.16,
+                     0.18, 10.0),
     ddef.viaDefTuple("cont", laylyr.Cont_drawing, "", 0.16, 0.16, 0.16, 0.16, 0.18, 10.0),
     ddef.viaDefTuple('viamim', laylyr.Vmim_drawing, "", techParams['TV1_a'], 10,
                      techParams['TV1_a'], 10, 0.84, 10),
-    ddef.viaDefTuple("v1", laylyr.Via1_drawing, "", 0.2, 10.0, 0.2, 10.0, 0.1, 10.0)
+    ddef.viaDefTuple("via1", laylyr.Via1_drawing, "", 0.19, 0.19, 0.19, 0.19,
+                     0.22, 10.0),
+    ddef.viaDefTuple("via2", laylyr.Via2_drawing, "", 0.19, 0.19, 0.19, 0.19,
+                     0.22, 10.0),
+    ddef.viaDefTuple("via3", laylyr.Via3_drawing, "", 0.19, 0.19, 0.19, 0.19,
+                     0.22, 10.0),
+    ddef.viaDefTuple("via4", laylyr.Via4_drawing, "", 0.19, 0.19, 0.19, 0.19,
+                     0.22, 10.0),
+    ddef.viaDefTuple("topVia1", laylyr.TopVia1_drawing, "", 0.42, 0.42, 0.42,
+                     0.42, 0.42, 10.0),
+    ddef.viaDefTuple("topVia2", laylyr.TopVia2_drawing, "", 0.90, 0.90, 0.90,
+                     0.90, 1.06, 10.0)
 ]
 
 processViaNames = [via.name for via in processVias]
