@@ -34,7 +34,7 @@ dbu = 1000  # distance between two points, 1um/1000=1n
 snapGrid = 50 # 50nm
 majorGrid = 100 # 100nm
 gdsUnit = Quantity("1 um")
-gdsPrecision = Quantity("1 num")
+gdsPrecision = Quantity("1 nm")
 
 # via definitions, all distances are in um.
 # class viaDefTuple(NamedTuple):
@@ -68,3 +68,25 @@ processVias = [
 ]
 
 processViaNames = [via.name for via in processVias]
+
+processPaths = [
+    ddef.layoutPathDefTuple("nwell", laylyr.NWell_drawing, "", 0.62, 1000.0,
+                         0.62, 10000.0, 0.62, 10000.0),
+    ddef.layoutPathDefTuple("gatPoly", laylyr.GatPoly_drawing, "", 0.13, 100.0, 0.13,
+                         1000.0, 0.18, 1000.0),
+    ddef.layoutPathDefTuple("metal1", laylyr.Metal1_drawing, "", 0.16, 100.0, 0.6,
+                         1000.0, 0.18, 1000.0),
+    ddef.layoutPathDefTuple("metal2", laylyr.Metal2_drawing, "", 0.20, 100.0, 0.6,
+                         1000.0, 0.21, 1000.0),
+    ddef.layoutPathDefTuple("metal3", laylyr.Metal3_drawing, "", 0.20, 100.0, 0.6,
+                         1000.0, 0.21, 1000.0),
+    ddef.layoutPathDefTuple("metal4", laylyr.Metal4_drawing, "", 0.20, 100.0, 0.6,
+                         1000.0, 0.21, 1000.0),
+    ddef.layoutPathDefTuple("metal5", laylyr.Metal5_drawing, "", 0.20, 100.0, 0.6,
+                         1000.0, 0.21, 1000.0),
+    ddef.layoutPathDefTuple("topMetal1", laylyr.TopMetal1_drawing, "", 1.64, 100.0, 1,
+                         1000.0, 1.64, 1000.0),
+    ddef.layoutPathDefTuple("topMetal2", laylyr.TopMetal1_drawing, "", 2.0, 100.0, 1,
+                         1000.0, 2.0, 1000.0),
+]
+processPathNames = [path.name for path in processPaths]
