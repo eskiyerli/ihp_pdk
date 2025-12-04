@@ -33,7 +33,7 @@ techParams = importPDKModule('sg13_tech').SG13_Tech().techParams
 dbu = 1000  # distance between two points, 1um/1000=1n
 snapGrid = 50 # 50nm
 majorGrid = 100 # 100nm
-gdsUnit = Quantity("1 um")
+gdsUnit = Quantity("1 nm")
 gdsPrecision = Quantity("1 nm")
 
 # via definitions, all distances are in um.

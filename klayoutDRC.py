@@ -22,15 +22,12 @@
 #     Licensor: Revolution Semiconductor (Registered in the Netherlands)
 
 
-from ast import main
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QGroupBox, QHBoxLayout, QFileDialog, QComboBox,
                                QDialogButtonBox, QPushButton, QFormLayout, QCheckBox)
 
-from revedaEditor.backend.pdkPaths import importPDKModule
 
 import revedaEditor.backend.editFunctions as edf
 
-from pathlib import Path
 
 
 class drcKLayoutDialogue(QDialog):

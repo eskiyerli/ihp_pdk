@@ -30,7 +30,7 @@ try:
     from . import process
     from . import schLayers
     from . import symLayers
-    __all__ = ['callbacks', 'layoutLayers', 'pcells', 'process', 'schLayers', 'symLayers']
+    __all__ = ['callbacks', 'layoutLayers', 'pcells', 'process', 'schLayers', 'symLayers', 'sg13_tech', 'klayout_DRC']
 except ImportError:
     # Fallback for when modules can't be imported
     __all__ = []
