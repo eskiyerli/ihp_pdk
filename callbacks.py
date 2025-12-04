@@ -237,10 +237,10 @@ class rhigh(baseInst):
 
     def R_parm(self):
         return (
-            1.6e-4 / self.W
-            + 1360.0
-            * ((self.b + 1) * self.L + (1.081 * (self.W - 0.04e-6) + 0.18e-6) * self.b)
-            / (self.W - 0.04e-6)
+                1.6e-4 / self.W
+                + 1360.0
+                * ((self.b + 1) * self.L + (1.081 * (self.W - 0.04e-6) + 0.18e-6) * self.b)
+                / (self.W - 0.04e-6)
         ) / self.m
 
 
@@ -254,10 +254,10 @@ class rppd(baseInst):
 
     def R_parm(self):
         return (
-            70.0e-6 / self.W
-            + 260.0
-            * ((self.b + 1) * self.L + (1.081 * (self.W + 6.0e-9) + 0.18e-6) * self.b)
-            / (self.W + 6.0e-9)
+                70.0e-6 / self.W
+                + 260.0
+                * ((self.b + 1) * self.L + (1.081 * (self.W + 6.0e-9) + 0.18e-6) * self.b)
+                / (self.W + 6.0e-9)
         ) / self.m
 
 
@@ -271,10 +271,10 @@ class rsil(baseInst):
 
     def R_parm(self):
         return (
-            9.0e-6 / self.w
-            + 7.0
-            * ((self.b + 1) * self.l + (1.081 * (self.w + 1.0e-8) + 0.18e-6) * self.b)
-            / (self.w + 1.0e-8)
+                9.0e-6 / self.w
+                + 7.0
+                * ((self.b + 1) * self.l + (1.081 * (self.w + 1.0e-8) + 0.18e-6) * self.b)
+                / (self.w + 1.0e-8)
         ) / self.m
 
 

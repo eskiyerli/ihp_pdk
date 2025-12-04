@@ -18,11 +18,12 @@
 
 import math
 from functools import lru_cache
+
 from PySide6.QtCore import QPointF, QRectF
 from quantiphy import Quantity
 
 import revedaEditor.common.layoutShapes as lshp
-from revedaEditor.backend.pdkPaths import importPDKModule
+from revedaEditor.backend.pdkLoader import importPDKModule
 from .base import baseCell
 
 laylyr = importPDKModule('layoutLayers')
@@ -422,7 +423,8 @@ class rsil(baseCell):
     # ****************************************************************************************************
     # CbResCalc
     # ****************************************************************************************************
-    def CbResCalc(self, calc: str, r: float, l: float, w: float, b: int, ps: float, cell: str) -> float:
+    def CbResCalc(self, calc: str, r: float, l: float, w: float, b: int, ps: float,
+                  cell: str) -> float:
         """
         Calculates resistance, length, or width for a resistor.
         Args:
@@ -437,7 +439,8 @@ class rsil(baseCell):
             float: The calculated result.
         """
         params = self._get_res_calc_params(cell)
-        rspec, rzspec, lwd, kappa, minW = (params["rspec"], params["rzspec"], params["lwd"], params["kappa"], params["minW"])
+        rspec, rzspec, lwd, kappa, minW = (params["rspec"], params["rzspec"], params["lwd"],
+                                           params["kappa"], params["minW"])
 
         if w >= (minW - self._epsilon):
             w = minW
@@ -456,7 +459,8 @@ class rsil(baseCell):
         elif calc == "l":
             weff = w + lwd
             # in [m]
-            return ((weff * r - b * (2.0 / kappa * weff + ps) * rspec - 2.0 * weff / w * rzspec)
+            return ((weff * r - b * (
+                        2.0 / kappa * weff + ps) * rspec - 2.0 * weff / w * rzspec)
                     / (rspec * (b + 1)) * 1.0e-6)
         elif calc == "w":
             tmp = r - 2 * b * rspec / kappa
@@ -472,6 +476,7 @@ class rsil(baseCell):
 
         return 0.0
 
+
 class cmim(baseCell):
     mimLayer = laylyr.MIM_drawing
     topMetal1 = laylyr.TopMetal1_drawing
@@ -480,6 +485,7 @@ class cmim(baseCell):
     metal5pin = laylyr.Metal5_pin
     metal5lbl = laylyr.Metal5_text
     cont = laylyr.Cont_drawing
+
     def __init__(self, width: str = "1.14u", length: str = "1.14u"):
         # process parameter values entered by user
         self.width = width

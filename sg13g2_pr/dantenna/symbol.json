@@ -1,254 +1,254 @@
 [
-    {
-        "viewType": "symbol"
-    },
-    {
-        "snapGrid": [
-            10,
-            10
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            -120
-        ],
-        "end": [
-            0,
-            -20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            20
-        ],
-        "end": [
-            0,
-            120
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -40,
-            -20
-        ],
-        "end": [
-            40,
-            -20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "polygon",
-        "ps": [
-            [
-                0.0,
-                -20.0
-            ],
-            [
-                -40.0,
-                20.0
-            ],
-            [
-                40.0,
-                20.0
-            ],
-            [
-                0.0,
-                -20.0
-            ]
-        ],
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            60,
-            50
-        ],
-        "nam": "@modelName",
-        "def": "[@modelName]",
-        "txt": "[@modelName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": "12",
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            -50.0,
-            -50.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            30,
-            -70
-        ],
-        "nam": "@l",
-        "def": "[@l:l=%:l=0.78u]",
-        "txt": "[@l:l=%:l=0.78u]",
-        "val": "",
-        "vis": false,
-        "lt": "NLPLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            30.0,
-            -70.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            50,
-            -90
-        ],
-        "nam": "@w",
-        "def": "[@w:w=%:w=0.78u]",
-        "txt": "[@w:w=%:w=0.78u]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            30.0,
-            -100.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            -120
-        ],
-        "nam": "@instName",
-        "def": "[@instName]",
-        "txt": "[@instName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            40.0,
-            -120.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            0,
-            120
-        ],
-        "nam": "d0",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            0,
-            -120
-        ],
-        "nam": "d1",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "attr",
-        "nam": "SpiceNetlistLine",
-        "def": "%spiceprefix@instName %pinOrder %modelName l=@l w=@w"
-    },
-    {
-        "type": "attr",
-        "nam": "modelName",
-        "def": "dantenna"
-    },
-    {
-        "type": "attr",
-        "nam": "spiceprefix",
-        "def": "X"
-    },
-    {
-        "type": "attr",
-        "nam": "pinOrder",
-        "def": "d0, d1"
-    }
+  {
+    "viewType": "symbol"
+  },
+  {
+    "snapGrid": [
+      10,
+      10
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      0,
+      -120
+    ],
+    "end": [
+      0,
+      -20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      0,
+      20
+    ],
+    "end": [
+      0,
+      120
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      -40,
+      -20
+    ],
+    "end": [
+      40,
+      -20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "polygon",
+    "ps": [
+      [
+        0.0,
+        -20.0
+      ],
+      [
+        -40.0,
+        20.0
+      ],
+      [
+        40.0,
+        20.0
+      ],
+      [
+        0.0,
+        -20.0
+      ]
+    ],
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "label",
+    "st": [
+      60,
+      50
+    ],
+    "nam": "@modelName",
+    "def": "[@modelName]",
+    "txt": "[@modelName]",
+    "val": "",
+    "vis": true,
+    "lt": "NLPLabel",
+    "ht": "12",
+    "al": "Left",
+    "or": "R0",
+    "use": "Normal",
+    "loc": [
+      -50.0,
+      -50.0
+    ],
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "label",
+    "st": [
+      30,
+      -70
+    ],
+    "nam": "@l",
+    "def": "[@l:l=%:l=0.78u]",
+    "txt": "[@l:l=%:l=0.78u]",
+    "val": "",
+    "vis": false,
+    "lt": "NLPLabel",
+    "ht": 12,
+    "al": "Left",
+    "or": "R0",
+    "use": "Normal",
+    "loc": [
+      30.0,
+      -70.0
+    ],
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "label",
+    "st": [
+      50,
+      -90
+    ],
+    "nam": "@w",
+    "def": "[@w:w=%:w=0.78u]",
+    "txt": "[@w:w=%:w=0.78u]",
+    "val": "",
+    "vis": true,
+    "lt": "NLPLabel",
+    "ht": 12,
+    "al": "Left",
+    "or": "R0",
+    "use": "Normal",
+    "loc": [
+      30.0,
+      -100.0
+    ],
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "label",
+    "st": [
+      40,
+      -120
+    ],
+    "nam": "@instName",
+    "def": "[@instName]",
+    "txt": "[@instName]",
+    "val": "",
+    "vis": true,
+    "lt": "NLPLabel",
+    "ht": 16,
+    "al": "Left",
+    "or": "R0",
+    "use": "Normal",
+    "loc": [
+      40.0,
+      -120.0
+    ],
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "pin",
+    "st": [
+      0,
+      120
+    ],
+    "nam": "d0",
+    "pd": "Inout",
+    "pt": "Signal",
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "pin",
+    "st": [
+      0,
+      -120
+    ],
+    "nam": "d1",
+    "pd": "Inout",
+    "pt": "Signal",
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "attr",
+    "nam": "SpiceNetlistLine",
+    "def": "%spiceprefix@instName %pinOrder %modelName l=@l w=@w"
+  },
+  {
+    "type": "attr",
+    "nam": "modelName",
+    "def": "dantenna"
+  },
+  {
+    "type": "attr",
+    "nam": "spiceprefix",
+    "def": "X"
+  },
+  {
+    "type": "attr",
+    "nam": "pinOrder",
+    "def": "d0, d1"
+  }
 ]

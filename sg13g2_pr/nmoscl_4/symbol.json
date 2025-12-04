@@ -1,189 +1,189 @@
 [
-    {
-        "viewType": "symbol"
-    },
-    {
-        "snapGrid": [
-            10,
-            10
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            40,
-            20
-        ],
-        "end": [
-            0,
-            -20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -40,
-            20
-        ],
-        "end": [
-            40,
-            20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            -20
-        ],
-        "end": [
-            -40,
-            20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -40,
-            -20
-        ],
-        "end": [
-            40,
-            -20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            20
-        ],
-        "end": [
-            0,
-            120
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            -120
-        ],
-        "end": [
-            0,
-            -20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            0,
-            -120
-        ],
-        "nam": "vdd",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            0,
-            120
-        ],
-        "nam": "vss",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "attr",
-        "nam": "SpiceNetlistLine",
-        "def": "%spiceprefix@instName %pinOrder %modelName m=@m"
-    },
-    {
-        "type": "attr",
-        "nam": "modelName",
-        "def": "nmoscl_4"
-    },
-    {
-        "type": "attr",
-        "nam": "spiceprefix",
-        "def": "X"
-    },
-    {
-        "type": "attr",
-        "nam": "pinOrder",
-        "def": "vss, vdd"
-    }
+  {
+    "viewType": "symbol"
+  },
+  {
+    "snapGrid": [
+      10,
+      10
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      40,
+      20
+    ],
+    "end": [
+      0,
+      -20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      -40,
+      20
+    ],
+    "end": [
+      40,
+      20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      0,
+      -20
+    ],
+    "end": [
+      -40,
+      20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      -40,
+      -20
+    ],
+    "end": [
+      40,
+      -20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      0,
+      20
+    ],
+    "end": [
+      0,
+      120
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      0,
+      -120
+    ],
+    "end": [
+      0,
+      -20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "pin",
+    "st": [
+      0,
+      -120
+    ],
+    "nam": "vdd",
+    "pd": "Inout",
+    "pt": "Signal",
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "pin",
+    "st": [
+      0,
+      120
+    ],
+    "nam": "vss",
+    "pd": "Inout",
+    "pt": "Signal",
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "type": "attr",
+    "nam": "SpiceNetlistLine",
+    "def": "%spiceprefix@instName %pinOrder %modelName m=@m"
+  },
+  {
+    "type": "attr",
+    "nam": "modelName",
+    "def": "nmoscl_4"
+  },
+  {
+    "type": "attr",
+    "nam": "spiceprefix",
+    "def": "X"
+  },
+  {
+    "type": "attr",
+    "nam": "pinOrder",
+    "def": "vss, vdd"
+  }
 ]

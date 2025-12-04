@@ -1,193 +1,193 @@
 [
-    {
-        "viewType": "symbol"
-    },
-    {
-        "snapGrid": [
-            10,
-            10
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            0,
-            120
-        ],
-        "nam": "vss",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            0,
-            -120
-        ],
-        "nam": "pad",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
-            -120,
-            0
-        ],
-        "nam": "vdd",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -120,
-            0
-        ],
-        "end": [
-            -80,
-            0
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -40,
-            -20
-        ],
-        "end": [
-            40,
-            -20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            20
-        ],
-        "end": [
-            0,
-            120
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            0,
-            -120
-        ],
-        "end": [
-            0,
-            -20
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            40,
-            8
-        ],
-        "nam": "@[@instName]",
-        "def": "[@instName]",
-        "txt": "[@instName]",
-        "val": "[@instName]",
-        "vis": true,
-        "lt": "Normal",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            40.0,
-            8.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "attr",
-        "nam": "SpiceNetlistLine",
-        "def": "%spiceprefix@instName %pinOrder %modelName m=@m"
-    },
-    {
-        "type": "attr",
-        "nam": "modelName",
-        "def": "idiodevss_4kv"
-    },
-    {
-        "type": "attr",
-        "nam": "spiceprefix",
-        "def": "X"
-    },
-    {
-        "type": "attr",
-        "nam": "pinOrder",
-        "def": "vdd, pad, vss"
-    }
+  {
+    "viewType": "symbol"
+  },
+  {
+    "snapGrid": [
+      10,
+      10
+    ]
+  },
+  {
+    "type": "pin",
+    "st": [
+      0,
+      120
+    ],
+    "nam": "vss",
+    "pd": "Inout",
+    "pt": "Signal",
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "pin",
+    "st": [
+      0,
+      -120
+    ],
+    "nam": "pad",
+    "pd": "Inout",
+    "pt": "Signal",
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "pin",
+    "st": [
+      -120,
+      0
+    ],
+    "nam": "vdd",
+    "pd": "Inout",
+    "pt": "Signal",
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      -120,
+      0
+    ],
+    "end": [
+      -80,
+      0
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      -40,
+      -20
+    ],
+    "end": [
+      40,
+      -20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      0,
+      20
+    ],
+    "end": [
+      0,
+      120
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "line",
+    "st": [
+      0,
+      -120
+    ],
+    "end": [
+      0,
+      -20
+    ],
+    "loc": [
+      0.0,
+      0.0
+    ],
+    "ang": 0.0,
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "label",
+    "st": [
+      40,
+      8
+    ],
+    "nam": "@[@instName]",
+    "def": "[@instName]",
+    "txt": "[@instName]",
+    "val": "[@instName]",
+    "vis": true,
+    "lt": "Normal",
+    "ht": 16,
+    "al": "Left",
+    "or": "R0",
+    "use": "Normal",
+    "loc": [
+      40.0,
+      8.0
+    ],
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
+    "type": "attr",
+    "nam": "SpiceNetlistLine",
+    "def": "%spiceprefix@instName %pinOrder %modelName m=@m"
+  },
+  {
+    "type": "attr",
+    "nam": "modelName",
+    "def": "idiodevss_4kv"
+  },
+  {
+    "type": "attr",
+    "nam": "spiceprefix",
+    "def": "X"
+  },
+  {
+    "type": "attr",
+    "nam": "pinOrder",
+    "def": "vdd, pad, vss"
+  }
 ]

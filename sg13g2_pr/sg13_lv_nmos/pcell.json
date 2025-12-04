@@ -1,8 +1,8 @@
 [
-    {
-        "cellView": "pcell"
-    },
-    {
-        "reference": "nmos"
-    }
+  {
+    "cellView": "pcell"
+  },
+  {
+    "reference": "nmos"
+  }
 ]

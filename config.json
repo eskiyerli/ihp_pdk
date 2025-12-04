@@ -1,0 +1,20 @@
+{
+  "pdk_name": "IHP SG13G2",
+  "pdk_version": "0.2.0",
+  "technology": "SG13G2 130nm BiCMOS",
+  "copyright": "Apache 2.0 license",
+  "menu_items": [
+    {
+      "location": "menuBar",
+      "menu": "Check",
+      "action": "KLayoutDRC",
+      "text": "DRC with KLayout",
+      "module": "klayoutDRC",
+      "callback": "klayoutDRCClick",
+      "shortcut": "Ctrl+Shift+D",
+      "apply": [
+        "layoutEditor"
+      ]
+    }
+  ]
+}

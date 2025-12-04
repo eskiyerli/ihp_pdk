@@ -17,11 +17,12 @@
 ########################################################################
 
 from functools import lru_cache
+
 from PySide6.QtCore import QPointF
 from quantiphy import Quantity
 
 import revedaEditor.common.layoutShapes as lshp
-from revedaEditor.backend.pdkPaths import importPDKModule
+from revedaEditor.backend.pdkLoader import importPDKModule
 from .base import baseMosfet, baseCell
 
 laylyr = importPDKModule('layoutLayers')
@@ -69,7 +70,8 @@ class nmos(baseMosfet):
         l = self.length * 1e6
 
         # Calculate contact parameters
-        contActMin, ncont, diff_cont_offset, diffoffset = self._calculate_contact_params(wf, common_params)
+        contActMin, ncont, diff_cont_offset, diffoffset = self._calculate_contact_params(wf,
+                                                                                         common_params)
 
         # Adjust gate-contact distance for small widths
         gatpoly_cont_dist = common_params["gatpoly_cont_dist"]
@@ -87,13 +89,15 @@ class nmos(baseMosfet):
         distc = common_params["cont_size"] + common_params["cont_dist"]
         ycont_cnt = ycont_beg + diffoffset + diff_cont_offset
         yMet1 = min(ycont_cnt - endcap, ydiff_beg + diffoffset)
-        yMet2 = max(ycont_cnt + common_params["cont_size"] + (ncont - 1) * distc + endcap, ydiff_end + diffoffset)
+        yMet2 = max(ycont_cnt + common_params["cont_size"] + (ncont - 1) * distc + endcap,
+                    ydiff_end + diffoffset)
 
         # Draw source contact and diffusion
         self._draw_metal_and_contacts(tempShapesList, xcont_beg, xcont_end, yMet1, yMet2,
-                                     ydiff_beg, ydiff_end, diffoffset, "S", common_params)
+                                      ydiff_beg, ydiff_end, diffoffset, "S", common_params)
         self._draw_diffusion_rect(tempShapesList, xcont_beg, ycont_beg, xcont_end,
-                                 common_params["cont_size"], common_params["cont_Activ_overRec"], self.ndiff_layer)
+                                  common_params["cont_size"],
+                                  common_params["cont_Activ_overRec"], self.ndiff_layer)
 
         # Draw gates and drain contacts
         for i in range(1, self.ng + 1):
@@ -104,16 +108,19 @@ class nmos(baseMosfet):
             ypoly_end = ydiff_end + common_params["gatpoly_Activ_over"]
 
             self._draw_gate_poly(tempShapesList, xpoly_beg, ypoly_beg, xpoly_end, ypoly_end,
-                               diffoffset, i == 1)
+                                 diffoffset, i == 1)
 
             # Drain contact
             xcont_beg = xpoly_end + gatpoly_cont_dist
             xcont_end = xcont_beg + common_params["cont_size"]
 
-            self._draw_metal_and_contacts(tempShapesList, xcont_beg, xcont_end, yMet1, yMet2,
-                                         ydiff_beg, ydiff_end, diffoffset, "D" if i == 1 else "", common_params)
+            self._draw_metal_and_contacts(tempShapesList, xcont_beg, xcont_end, yMet1,
+                                          yMet2,
+                                          ydiff_beg, ydiff_end, diffoffset,
+                                          "D" if i == 1 else "", common_params)
             self._draw_diffusion_rect(tempShapesList, xcont_beg, ycont_beg, xcont_end,
-                                     common_params["cont_size"], common_params["cont_Activ_overRec"], self.ndiff_layer)
+                                      common_params["cont_size"],
+                                      common_params["cont_Activ_overRec"], self.ndiff_layer)
 
         # Final diffusion layer
         xdiff_end = xcont_end + common_params["cont_Activ_overRec"]
@@ -122,6 +129,7 @@ class nmos(baseMosfet):
         tempShapesList.append(lshp.layoutRect(point1, point2, self.ndiff_layer))
 
         self.shapes = tempShapesList
+
 
 class pmos(baseMosfet):
     @staticmethod
@@ -168,7 +176,8 @@ class pmos(baseMosfet):
         l = self.length * 1e6
 
         # Calculate contact parameters
-        contActMin, ncont, diff_cont_offset, diffoffset = self._calculate_contact_params(wf, common_params)
+        contActMin, ncont, diff_cont_offset, diffoffset = self._calculate_contact_params(wf,
+                                                                                         common_params)
 
         # Adjust gate-contact distance for small widths
         gatpoly_cont_dist = common_params["gatpoly_cont_dist"]
@@ -186,13 +195,15 @@ class pmos(baseMosfet):
         distc = common_params["cont_size"] + common_params["cont_dist"]
         ycont_cnt = ycont_beg + diffoffset + diff_cont_offset
         yMet1 = min(ycont_cnt - endcap, ydiff_beg + diffoffset)
-        yMet2 = max(ycont_cnt + common_params["cont_size"] + (ncont - 1) * distc + endcap, ydiff_end + diffoffset)
+        yMet2 = max(ycont_cnt + common_params["cont_size"] + (ncont - 1) * distc + endcap,
+                    ydiff_end + diffoffset)
 
         # Draw source contact and diffusion
         self._draw_metal_and_contacts(tempShapesList, xcont_beg, xcont_end, yMet1, yMet2,
-                                     ydiff_beg, ydiff_end, diffoffset, "S", common_params)
+                                      ydiff_beg, ydiff_end, diffoffset, "S", common_params)
         self._draw_diffusion_rect(tempShapesList, xcont_beg, ycont_beg, xcont_end,
-                                 common_params["cont_size"], common_params["cont_Activ_overRec"], self.pdiff_layer)
+                                  common_params["cont_size"],
+                                  common_params["cont_Activ_overRec"], self.pdiff_layer)
 
         # Draw gates and drain contacts
         for i in range(1, self.ng + 1):
@@ -206,25 +217,31 @@ class pmos(baseMosfet):
             point1 = self.toSceneCoord(QPointF(xpoly_beg, ypoly_beg + diffoffset))
             point2 = self.toSceneCoord(QPointF(xpoly_end, ypoly_end + diffoffset))
             tempShapesList.append(lshp.layoutRect(point1, point2, self.gatpoly_layer))
-            tempShapesList.extend(self.ihpAddThermalMosLayer(point1, point2, True, self.__class__.__name__))
+            tempShapesList.extend(
+                self.ihpAddThermalMosLayer(point1, point2, True, self.__class__.__name__))
 
             if i == 1:
                 from PySide6.QtCore import QRectF
                 center = QRectF(point1, point2).center()
-                tempShapesList.append(lshp.layoutPin(point1, point2, "G", lshp.layoutPin.pinDirs[2],
-                                                   lshp.layoutPin.pinTypes[0], self.poly_layer_pin))
+                tempShapesList.append(
+                    lshp.layoutPin(point1, point2, "G", lshp.layoutPin.pinDirs[2],
+                                   lshp.layoutPin.pinTypes[0], self.poly_layer_pin))
                 tempShapesList.append(lshp.layoutLabel(center, "G", *self._labelFontTuple,
-                                                     lshp.layoutLabel.LABEL_ALIGNMENTS[0],
-                                                     lshp.layoutLabel.LABEL_ORIENTS[0], self.text_layer))
+                                                       lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                                                       lshp.layoutLabel.LABEL_ORIENTS[0],
+                                                       self.text_layer))
 
             # Drain contact
             xcont_beg = xpoly_end + gatpoly_cont_dist
             xcont_end = xcont_beg + common_params["cont_size"]
 
-            self._draw_metal_and_contacts(tempShapesList, xcont_beg, xcont_end, yMet1, yMet2,
-                                         ydiff_beg, ydiff_end, diffoffset, "D" if i == 1 else "", common_params)
+            self._draw_metal_and_contacts(tempShapesList, xcont_beg, xcont_end, yMet1,
+                                          yMet2,
+                                          ydiff_beg, ydiff_end, diffoffset,
+                                          "D" if i == 1 else "", common_params)
             self._draw_diffusion_rect(tempShapesList, xcont_beg, ycont_beg, xcont_end,
-                                     common_params["cont_size"], common_params["cont_Activ_overRec"], self.pdiff_layer)
+                                      common_params["cont_size"],
+                                      common_params["cont_Activ_overRec"], self.pdiff_layer)
 
         # Final layers
         xdiff_end = xcont_end + common_params["cont_Activ_overRec"]
@@ -236,17 +253,21 @@ class pmos(baseMosfet):
 
         # pSD layer
         point1 = self.toSceneCoord(QPointF(xdiff_beg - device_params["psd_pActiv_over"],
-                                          ydiff_beg - common_params["gatpoly_Activ_over"] - device_params["psd_PFET_over"] + diffoffset))
+                                           ydiff_beg - common_params["gatpoly_Activ_over"] -
+                                           device_params["psd_PFET_over"] + diffoffset))
         point2 = self.toSceneCoord(QPointF(xdiff_end + device_params["psd_pActiv_over"],
-                                          ydiff_end + common_params["gatpoly_Activ_over"] + device_params["psd_PFET_over"] + diffoffset))
+                                           ydiff_end + common_params["gatpoly_Activ_over"] +
+                                           device_params["psd_PFET_over"] + diffoffset))
         tempShapesList.append(lshp.layoutRect(point1, point2, self.pdiffx_layer))
 
         # NWell layer
         nwell_offset = max(0, self.GridFix((contActMin - wf) / 2 + self._sg13grid / 2))
         point1 = self.toSceneCoord(QPointF(xdiff_beg - device_params["nwell_pActiv_over"],
-                                          ydiff_beg - device_params["nwell_pActiv_over"] + diffoffset - nwell_offset))
+                                           ydiff_beg - device_params[
+                                               "nwell_pActiv_over"] + diffoffset - nwell_offset))
         point2 = self.toSceneCoord(QPointF(xdiff_end + device_params["nwell_pActiv_over"],
-                                          ydiff_end + device_params["nwell_pActiv_over"] + diffoffset + nwell_offset))
+                                           ydiff_end + device_params[
+                                               "nwell_pActiv_over"] + diffoffset + nwell_offset))
         tempShapesList.append(lshp.layoutRect(point1, point2, self.well_layer))
 
         self.shapes = tempShapesList

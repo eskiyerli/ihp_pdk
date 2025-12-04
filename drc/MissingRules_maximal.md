@@ -1,7 +1,7 @@
 # Missing Rules
 
 | Name             | Description                                                                                                                                                                                                                                                                   |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | NW.b             | Min. NWell space or notch (same net). NWell regions separated by less than this value will be merged.                                                                                                                                                                         |
 | NW.b1            | Min. PWell width between NWell regions (different net) (A certain distance between NWell and PWell (see section 4.2) on different nets is required to prevent punchthrough due to different potentials.)                                                                      |
 | PWB.d            | Overlap of PWell:block and NWell is allowed                                                                                                                                                                                                                                   |

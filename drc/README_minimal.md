@@ -3,7 +3,7 @@
 List of available DRC rules:
 
 | Name              | Description                                                                 |
-| ----------------- | --------------------------------------------------------------------------- |
+|-------------------|-----------------------------------------------------------------------------|
 | Act.a             | Min. Activ width                                                            |
 | Act.b             | Min. Activ space or notch                                                   |
 | AFil.g/g1         | Global Activ density [%]                                                    |

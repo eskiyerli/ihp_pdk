@@ -23,7 +23,7 @@ from PySide6.QtCore import QPointF
 from quantiphy import Quantity
 
 import revedaEditor.common.layoutShapes as lshp
-from revedaEditor.backend.pdkPaths import importPDKModule
+from revedaEditor.backend.pdkLoader import importPDKModule
 from .base import baseRfMosfet
 
 laylyr = importPDKModule('layoutLayers')
@@ -36,10 +36,10 @@ class rfnmos(baseRfMosfet):
         """Cache for RFNMOS technology parameters."""
         tp = baseRfMosfet._techParams
         return {"defL": Quantity(tp["rfnmos_defL"]).real,
-            "defW": Quantity(tp["rfnmos_defW"]).real,
-            "defNG": Quantity(tp["rfnmos_defNG"]).real,
-            "minL": Quantity(tp["rfnmos_minL"]).real,
-            "minW": Quantity(tp["rfnmos_minW"]).real, }
+                "defW": Quantity(tp["rfnmos_defW"]).real,
+                "defNG": Quantity(tp["rfnmos_defNG"]).real,
+                "minL": Quantity(tp["rfnmos_minL"]).real,
+                "minW": Quantity(tp["rfnmos_minW"]).real, }
 
     # RFNMOS-specific layers
     psd_layer = laylyr.pSD_drawing
@@ -107,12 +107,12 @@ class rfnmos(baseRfMosfet):
         # Inscription
         tempShapesList.append(lshp.layoutLabel(self.toSceneCoord(
             QPointF((xl + xr) / 2, yt - rf_params['wguard'] / 2)),
-                                               self.__class__.__name__,
-                                               *self._labelFontTuple,
-                                               lshp.layoutLabel.LABEL_ALIGNMENTS[
-                                                   0],
-                                               lshp.layoutLabel.LABEL_ORIENTS[0],
-                                               self.text_layer))
+            self.__class__.__name__,
+            *self._labelFontTuple,
+            lshp.layoutLabel.LABEL_ALIGNMENTS[
+                0],
+            lshp.layoutLabel.LABEL_ORIENTS[0],
+            self.text_layer))
 
         # pSD for rfnmos
         wpsd = 0.38
@@ -153,10 +153,10 @@ class rfpmos(baseRfMosfet):
         """Cache for RFPMOS technology parameters."""
         tp = baseRfMosfet._techParams
         return {"defL": Quantity(tp["rfpmos_defL"]).real,
-            "defW": Quantity(tp["rfpmos_defW"]).real,
-            "defNG": Quantity(tp["rfpmos_defNG"]).real,
-            "minL": Quantity(tp["rfpmos_minL"]).real,
-            "minW": Quantity(tp["rfpmos_minW"]).real, }
+                "defW": Quantity(tp["rfpmos_defW"]).real,
+                "defNG": Quantity(tp["rfpmos_defNG"]).real,
+                "minL": Quantity(tp["rfpmos_minL"]).real,
+                "minW": Quantity(tp["rfpmos_minW"]).real, }
 
     # RFPMOS-specific layers
     nsd_layer = laylyr.nSD_drawing
@@ -259,12 +259,12 @@ class rfpmos(baseRfMosfet):
         # Inscription
         tempShapesList.append(lshp.layoutLabel(self.toSceneCoord(
             QPointF((xl + xr) / 2, yt - rf_params['wguard'] / 2)),
-                                               self.__class__.__name__,
-                                               *self._labelFontTuple,
-                                               lshp.layoutLabel.LABEL_ALIGNMENTS[
-                                                   0],
-                                               lshp.layoutLabel.LABEL_ORIENTS[0],
-                                               self.text_layer))
+            self.__class__.__name__,
+            *self._labelFontTuple,
+            lshp.layoutLabel.LABEL_ALIGNMENTS[
+                0],
+            lshp.layoutLabel.LABEL_ORIENTS[0],
+            self.text_layer))
 
         # Move to origin
         move_point = self.toSceneCoord(QPointF(-xl, -yb))

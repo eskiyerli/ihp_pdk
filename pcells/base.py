@@ -24,7 +24,7 @@ from quantiphy import Quantity
 
 import revedaEditor.backend.dataDefinitions as ddef
 import revedaEditor.common.layoutShapes as lshp
-from revedaEditor.backend.pdkPaths import importPDKModule
+from revedaEditor.backend.pdkLoader import importPDKModule
 
 sg13_tech = importPDKModule('sg13_tech')
 laylyr = importPDKModule('layoutLayers')
@@ -57,7 +57,7 @@ class baseCell(lshp.layoutPcell):
         super().__init__(shapes)
         fontFamilies = QFontDatabase().families()
         fontFamily = \
-        [font for font in fontFamilies if QFontDatabase().isFixedPitch(font)][0]
+            [font for font in fontFamilies if QFontDatabase().isFixedPitch(font)][0]
         self._fixedFont = QFont(fontFamily, 16)
         self._labelFontStyle = self._fixedFont.styleName()
         self._labelFontFamily = self._fixedFont.family()
@@ -76,7 +76,7 @@ class baseCell(lshp.layoutPcell):
     # contactArray
     # ***********************************************************************************************************************
     def contactArray(self, pathLayer: ddef.layLayer | int,
-            contLayer: ddef.layLayer, xl, yl, xh, yh, ox, oy, ws, ds, ):
+                     contLayer: ddef.layLayer, xl, yl, xh, yh, ox, oy, ws, ds, ):
         w, h = xh - xl, yh - yl
         mlist = []
 
@@ -119,8 +119,9 @@ class baseCell(lshp.layoutPcell):
         if addThermalText:
             shapes.append(
                 lshp.layoutLabel(QRectF(point1, point2).center(), labelText,
-                    *self._labelFontTuple, lshp.layoutLabel.LABEL_ALIGNMENTS[0],
-                    lshp.layoutLabel.LABEL_ORIENTS[0], heatLayer, ))
+                                 *self._labelFontTuple,
+                                 lshp.layoutLabel.LABEL_ALIGNMENTS[0],
+                                 lshp.layoutLabel.LABEL_ORIENTS[0], heatLayer, ))
         return shapes
 
     def ihpAddThermalMosLayer(self, point1, point2, addThermalText, label):
@@ -186,10 +187,10 @@ class baseMosfet(baseCell):
         """Get common MOSFET parameters."""
         tp = baseCell._techParams
         return {"epsilon": tp["epsilon1"], "endcap": tp["M1_c1"],
-            "cont_size": tp["Cnt_a"], "cont_dist": tp["Cnt_b"],
-            "cont_Activ_overRec": tp["Cnt_c"], "cont_metall_over": tp["M1_c"],
-            "gatpoly_Activ_over": tp["Gat_c"], "gatpoly_cont_dist": tp["Cnt_f"],
-            "smallw_gatpoly_cont_dist": tp["Cnt_c"], }
+                "cont_size": tp["Cnt_a"], "cont_dist": tp["Cnt_b"],
+                "cont_Activ_overRec": tp["Cnt_c"], "cont_metall_over": tp["M1_c"],
+                "gatpoly_Activ_over": tp["Gat_c"], "gatpoly_cont_dist": tp["Cnt_f"],
+                "smallw_gatpoly_cont_dist": tp["Cnt_c"], }
 
     def _calculate_contact_params(self, wf, params):
         """Calculate contact-related parameters."""
@@ -208,8 +209,8 @@ class baseMosfet(baseCell):
             ncont = 1
 
         diff_cont_offset = self.GridFix((
-                                                    wf - 2 * cont_Activ_overRec - ncont * cont_size - (
-                                                        ncont - 1) * cont_dist) / 2)
+                                                wf - 2 * cont_Activ_overRec - ncont * cont_size - (
+                                                ncont - 1) * cont_dist) / 2)
 
         diffoffset = 0
         if wf < contActMin:
@@ -295,11 +296,11 @@ class baseRfMosfet(baseCell):
         """Get common RF MOSFET parameters."""
         tp = baseCell._techParams
         return {'wc': tp['Cnt_a'], 'sc': tp['Cnt_b'], 'ec': tp['Cnt_c'],
-            'dc': tp['Cnt_f'], 'wvia1': tp['TV1_a'], 'svia1': tp['TV1_b'],
-            'dvia1': tp['TV1_d'], 'wgat': tp['Gat_a'], 'dgatx': tp['Gat_d'],
-            'dgaty': tp['Gat_c'], 'wguard': tp['pSD_a'], 'dguard': tp['pSD_b'],
-            'wcont': W,
-            'hcont': (tp['Cnt_a'] * cnt_rows) + (tp['Cnt_b'] * (cnt_rows - 1)), }
+                'dc': tp['Cnt_f'], 'wvia1': tp['TV1_a'], 'svia1': tp['TV1_b'],
+                'dvia1': tp['TV1_d'], 'wgat': tp['Gat_a'], 'dgatx': tp['Gat_d'],
+                'dgaty': tp['Gat_c'], 'wguard': tp['pSD_a'], 'dguard': tp['pSD_b'],
+                'wcont': W,
+                'hcont': (tp['Cnt_a'] * cnt_rows) + (tp['Cnt_b'] * (cnt_rows - 1)), }
 
     def _draw_rf_active_and_gates(self, shapes_list, W, hact, ng, params):
         """Draw RF active area and gates."""
@@ -436,10 +437,10 @@ class baseRfMosfet(baseCell):
                             self.activ_layer))
         shapes_list.append(lshp.layoutRect(self.toSceneCoord(
             QPointF(xr - params['wguard'], yb + params['wguard'])),
-                                           self.toSceneCoord(QPointF(xr,
-                                                                     yt - params[
-                                                                         'wguard'])),
-                                           self.activ_layer))
+            self.toSceneCoord(QPointF(xr,
+                                      yt - params[
+                                          'wguard'])),
+            self.activ_layer))
 
         # Guard ring contacts
         shapes_list.extend(

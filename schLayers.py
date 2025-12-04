@@ -47,9 +47,9 @@ wireErrorLayer = replace(wireLayer, name="wireError", pcolor=QColor("red"),
                          bcolor=QColor("red"), z=1)
 selectedWireLayer = replace(wireLayer, name="selectedWire", pcolor=QColor("blue"), bcolor=
 QColor("blue"), z=2)
-busLayer = replace(wireLayer, name="bus", pwidth = 8)
-busErrorLayer = replace(wireErrorLayer, name="busError", pwidth = 8)
-selectedBusLayer = replace(selectedWireLayer, name="selectedBus", pwidth = 8)
+busLayer = replace(wireLayer, name="bus", pwidth=8)
+busErrorLayer = replace(wireErrorLayer, name="busError", pwidth=8)
+selectedBusLayer = replace(selectedWireLayer, name="selectedBus", pwidth=8)
 wireHilightLayer = ddef.edLayer(
     name="wireHilightLayer",
     pcolor=QColor("darkMagenta"),
@@ -60,7 +60,7 @@ wireHilightLayer = ddef.edLayer(
     visible=True,
     selectable=False,
 )
-busHilightLayer = replace(wireHilightLayer, name="busHilightLayer", pwidth = 8)
+busHilightLayer = replace(wireHilightLayer, name="busHilightLayer", pwidth=8)
 guideLineLayer = replace(
     wireLayer, name="guideLine", pcolor=QColor("gray"), pstyle=Qt.DashLine, z=7
 )
@@ -130,13 +130,15 @@ selectedTextPen = QPen(
 )
 guideLinePen = QPen(guideLineLayer.pcolor, guideLineLayer.pwidth, guideLineLayer.pstyle)
 wirePen = QPen(wireLayer.pcolor, wireLayer.pwidth, wireLayer.pstyle)
+wirePen.setCosmetic(False)
 selectedWirePen = QPen(
     selectedWireLayer.pcolor, selectedWireLayer.pwidth, selectedWireLayer.pstyle
 )
 stretchWirePen = QPen(QColor("red"), wireLayer.pwidth, wireLayer.pstyle)
 errorWirePen = QPen(wireErrorLayer.pcolor, wireErrorLayer.pwidth, wireErrorLayer.pstyle)
-busPen= QPen(busLayer.pcolor, busLayer.pwidth, busLayer.pstyle)
-selectedBusPen = QPen(selectedBusLayer.pcolor, selectedBusLayer.pwidth, selectedBusLayer.pstyle)
+busPen = QPen(busLayer.pcolor, busLayer.pwidth, busLayer.pstyle)
+selectedBusPen = QPen(selectedBusLayer.pcolor, selectedBusLayer.pwidth,
+                      selectedBusLayer.pstyle)
 stretchBusPen = QPen(QColor("red"), busLayer.pwidth, busLayer.pstyle)
 errorBusPen = QPen(busErrorLayer.pcolor, busErrorLayer.pwidth, busErrorLayer.pstyle)
 ignoreSymbolPen = QPen(
