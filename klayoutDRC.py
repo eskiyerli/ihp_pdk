@@ -28,7 +28,11 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QGroupBox, QHBoxLayout,
                                QCheckBox)
 
 import revedaEditor.backend.editFunctions as edf
+import revedaEditor.gui.layoutDialogues as ldlg
 from revedaEditor.backend.pdkLoader import importPDKModule
+from quantiphy import Quantity
+import json
+
 process = importPDKModule('process')
 
 
@@ -90,6 +94,7 @@ def klayoutDRCClick(editorwindow):
             editorwindow.processManager.maxProcesses = int(drcRunLimit)
             drcProcess = editorwindow.processManager.add_process(klayoutPath,
                                                             argumentsList)
+            
             drcProcess.process.finished.connect(
                 lambda: DRCProcessFinished(drcReportFilePath))
         else:
