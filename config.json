@@ -3,6 +3,7 @@
   "pdk_version": "0.2.0",
   "technology": "SG13G2 130nm BiCMOS",
   "copyright": "Apache 2.0 license",
+  "binary": 0,
   "menu_items": [
     {
       "location": "menuBar",

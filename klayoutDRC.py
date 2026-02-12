@@ -100,7 +100,7 @@ def klayoutDRCClick(editorwindow):
         else:
             editorwindow.logger.error('GDS file can not be found')
 
-    dlg = klayoutDRCModule.drcKLayoutDialogue(editorwindow)
+    dlg = drcKLayoutDialogue(editorwindow)
     drc = importPDKModule("drc")
     if drc is None:
         editorwindow.logger.error('PDK does not have DRC module.')
@@ -144,7 +144,7 @@ class drcKLayoutDialogue(QDialog):
         self.parent = parent
         super().__init__(parent)
         self.setMinimumSize(500, 500)
-        self.setWindowTitle("Revolution EDA Options")
+        self.setWindowTitle("DRC Options")
         mainLayout = QVBoxLayout()
         mainLayout.setSpacing(20)
 
@@ -172,7 +172,7 @@ class drcKLayoutDialogue(QDialog):
         self.DRCRunSetCB.currentIndexChanged.connect(self.onDRCRunSetChanged)
         drcRunSetDialogueLayout.addWidget(self.DRCRunSetCB, 5)
         filePathsLayout.addLayout(drcRunSetDialogueLayout)
-        DRCOptionsGroupBox = QGroupBox("DRC Options")
+        # DRCOptionsGroupBox = QGroupBox("DRC Options")
 
         drcRunLimitDialogueLayout = QHBoxLayout()
         drcRunLimitDialogueLayout.addWidget(edf.boldLabel("DRC Run Limit:"), 2)
