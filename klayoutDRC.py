@@ -64,6 +64,7 @@ def klayoutDRCClick(editorwindow):
     def DRCProcessFinished(filePath: pathlib.Path):
         dlg = ldlg.drcErrorsDialogue(editorwindow, filePath.resolve())
         dlg.drcTable.polygonSelected.connect(editorwindow.handlePolygonSelection)
+        dlg.drcTable.zoomToRect.connect(editorwindow.centralW.scene.zoomToRect)
         dlg.show()
 
     def runKlayoutDRC(dlg):
@@ -141,8 +142,9 @@ def klayoutDRCClick(editorwindow):
 
 class drcKLayoutDialogue(QDialog):
     def __init__(self, parent=None):
-        self.parent = parent
         super().__init__(parent)
+        self.parentEditor = parent
+        
         self.setMinimumSize(500, 500)
         self.setWindowTitle("DRC Options")
         mainLayout = QVBoxLayout()
