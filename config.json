@@ -16,6 +16,18 @@
       "apply": [
         "layoutEditor"
       ]
+    },
+    {
+      "location": "menuBar",
+      "menu": "Check",
+      "action": "KLayoutLVS",
+      "text": "LVS with KLayout",
+      "module": "klayoutLVS",
+      "callback": "klayoutLVSClick",
+      "shortcut": "Ctrl+Shift+L",
+      "apply": [
+        "layoutEditor"
+      ]
     }
   ]
 }

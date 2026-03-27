@@ -35,7 +35,7 @@ import revedaEditor.backend.dataDefinitions as ddef
 wireLayer = ddef.edLayer(
     name="wire",
     pcolor=QColor("cyan"),
-    pwidth=2,
+    pwidth=3,
     pstyle=Qt.SolidLine,
     z=0,
     bcolor=QColor("cyan"),
@@ -150,6 +150,8 @@ hilightPen = QPen(
 busHilightPen = QPen(wireHilightLayer.pcolor, busLayer.pwidth, wireHilightLayer.pstyle)
 otherPen = QPen(otherLayer.pcolor, otherLayer.pwidth, otherLayer.pstyle)
 draftPen = QPen(draftLayer.pcolor, draftLayer.pwidth, draftLayer.pstyle)
+draftPen.setCosmetic(True)
+guideLinePen.setCosmetic(True)
 
 # schematic brushes
 schematicPinBrush = QBrush(schematicPinLayer.bcolor, schematicPinLayer.bstyle)

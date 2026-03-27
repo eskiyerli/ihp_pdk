@@ -1,0 +1,262 @@
+Klayout-LVS
+===========
+
+Explains how to use the SG13G2 LVS rule decks.
+
+# Table of contents
+- [Klayout-LVS](#klayout-lvs)
+- [Table of contents](#table-of-contents)
+  - [Folder Structure](#folder-structure)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [CLI](#cli)
+      - [LVS Outputs](#lvs-outputs)
+    - [GUI](#gui)
+
+
+## Folder Structure
+
+```text
+📁 lvs
+ ┣ 📁testing               Directory for the SG13G2 LVS testing environment.
+ ┣ 📁rule_decks            Contains all LVS rule decks used for SG13G2.
+ ┣ 📜sg13g2.lvs            Main LVS runset that calls all rule decks.
+ ┣ 📜README.md             Documentation for SG13G2 LVS.
+ ┗ 📜run_lvs.py            Main Python script for SG13G2 LVS run.
+ ```
+
+## Prerequisites
+
+You need the following set of tools installed to be able to run SG13G2 LVS:
+
+- Python 3.9+
+- KLayout 0.30.2+
+
+We have tested this using the following setup:
+- Python 3.12.4
+- KLayout 0.30.3
+
+## Installation
+
+To install the required Python packages, execute the following command:
+
+```bash
+pip install -r ../../../../../requirements.txt
+```
+
+## Usage
+
+You have the option to execute the SG13G2-LVS through either a Python script via the command-line interface [CLI](#cli) or by the Klayout graphical user interface [GUI](#gui), as detailed in the subsequent usage sections.
+
+### CLI
+
+The `run_lvs.py` script takes your gds and netlist files to run LVS rule decks with switches to select subsets of all checks.
+
+```bash
+run_lvs.py (--help | -h)
+run_lvs.py [--layout=<layout_path>]
+           [--netlist=<netlist_path>] [--layout_netlist=<layout_netlist_path>] [--run_dir=<run_dir_path>]
+           [--topcell=<topcell_name>] [--run_mode=<run_mode>]
+           [--no_net_names] [--spice_comments] [--net_only] [--no_simplify]
+           [--no_series_res] [--no_parallel_res] [--combine_devices] [--top_lvl_pins]
+           [--purge] [--purge_nets] [--ignore_top_ports_mismatch]
+           [--implicit_nets=<nets>]
+```
+
+**Options:**
+
+- `--help -h`                         Displays this help message.
+
+- `--layout=<layout_path>`            Optional path to the input GDS file. Required unless `--layout_netlist` is provided.
+
+- `--netlist=<netlist_path>`          Optional path to the schematic netlist file.
+
+- `--layout_netlist=<layout_netlist_path>` Optional path to a layout-side netlist file. When provided, layout extraction is skipped and this netlist is used for comparison/output.
+
+- `--run_dir=<run_dir_path>`          Run directory to save generated results. By default, a timestamped run directory is created in the current directory.
+
+- `--topcell=<topcell_name>`          Specifies the name of the top cell to be used.
+
+- `--run_mode=<run_mode>`             Selects the allowed KLayout mode (`flat`, `deep`). [default: flat]
+
+- `--no_net_names`                    Omits net names in the extracted netlist.
+
+- `--spice_comments`                  Includes netlist comments in the extracted netlist.
+
+- `--net_only`                        Generates netlist objects only in the extracted netlist.
+
+- `--no_simplify`                     Disables simplification for both layout and schematic netlists.
+
+- `--no_series_res`                   Prevents simplification of series resistors for both layout and schematic.
+
+- `--no_parallel_res`                 Prevents simplification of parallel resistors for both layout and schematic.
+
+- `--combine_devices`                 Enables device combination for both layout and schematic netlists.
+
+- `--top_lvl_pins`                    Creates pins for top-level circuits in both layout and schematic netlists.
+
+- `--purge`                           Removes unused nets from both layout and schematic netlists.
+
+- `--purge_nets`                      Purges floating nets from both layout and schematic netlists.
+
+- `--ignore_top_ports_mismatch`       Ignores top-level port mismatches during comparison mode.
+
+- `--implicit_nets=<nets>`            Comma-separated net names/patterns for implicit connections (case-sensitive), e.g., `"VDD,VSS"` or `"*"`.
+
+
+---
+**NOTE**
+
+* By utilizing the `no_simplify` option, you can prevent layout simplification for both layout and schematic netlists. Simplification is enabled by default, incorporating steps such as `make_top_level_pins`, `purge`, `combine_devices`, and `purge_nets`.
+<br/>
+
+* When you use the `no_simplify` option to disable simplification, you can then use the `make_top_level_pins`, `purge`, `combine_devices`, and `purge_nets` options individually to fine-tune the behavior according to your needs.
+<br/>
+
+* Series resistors with identical parameters (except length) will combine into one resistor with the total length.
+<br/>
+
+* Parallel resistors will merge into a single resistor with the parameter `m` representing the number of parallel resistors, provided they share identical parameters.
+<br/>
+
+* The options `no_series_res` and `no_parallel_res` are specifically designed to disable layout simplification for resistors exclusively. When specified, they take priority over `combine_devices` option.
+<br/>
+
+* If `--net_only` is not set and no `--netlist` is provided, the script enables netlist-only extraction automatically for that run and logs a clear warning.
+<br/>
+
+* If both `--netlist` and `--net_only` are provided, `--net_only` takes precedence and the schematic netlist input is ignored (with a warning).
+<br/>
+
+* SVS flow is used for schematic-vs-schematic style checks: compare two netlists without layout extraction.
+<br/>
+
+* SVS inputs are `--netlist` (schematic-side netlist) and `--layout_netlist` (layout-side/pre-extracted netlist). `--layout` is optional in this mode.
+<br/>
+
+* In SVS flow (`--layout_netlist`), if `--layout` is omitted, the backend creates a temporary empty layout only to satisfy KLayout LVS layout-context requirements.
+<br/>
+
+* Implicit connections are useful for bottom-up checks where some nets are intentionally open at block level (for example power nets to be connected at top level). Avoid using implicit connections for final top-level signoff LVS.
+---
+
+**Example:**
+
+```bash
+    python3 run_lvs.py --layout=testing/testcases/unit/mos_devices/layout/sg13_lv_nmos.gds --netlist=testing/testcases/unit/mos_devices/netlist/sg13_lv_nmos.cdl --run_dir=test_nmos --ignore_top_ports_mismatch --implicit_nets=VDD,VSS
+```
+
+#### LVS Outputs
+
+You could find the run results at your run directory if you previously specified it through `--run_dir=<run_dir_path>`. Default path of run directory is `lvs_run_<date>_<time>` in current directory.
+
+**Folder Structure of run results**
+
+```text
+📁 lvs_run_<date>_<time>
+ ┣ 📜 lvs_run_<date>_<time>.log
+ ┣ 📜 <your_design_name>.log
+ ┣ 📜 <your_design_name>_extracted.cir
+ ┗ 📜 <your_design_name>.lvsdb
+ ```
+
+The outcome includes a database file for each device (`<device_name>.lvsdb`) containing LVS extractions and comparison results. You can view it by opening your gds file with: `klayout <device_name>.gds -mn <device_name>.lvsdb`. Alternatively, you can visualize it on your GDS file using the netlist browser option in the tools menu of the KLayout GUI as illustrated in the following figures.
+
+<p align="center">
+  <img src="images/lvs_marker_1.png" width="50%" >
+</p>
+<p align="center">
+  Fig. 1. Netlist Browser for Klayout-LVS
+</p>
+
+After selecting Netlist Browser option, you could load the database file and visualize the LVS results.
+
+<p align="center">
+  <img src="images/lvs_marker_2.png" width="70%" >
+</p>
+<p align="center">
+  Fig. 2. Loading LVS Netlist/database file - 1
+</p>
+
+<p align="center">
+  <img src="images/lvs_marker_3.png" width="70%" >
+</p>
+<p align="center">
+  Fig. 3. Loading LVS Netlist/database file - 2
+</p>
+
+<p align="center">
+  <img src="images/lvs_marker_4.png" width="70%" >
+</p>
+<p align="center">
+  Fig. 4. Visualize LVS results
+</p>
+
+Additionally, you can find the extracted netlist generated from your design at (`<device_name>_extracted.cir`) in the output run directory.
+
+At the end of each CLI run, `run_lvs.py` prints an **Important Summary** table that highlights:
+- run status and mode
+- final LVS outcome
+- results directory path
+- warning/error counts and key messages
+
+### GUI
+
+The SG13G2 also facilitates LVS execution via Klayout menus as depicted below:
+
+First, you need to add the LVS menus to your `KLAYOUT_PATH`, you could do that by executing the following command:
+
+```bash
+KLAYOUT_PATH=$PDKPATH/libs.tech/klayout:$PDKPATH/libs.tech/klayout/tech/ klayout -e
+```
+
+> **_NOTE:_** In this context, `PDKPATH` refers to the path leading to the IHP-Open-PDK/ihp-sg13g2 directory within the current repository.
+
+
+Then, you will get the LVS menus for SG13G2, you could set your desired options as shown below. The GUI now uses the same Python backend (`run_lvs.py`) and run-flow style as CLI.
+
+<p align="center">
+  <img src="images/lvs_menus_1.png" width="70%" >
+</p>
+<p align="center">
+  Fig. 5. Setting up LVS Options-GUI - 1
+</p>
+
+<p align="center">
+  <img src="images/lvs_menus_2.png" width="50%" >
+</p>
+<p align="center">
+  Fig. 6. Setting up LVS Options-GUI - 2
+</p>
+
+---
+**NOTE**
+
+* To utilize the LVS options, an active cell must be present. The currently active cell is automatically chosen as the default for running LVS. You could change it using `Top Cell` option.
+<br/>
+
+* `Netlist Path` is optional when `Netlist Only` is enabled.
+<br/>
+
+* If no netlist is provided and `Netlist Only` is disabled, the backend logs a clear warning and automatically runs in extraction-only mode for that run.
+<br/>
+
+* You can pass implicit connection patterns through `Implicit Nets` in the advanced tab (for example: `VDD,VSS` or `*`).
+
+---
+
+For additional details on GUI options, please refer to the [CLI Options section](#cli).
+
+Finally, after setting your option, you could execute the LVS using `Run Klayout LVS` from the dropdown menu.
+
+<p align="center">
+  <img src="images/lvs_menus_3.png" width="70%" >
+</p>
+<p align="center">
+  Fig. 7. Running LVS using Klayout menus
+</p>
+
+Upon executing the LVS, a live log window is shown and the generated result database is loaded on your layout interface automatically, allowing you to verify the outcome as shown above in Fig. 4.
+
+Additionally, all run outputs (log, extracted netlist, report database) are available in the selected `Output Run Directory`.

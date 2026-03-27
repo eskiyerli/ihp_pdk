@@ -37,10 +37,10 @@ process = importPDKModule('process')
 
 
 def klayoutDRCClick(editorwindow):
-    klayoutDRCModule = importPDKModule("klayoutDRC")
-    if klayoutDRCModule is None:
-        editorwindow.logger.error('PDK does not allow DRC verification with KLayout.')
-        return
+    # klayoutDRCModule = importPDKModule("klayoutDRC")
+    # if klayoutDRCModule is None:
+    #     editorwindow.logger.error('PDK does not allow DRC verification with KLayout.')
+    #     return
 
     def saveRunSet(dlg):
         klayoutPath = dlg.klayoutPathEdit.text().strip()
