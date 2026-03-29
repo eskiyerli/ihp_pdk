@@ -28,10 +28,11 @@ import pathlib
 import time
 from contextlib import contextmanager
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox,
-    QFileDialog, QFormLayout, QGroupBox, QHBoxLayout, QPushButton,
-    QRadioButton, QVBoxLayout,
+    QFileDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPlainTextEdit,
+    QPushButton, QRadioButton, QScrollArea, QSplitter, QVBoxLayout, QWidget,
 )
 from quantiphy import Quantity
 
@@ -70,8 +71,13 @@ def klayoutLVSClick(layoutEditor):
             json.dump(settings, f, indent=4)
         logger.info(f"LVS settings saved to {settingsPathObj}")
 
-    def LVSProcessFinished(filePath: pathlib.Path):
+    def LVSProcessFinished(filePath: pathlib.Path, extractedNetlistPath: pathlib.Path, dlg: 'klayoutLVSDialogue'):
         logger.info(f"LVS process finished. Report: {filePath}")
+        dlg.console.appendPlainText(f"\n--- LVS Finished. Report: {filePath} ---")
+        if extractedNetlistPath.exists():
+            dlg.console.appendPlainText(f"--- Extracted layout netlist: {extractedNetlistPath} ---")
+        else:
+            dlg.console.appendPlainText("--- Extracted layout netlist was not generated. ---")
 
     def runKlayoutLVS(dlg):
         settings = dlg.collectSettings()
@@ -117,11 +123,13 @@ def klayoutLVSClick(layoutEditor):
             return
 
         lvsReportFilePath = lvsRunPathObj / f'{layoutCellName}.lvsdb'
+        lvsExtractedNetlistPath = lvsRunPathObj / f'{layoutCellName}_extracted.cir'
         argumentsList = [
             '-b', '-r', str(lvsRulePath),
             '-rd', f'input={gdsPath}',
             '-rd', f'topcell={layoutCellName}',
             '-rd', f'report={lvsReportFilePath}',
+            '-rd', f'target_netlist={lvsExtractedNetlistPath}',
             '-rd', f'net_only={'true' if netOnly else 'false'}',
             '-rd', f'run_mode={runMode}',
         ]
@@ -135,8 +143,18 @@ def klayoutLVSClick(layoutEditor):
             argumentsList.extend(['-rd', f'implicit_nets={implicitNets}'])
 
         layoutEditor.processManager.maxProcesses = int(lvsRunLimit)
+        dlg.console.appendPlainText("--- LVS Started ---")
         lvsProcess = layoutEditor.processManager.add_process(klayoutPath, argumentsList)
-        lvsProcess.process.finished.connect(lambda: LVSProcessFinished(lvsReportFilePath))
+        # Redirect process output to dialog console instead of main logger
+        try:
+            lvsProcess.process.readyReadStandardOutput.disconnect()
+        except RuntimeError:
+            pass
+        lvsProcess.process.readyReadStandardOutput.connect(
+            lambda: dlg.appendLVSOutput(lvsProcess.process))
+        lvsProcess.process.readyReadStandardError.connect(
+            lambda: dlg.appendLVSError(lvsProcess.process))
+        lvsProcess.process.finished.connect(lambda: LVSProcessFinished(lvsReportFilePath, lvsExtractedNetlistPath, dlg))
 
     def createSchematicNetlist(dlg, lvsRunPathObj):
         settings = dlg.collectSettings()
@@ -182,7 +200,7 @@ class klayoutLVSDialogue(QDialog):
         self.layoutEditor = parentEditor
         self.model = parentEditor.libraryView.libraryModel
         self.setWindowTitle("KLayout LVS")
-        self.setMinimumSize(600, 900)
+        self.setMinimumSize(1100, 700)
         self.mainLayout = QVBoxLayout()
         hLayout = QHBoxLayout()
         self.mainLayout.addLayout(hLayout)
@@ -364,7 +382,36 @@ class klayoutLVSDialogue(QDialog):
         self.buttonBox.addButton(self.closeButton, QDialogButtonBox.RejectRole)
         self.buttonBox.rejected.connect(self.reject)
         self.mainLayout.addWidget(self.buttonBox)
-        self.setLayout(self.mainLayout)
+
+        # Wrap the form in a scroll area (left panel of splitter)
+        formWidget = QWidget()
+        formWidget.setLayout(self.mainLayout)
+        scrollArea = QScrollArea()
+        scrollArea.setWidget(formWidget)
+        scrollArea.setWidgetResizable(True)
+        scrollArea.setMinimumWidth(580)
+
+        # Console panel (right panel of splitter)
+        consoleWidget = QWidget()
+        consoleLayout = QVBoxLayout(consoleWidget)
+        consoleLayout.addWidget(QLabel("LVS Output:"))
+        self.console = QPlainTextEdit()
+        self.console.setReadOnly(True)
+        self.console.setMinimumWidth(400)
+        clearConsoleButton = QPushButton("Clear Console")
+        clearConsoleButton.clicked.connect(self.console.clear)
+        consoleLayout.addWidget(self.console)
+        consoleLayout.addWidget(clearConsoleButton)
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        splitter.addWidget(scrollArea)
+        splitter.addWidget(consoleWidget)
+        splitter.setStretchFactor(0, 1)
+        splitter.setStretchFactor(1, 1)
+
+        outerLayout = QHBoxLayout()
+        outerLayout.addWidget(splitter)
+        self.setLayout(outerLayout)
         self.show()
 
     def changeSchematicCells(self):
@@ -479,3 +526,13 @@ class klayoutLVSDialogue(QDialog):
             elif runMode == 'flat':
                 self.flatBtn.setChecked(True)
         self._lockLayoutSelection()
+
+    def appendLVSOutput(self, process) -> None:
+        output = process.readAllStandardOutput().data().decode("utf-8")
+        if output.strip():
+            self.console.appendPlainText(output.rstrip())
+
+    def appendLVSError(self, process) -> None:
+        error = process.readAllStandardError().data().decode("utf-8")
+        if error.strip():
+            self.console.appendPlainText(f"[STDERR] {error.rstrip()}")

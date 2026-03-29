@@ -22,10 +22,11 @@
 #     Licensor: Revolution Semiconductor (Registered in the Netherlands)
 
 import pathlib
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QGroupBox, QHBoxLayout,
-                               QFileDialog, QComboBox,
+                               QFileDialog, QComboBox, QLabel, QPlainTextEdit,
                                QDialogButtonBox, QPushButton, QFormLayout,
-                               QCheckBox)
+                               QScrollArea, QSplitter, QWidget, QCheckBox)
 
 import revedaEditor.backend.editFunctions as edf
 import revedaEditor.gui.layoutDialogues as ldlg
@@ -61,11 +62,12 @@ def klayoutDRCClick(editorwindow):
                         'gdsExport': gdsExport, 'gdsUnit': gdsUnit,
                         'gdsPrecision': gdsPrecision}, f, indent=4)
 
-    def DRCProcessFinished(filePath: pathlib.Path):
-        dlg = ldlg.drcErrorsDialogue(editorwindow, filePath.resolve())
-        dlg.drcTable.polygonSelected.connect(editorwindow.handlePolygonSelection)
-        dlg.drcTable.zoomToRect.connect(editorwindow.centralW.scene.zoomToRect)
-        dlg.show()
+    def DRCProcessFinished(filePath: pathlib.Path, dlg: 'drcKLayoutDialogue'):
+        dlg.console.appendPlainText(f"\n--- DRC Finished. Report: {filePath} ---")
+        errorsDlg = ldlg.drcErrorsDialogue(editorwindow, filePath.resolve())
+        errorsDlg.drcTable.polygonSelected.connect(editorwindow.handlePolygonSelection)
+        errorsDlg.drcTable.zoomToRect.connect(editorwindow.centralW.scene.zoomToRect)
+        errorsDlg.show()
 
     def runKlayoutDRC(dlg):
         klayoutPath = dlg.klayoutPathEdit.text().strip()
@@ -93,11 +95,20 @@ def klayoutDRCClick(editorwindow):
                                 '-rd',
                                 f'report_file={drcReportFilePath}']
             editorwindow.processManager.maxProcesses = int(drcRunLimit)
+            dlg.console.appendPlainText("--- DRC Started ---")
             drcProcess = editorwindow.processManager.add_process(klayoutPath,
                                                             argumentsList)
-            
+            # Redirect process output to dialog console instead of main logger
+            try:
+                drcProcess.process.readyReadStandardOutput.disconnect()
+            except RuntimeError:
+                pass
+            drcProcess.process.readyReadStandardOutput.connect(
+                lambda: dlg.appendDRCOutput(drcProcess.process))
+            drcProcess.process.readyReadStandardError.connect(
+                lambda: dlg.appendDRCError(drcProcess.process))
             drcProcess.process.finished.connect(
-                lambda: DRCProcessFinished(drcReportFilePath))
+                lambda: DRCProcessFinished(drcReportFilePath, dlg))
         else:
             editorwindow.logger.error('GDS file can not be found')
 
@@ -145,7 +156,7 @@ class drcKLayoutDialogue(QDialog):
         super().__init__(parent)
         self.parentEditor = parent
         
-        self.setMinimumSize(500, 500)
+        self.setMinimumSize(1000, 500)
         self.setWindowTitle("DRC Options")
         mainLayout = QVBoxLayout()
         mainLayout.setSpacing(20)
@@ -224,7 +235,36 @@ class drcKLayoutDialogue(QDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         mainLayout.addWidget(self.buttonBox)
-        self.setLayout(mainLayout)
+
+        # Wrap the form in a scroll area (left panel of splitter)
+        formWidget = QWidget()
+        formWidget.setLayout(mainLayout)
+        scrollArea = QScrollArea()
+        scrollArea.setWidget(formWidget)
+        scrollArea.setWidgetResizable(True)
+        scrollArea.setMinimumWidth(480)
+
+        # Console panel (right panel of splitter)
+        consoleWidget = QWidget()
+        consoleLayout = QVBoxLayout(consoleWidget)
+        consoleLayout.addWidget(QLabel("DRC Output:"))
+        self.console = QPlainTextEdit()
+        self.console.setReadOnly(True)
+        self.console.setMinimumWidth(400)
+        clearConsoleButton = QPushButton("Clear Console")
+        clearConsoleButton.clicked.connect(self.console.clear)
+        consoleLayout.addWidget(self.console)
+        consoleLayout.addWidget(clearConsoleButton)
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        splitter.addWidget(scrollArea)
+        splitter.addWidget(consoleWidget)
+        splitter.setStretchFactor(0, 1)
+        splitter.setStretchFactor(1, 1)
+
+        outerLayout = QHBoxLayout()
+        outerLayout.addWidget(splitter)
+        self.setLayout(outerLayout)
         self.show()
 
     def onkfilePathButtonClicked(self):
@@ -248,3 +288,13 @@ class drcKLayoutDialogue(QDialog):
 
     def onDRCRunSetChanged(self, index: int):
         print(index)
+
+    def appendDRCOutput(self, process) -> None:
+        output = process.readAllStandardOutput().data().decode("utf-8")
+        if output.strip():
+            self.console.appendPlainText(output.rstrip())
+
+    def appendDRCError(self, process) -> None:
+        error = process.readAllStandardError().data().decode("utf-8")
+        if error.strip():
+            self.console.appendPlainText(f"[STDERR] {error.rstrip()}")
