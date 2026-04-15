@@ -299,9 +299,44 @@
     ]
   },
   {
+    "type": "label",
+    "st": [
+      -10,
+      -20
+    ],
+    "nam": "@cellName",
+    "def": "[@cellName]",
+    "txt": "[@cellName]",
+    "val": "",
+    "vis": true,
+    "lt": "NLPLabel",
+    "ht": 12,
+    "al": "Left",
+    "or": "R0",
+    "use": "Normal",
+    "loc": [
+      -10.0,
+      -20.0
+    ],
+    "fl": [
+      1,
+      1
+    ]
+  },
+  {
     "type": "attr",
     "nam": "SpiceNetlistLine",
     "def": "%spiceprefix@instName %pinOrder %modelName m=@m"
+  },
+  {
+    "type": "attr",
+    "nam": "lvsNetlistLine",
+    "def": "D@instName %pinOrder @cellName m=@m"
+  },
+  {
+    "type": "attr",
+    "nam": "lvsDeviceType",
+    "def": "dio"
   },
   {
     "type": "attr",

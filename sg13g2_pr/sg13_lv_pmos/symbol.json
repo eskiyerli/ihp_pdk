@@ -199,6 +199,56 @@
         ]
     },
     {
+        "type": "label",
+        "st": [
+            -70,
+            -30
+        ],
+        "nam": "@modelName",
+        "def": "[@modelName]",
+        "txt": "[@modelName]",
+        "val": "",
+        "vis": false,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            -70.0,
+            -30.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            -10,
+            -20
+        ],
+        "nam": "@cellName",
+        "def": "[@cellName]",
+        "txt": "[@cellName]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            -10.0,
+            -20.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
         "type": "pin",
         "st": [
             79,
@@ -400,34 +450,19 @@
         ]
     },
     {
-        "type": "label",
-        "st": [
-            -10,
-            -20
-        ],
-        "nam": "@modelName",
-        "def": "[@modelName]",
-        "txt": "[@modelName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            -70.0,
-            -30.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
         "type": "attr",
         "nam": "SpiceNetlistLine",
         "def": "%spiceprefix@instName %pinOrder %modelName w=@w l=@l ng=@ng m=@m"
+    },
+    {
+        "type": "attr",
+        "nam": "lvsNetlistLine",
+        "def": "M@instName %pinOrder @cellName w=@w l=@l ng=@ng m=@m"
+    },
+    {
+        "type": "attr",
+        "nam": "lvsDeviceType",
+        "def": "mos"
     },
     {
         "type": "attr",
@@ -437,7 +472,7 @@
     {
         "type": "attr",
         "nam": "spiceprefix",
-        "def": "X"
+        "def": "M"
     },
     {
         "type": "attr",

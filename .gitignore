@@ -7,13 +7,9 @@
 .vs/
 .idea/
 __pycache__/
-.history/
 icons/
 dist/
 build/
-schematicEditor.kdev4
-reveda.log
-revolution_eda.egg-info/
 *.pyc
 aiDocuments/
 
