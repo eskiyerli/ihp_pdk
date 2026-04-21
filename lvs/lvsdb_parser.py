@@ -1,6 +1,6 @@
 import re
 from typing import List, Dict, Any, Optional, Iterator, Tuple
-from revedaEditor.backend.pdkLoader import importPDKModule
+# from revedaEditor.backend.pdkLoader import importPDKModule
 
 class LVSDBParser:
     """
@@ -378,7 +378,87 @@ class LVSDBParser:
             return cell_data['nets']
         return nets
 
-    def get_devices(self, cell_name: str) -> List[Dict]:
+    def get_nets_with_schematic_names(self, cell_name: str) -> List[Dict]:
+        """
+        Return layout nets with schematic net names for easier identification.
+
+        This method returns the same net geometry data as get_nets(), but
+        replaces layout net names with their corresponding schematic net names.
+        If a layout net has no schematic mapping, the original layout name is kept.
+
+        Args:
+            cell_name: Name of the layout cell to query.
+
+        Returns:
+            List of net dictionaries with keys:
+            - 'net_id': Layout net ID
+            - 'name': Schematic net name (or layout name if no mapping exists)
+            - 'layout_name': Original layout net name
+            - 'shapes': List of geometry dictionaries
+        """
+        # Get layout nets
+        layout_nets = self.get_nets(cell_name)
+        if not layout_nets:
+            return []
+
+        # Get cross-reference mapping
+        xref = self.get_crossref(cell_name)
+        if not xref:
+            # No cross-reference, return nets with original names
+            return [
+                {
+                    'net_id': net['net_id'],
+                    'name': net['name'],
+                    'layout_name': net['name'],
+                    'shapes': net['shapes']
+                }
+                for net in layout_nets
+            ]
+
+        # Get schematic cell name and schematic nets
+        schematic_name = xref.get('schematic_name', cell_name.upper())
+        schem_cell_data = self._get_schematic_cell(schematic_name)
+
+        # Build schematic net ID -> schematic net name lookup
+        schem_net_id_to_name = {}
+        if schem_cell_data and 'nets' in schem_cell_data:
+            for net in schem_cell_data['nets']:
+                net_id = net.get('net_id')
+                net_name = net.get('name', '')
+                if net_id:
+                    schem_net_id_to_name[net_id] = net_name
+
+        # Build layout net ID -> schematic net ID mapping from crossref
+        layout_to_schem_net_id = {}
+        for mapping in xref.get('mapping', {}).get('nets', []):
+            layout_net_id = mapping.get('layout_net')
+            schem_net_id = mapping.get('schem_net')
+            if layout_net_id and schem_net_id:
+                layout_to_schem_net_id[layout_net_id] = schem_net_id
+
+        # Map each layout net to its schematic name
+        result = []
+        for net in layout_nets:
+            layout_net_id = net['net_id']
+            layout_name = net['name']
+
+            # Look up schematic net ID, then schematic net name
+            schem_net_id = layout_to_schem_net_id.get(layout_net_id)
+            schem_name = schem_net_id_to_name.get(schem_net_id, '') if schem_net_id else ''
+
+            # Use schematic name if available, otherwise keep layout name
+            display_name = schem_name if schem_name else layout_name
+
+            result.append({
+                'net_id': layout_net_id,
+                'name': display_name,
+                'layout_name': layout_name,
+                'shapes': net['shapes']
+            })
+
+        return result
+
+    def get_layout_devices(self, cell_name: str) -> List[Dict]:
         """
         Return all devices in a specific layout cell.
 

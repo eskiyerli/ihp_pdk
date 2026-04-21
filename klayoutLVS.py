@@ -28,7 +28,7 @@ import logging
 import pathlib
 import time
 
-from PySide6.QtCore import QPoint, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItemModel
 from PySide6.QtWidgets import (
     QApplication,
@@ -51,20 +51,23 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 from quantiphy import Quantity
+
 import revedaEditor.backend.dataDefinitions as ddef
 import revedaEditor.backend.editFunctions as edf
 import revedaEditor.backend.libraryMethods as libm
+import revedaEditor.gui.layoutDialogues as ldlg
 from revedaEditor.backend.pdkLoader import importPDKModule
-import revedaEditor.common.net as snet
-# import revedaEditor.common.shapes as shp
+from revedaEditor.fileio.extractedSchematic import klayoutSchematicGenerator
+
 from revedaEditor.gui.schematicEditor import schematicEditor, xyceNetlist
 
 process = importPDKModule("process")
+
+
 logger = logging.getLogger("reveda")
 
 SYMBOL_PIN_DISTANCE = 80
 SYMBOL_STUB_LENGHT = 20
-
 
 
 @contextmanager
@@ -80,105 +83,19 @@ def _measureDuration():
 
 
 def klayoutLVSClick(layoutEditor):
-
-
-    # def createSchematicSymbol(device:dict, fixedFont: QFont, libraryDict: dict):
-    #     cellType = device['type']
-    #     instanceName = device['name']
-
-    #     # Try to find the real symbol in libraries
-    #     symbolBox = _loadLibrarySymbol(cellType, instanceName, libraryDict)
-    #     if symbolBox:
-    #         return symbolBox
-
-    #     # Fallback: create generic symbol
-    #     terminalNames = list(device['terminals'].keys())
-    #     numTerminals = len(terminalNames)
-    #     pinsPerSide = max(1, (numTerminals + 3) // 4)
-    #     symbolSideLength = pinsPerSide * SYMBOL_PIN_DISTANCE
-
-    #     rectItem = shp.symbolRectangle(QPoint(0, 0), QPoint(symbolSideLength, symbolSideLength))
-    #     textItem = shp.text(
-    #         rectItem.start,
-    #         f'{instanceName}',
-    #         fixedFont.family(),
-    #         fixedFont.styleName(),
-    #         str(fixedFont.pointSize()),
-    #         shp.text.textAlignments[0],
-    #         shp.text.textOrients[0],
-    #     )
-    #     instNameLabel = shp.symbolLabel(
-    #         QPoint(symbolSideLength // 2, symbolSideLength // 2 - 15),
-    #         "[@instName]",
-    #         "NLPLabel",
-    #         12,
-    #         "Center",
-    #         "R0",
-    #         "Normal",
-    #     )
-    #     instNameLabel.labelVisible = True
-
-    #     instCellLabel = shp.symbolLabel(
-    #         QPoint(symbolSideLength // 2 - 15, symbolSideLength // 2 + 15),
-    #         "[@cellName]",
-    #         "NLPLabel",
-    #         12,
-    #         "Center",
-    #         "R0",
-    #         "Normal",
-    #     )
-    #     instCellLabel.labelVisible = True
-
-    #     pinItems = []
-    #     sides = ['left', 'top', 'right', 'bottom']
-    #     sideIndex = 0
-    #     pinIndexOnSide = 0
-
-    #     for i, termName in enumerate(terminalNames):
-    #         side = sides[sideIndex]
-    #         if side == 'left':
-    #             x = -SYMBOL_STUB_LENGHT // 2
-    #             y = (pinIndexOnSide + 0.5) * SYMBOL_PIN_DISTANCE
-    #         elif side == 'top':
-    #             x = (pinIndexOnSide + 0.5) * SYMBOL_PIN_DISTANCE
-    #             y = -SYMBOL_STUB_LENGHT // 2
-    #         elif side == 'right':
-    #             x = symbolSideLength + SYMBOL_STUB_LENGHT // 2
-    #             y = (pinIndexOnSide + 0.5) * SYMBOL_PIN_DISTANCE
-    #         else:
-    #             x = int((pinIndexOnSide + 0.5) * SYMBOL_PIN_DISTANCE)
-    #             y = int(symbolSideLength + SYMBOL_STUB_LENGHT // 2)
-
-    #         pinItem = shp.symbolPin(QPoint(x, y), termName, 'Inout', 'Signal')
-    #         pinItems.append(pinItem)
-
-    #         pinIndexOnSide += 1
-    #         if pinIndexOnSide >= pinsPerSide:
-    #             pinIndexOnSide = 0
-    #             sideIndex = (sideIndex + 1) % 4
-
-    #     attrs = {'pinOrder': ', '.join(terminalNames)}
-    #     symbolBox = shp.schematicSymbol([rectItem, textItem, instNameLabel, instCellLabel] + pinItems, attrs)
-    #     symbolBox.instanceName = instanceName
-    #     symbolBox.cellName = cellType
-    #     instNameLabel.labelDefs()
-    #     instNameLabel.setOpacity(1)
-    #     instCellLabel.labelDefs()
-    #     instCellLabel.setOpacity(1)
-    #     return symbolBox
+    from revedaEditor.fileio.importlvsdb import LVSDBParser 
 
     @lru_cache(maxsize=16)
     def findSymbolViewNameTuple(extractedCellName: str, libraryModel: QStandardItemModel):
         """Find (libName, cellName, viewName) tuple for a cell type."""
-        print(extractedCellName)
-        
+
         root = libraryModel.invisibleRootItem()
-        
+
         # Iterate through libraries (level 0)
         for libRow in range(root.rowCount()):
             libItem = root.child(libRow)  # libraryItem
             libName = libItem.libraryName
-            
+
             # Iterate through cells in this library (level 1)
             for cellRow in range(libItem.rowCount()):
                 cellItem = libItem.child(cellRow)  # cellItem
@@ -188,7 +105,7 @@ def klayoutLVSClick(layoutEditor):
                         viewItem = cellItem.child(viewRow)  # viewItem
                         if viewItem.viewName == "symbol":
                             return ddef.viewNameTuple(libName, extractedCellName, "symbol")
-                            
+
         return None
 
     def saveRunSet(dlg):
@@ -215,108 +132,25 @@ def klayoutLVSClick(layoutEditor):
             dlg.console.appendPlainText(
                 "--- Extracted layout netlist was not generated. ---"
             )
-        from lvs.lvsdb_parser import LVSDBParser
-        layoutLayers = importPDKModule('layoutLayers')
+
+        layoutLayers = importPDKModule("layoutLayers")
         parser = LVSDBParser(filePath, layoutLayers)
         parser.load()
         logger.info(f"Parsed LVSDB: {parser.filepath}")
         extracted = parser.get_extracted_schematic(layoutEditor.cellName)
         if extracted:
-            from revedaEditor.gui.schematicEditor import schematicEditor
-            import revedaEditor.backend.libBackEnd as libb
-            # schLayers: ModuleType | None = importPDKModule('schLayers')
-
             revedaMain = QApplication.instance().appMainW
-
-            # Create temporary filepath
-            tempViewFilePath = layoutEditor.cellItem.cellPath.joinpath(
-                "lvs_schematic.json"
+            gen = klayoutSchematicGenerator(
+                parser, layoutEditor, revedaMain, findSymbolViewNameTuple, logger
             )
-            tempViewItem = libb.viewItem(tempViewFilePath)
-            layoutEditor.cellItem.appendRow(tempViewItem)
-            tempSchematicEditor = schematicEditor(
-                tempViewItem, revedaMain.libraryDict, revedaMain.libraryBrowser
-            )
-            snapToGrid = tempSchematicEditor.centralW.scene.snapToGrid
-            devices = extracted["devices"]
-
-            # Get layout device positions and cross-reference mapping
-            layout_devices = parser.get_devices(layoutEditor.cellName)
-            xref = parser.get_crossref(layoutEditor.cellName)
-
-            # Build mapping: schematic device name -> layout position
-            schem_to_layout_pos = {}
-            if xref and layout_devices:
-                # Build layout device ID -> position lookup
-                layout_pos_by_id = {d['id']: d.get('position') for d in layout_devices}
-                # Map schematic devices to layout positions via cross-reference
-                for mapping in xref.get('mapping', {}).get('devices', []):
-                    layout_dev = mapping.get('layout_dev')
-                    schem_dev = mapping.get('schem_dev')
-                    if layout_dev in layout_pos_by_id:
-                        schem_to_layout_pos[schem_dev] = layout_pos_by_id[layout_dev]
-
-            for device in devices:
-                symbolViewNameTuple = findSymbolViewNameTuple(device['type'], revedaMain.libraryModel)
-                if symbolViewNameTuple is None:
-                    logger.warning(f"Could not find symbol for device: {device}")
-                    continue
-                # Use layout position if available, otherwise fallback to device index
-                schem_dev_id = device.get('id')
-                layout_pos = schem_to_layout_pos.get(schem_dev_id)
-
-                if layout_pos:
-                    # Scale layout coordinates to schematic units (e.g., divide by 10)
-                    snappedPos = snapToGrid(QPoint(layout_pos[0] / 5, layout_pos[1] / 5))
-                    symbolItem = tempSchematicEditor.centralW.scene.instSymbol(symbolViewNameTuple, snappedPos)
-                    symbolItem.setPos(snappedPos)
-                else:
-                    symbolItem = tempSchematicEditor.centralW.scene.instSymbol(symbolViewNameTuple, QPoint(0, 0))
-                symbolItem.instanceName = device['name']
-                symbolItem.labels['@instName'].labelDefs()
-                tempSchematicEditor.centralW.scene.addItem(symbolItem)
-                br = symbolItem.boundingRect()
-                center = br.center()
-
-                for pinName, pinItem in symbolItem.pins.items():
-                    localPos = pinItem.start
-                    pinScenePos = pinItem.mapToScene(localPos)
-                    dx = localPos.x() - center.x()
-                    dy = localPos.y() - center.y()
-                    
-                    if abs(dx) > abs(dy):
-                        side = "left" if dx < 0 else "right"
-                    else:
-                        side = "top" if dy < 0 else "bottom"
-                
-
-                    # Determine side based on local position relative to rectangle
-                    if side == "left":
-                        pinNetItem = snet.schematicNet(pinScenePos, pinScenePos-QPoint(30,0), 1, 0)
-                        name =  device['terminals'].get(pinName)
-                        if name:
-                            pinNetItem.name = name
-
-                    elif side == "right":
-                        pinNetItem = snet.schematicNet(pinScenePos, pinScenePos+QPoint(30,0), 1, 0)
-                        name =  device['terminals'].get(pinName)
-                        if name:
-                            pinNetItem.name = name
-                    elif side == "top":
-                        pinNetItem = snet.schematicNet(pinScenePos, pinScenePos-QPoint(0,30), 1, 0)
-                        name =  device['terminals'].get(pinName)   
-                        if name:
-                            pinNetItem.name = name                 
-                    else:
-                        pinNetItem = snet.schematicNet(pinScenePos, pinScenePos+QPoint(0,30), 1, 0)
-                        name =  device['terminals'].get(pinName)    
-                    if name:
-                            pinNetItem.name = name
-                    tempSchematicEditor.centralW.scene.addItem(pinNetItem)
-            tempSchematicEditor.show()
+            gen.generateSchematic(extracted)
         # now starting parsing layout data
 
-
+        # Create LVS results dialog
+        nets = parser.get_nets_with_schematic_names(layoutEditor.cellName)
+        devices = parser.get_layout_devices(layoutEditor.cellName)
+        lvsNetsDlg = ldlg.lvsResultsDialogue(layoutEditor, nets, devices)
+        lvsNetsDlg.show()
 
     def runKlayoutLVS(dlg):
         settings = dlg.collectSettings()
@@ -392,9 +226,7 @@ def klayoutLVSClick(layoutEditor):
             argumentsList.extend(["-rd", f"schematic={schematicNetlistPathObj}"])
 
         for switchName, enabled in lvsSwitches.items():
-            argumentsList.extend(
-                ["-rd", f"{switchName}={'true' if enabled else 'false'}"]
-            )
+            argumentsList.extend(["-rd", f"{switchName}={'true' if enabled else 'false'}"])
 
         if implicitNets:
             argumentsList.extend(["-rd", f"implicit_nets={implicitNets}"])
@@ -402,6 +234,12 @@ def klayoutLVSClick(layoutEditor):
         layoutEditor.processManager.maxProcesses = int(lvsRunLimit)
         dlg.console.appendPlainText("--- LVS Started ---")
         lvsProcess = layoutEditor.processManager.add_process(klayoutPath, argumentsList)
+
+        if lvsProcess.process is None:
+            dlg.console.appendPlainText("ERROR: Failed to start KLayout process")
+            logger.error("Failed to start KLayout process")
+            return
+
         # Redirect process output to dialog console instead of main logger
         try:
             lvsProcess.process.readyReadStandardOutput.disconnect()
@@ -413,6 +251,11 @@ def klayoutLVSClick(layoutEditor):
         lvsProcess.process.readyReadStandardError.connect(
             lambda: dlg.appendLVSError(lvsProcess.process)
         )
+        # Disconnect finished signal first to prevent multiple callback executions
+        try:
+            lvsProcess.process.finished.disconnect()
+        except RuntimeError:
+            pass
         lvsProcess.process.finished.connect(
             lambda: LVSProcessFinished(lvsReportFilePath, lvsExtractedNetlistPath, dlg)
         )
@@ -465,7 +308,7 @@ class klayoutLVSDialogue(QDialog):
         self.layoutEditor = parentEditor
         self.model = parentEditor.libraryView.libraryModel
         self.setWindowTitle("KLayout LVS")
-        self.setMinimumSize(1100, 700)
+        self.setMinimumSize(1100, 800)
         self.mainLayout = QVBoxLayout()
         hLayout = QHBoxLayout()
         self.mainLayout.addLayout(hLayout)
@@ -490,9 +333,7 @@ class klayoutLVSDialogue(QDialog):
         )
         self.schematicCellListCB.addItems(schematicCellList)
         self.schematicCellListCB.setEditable(True)
-        self.schematicCellListCB.currentTextChanged.connect(
-            self.changeSchematicCellViews
-        )
+        self.schematicCellListCB.currentTextChanged.connect(self.changeSchematicCellViews)
         self.schematicCellItem = libm.getCellItem(
             self.schematicLibItem, self.schematicCellListCB.currentText()
         )
@@ -557,18 +398,14 @@ class klayoutLVSDialogue(QDialog):
         netlistGroupBox.setLayout(netlistLayout)
         self.netlistBox = QCheckBox()
         self.netlistBox.setChecked(True)
-        netlistLayout.addRow(
-            edf.boldLabel("Create Schematic Netlist:"), self.netlistBox
-        )
+        netlistLayout.addRow(edf.boldLabel("Create Schematic Netlist:"), self.netlistBox)
         self.mainLayout.addWidget(netlistGroupBox)
 
         lvsOptionsGroup = QGroupBox("LVS Options")
         lvsOptionsLayout = QVBoxLayout()
         lvsOptionsLayout.setSpacing(10)
         klayoutPathDialogueLayout = QHBoxLayout()
-        klayoutPathDialogueLayout.addWidget(
-            edf.boldLabel("KLayout Executable Path:"), 1
-        )
+        klayoutPathDialogueLayout.addWidget(edf.boldLabel("KLayout Executable Path:"), 1)
         self.klayoutPathEdit = edf.longLineEdit()
         klayoutPathDialogueLayout.addWidget(self.klayoutPathEdit, 5)
         self.rootPathButton = QPushButton("...")
