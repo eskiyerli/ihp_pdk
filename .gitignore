@@ -1,15 +1,6 @@
-*.png
-*.pyc*
-*.zip
-*.spec
-*.log
-*.xml
-.vs/
-.idea/
-__pycache__/
-icons/
-dist/
-build/
-*.pyc
+.VSCodeCounter/
+.vscode/
 aiDocuments/
+*.pyc
+__pycache__
 
