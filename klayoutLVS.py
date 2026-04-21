@@ -55,7 +55,7 @@ from quantiphy import Quantity
 import revedaEditor.backend.dataDefinitions as ddef
 import revedaEditor.backend.editFunctions as edf
 import revedaEditor.backend.libraryMethods as libm
-import revedaEditor.gui.layoutDialogues as ldlg
+import revedaEditor.gui.lvsResults as lvsr
 from revedaEditor.backend.pdkLoader import importPDKModule
 from revedaEditor.fileio.extractedSchematic import klayoutSchematicGenerator
 
@@ -138,18 +138,40 @@ def klayoutLVSClick(layoutEditor):
         parser.load()
         logger.info(f"Parsed LVSDB: {parser.filepath}")
         extracted = parser.get_extracted_schematic(layoutEditor.cellName)
+        schematic_editor = None
         if extracted:
             revedaMain = QApplication.instance().appMainW
             gen = klayoutSchematicGenerator(
                 parser, layoutEditor, revedaMain, findSymbolViewNameTuple, logger
             )
-            gen.generateSchematic(extracted)
+            schematic_editor = gen.generateSchematic(extracted)
         # now starting parsing layout data
 
         # Create LVS results dialog
         nets = parser.get_nets_with_schematic_names(layoutEditor.cellName)
         devices = parser.get_layout_devices(layoutEditor.cellName)
-        lvsNetsDlg = ldlg.lvsResultsDialogue(layoutEditor, nets, devices)
+        cells = parser.get_layout_cells_with_bbox()
+        crossrefs = parser.get_all_crossrefs_formatted()
+        
+        # Get extracted schematic data
+        extracted_schematic = parser.get_extracted_schematic(layoutEditor.cellName)
+        schem_nets = []
+        schem_devices = []
+        if extracted_schematic:
+            schem_nets = extracted_schematic.get('nets', [])
+            schem_devices = extracted_schematic.get('devices', [])
+        
+        lvsNetsDlg = lvsr.lvsResultsDialogue(
+            layoutEditor,
+            nets,
+            devices,
+            cells,
+            parser,
+            crossrefs,
+            schem_nets,
+            schem_devices,
+            schematic_editor,
+        )
         lvsNetsDlg.show()
 
     def runKlayoutLVS(dlg):
