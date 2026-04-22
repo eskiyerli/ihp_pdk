@@ -140,11 +140,15 @@ def klayoutLVSClick(layoutEditor):
         extracted = parser.get_extracted_schematic(layoutEditor.cellName)
         schematic_editor = None
         if extracted:
+            settings = dlg.collectSettings()
+            schematicNetlistPath = pathlib.Path(settings["lvsRunPath"]) / (
+                f"{settings['schematicCellName']}_{settings['schematicViewName']}.cir"
+            )
             revedaMain = QApplication.instance().appMainW
             gen = klayoutSchematicGenerator(
                 parser, layoutEditor, revedaMain, findSymbolViewNameTuple, logger
             )
-            schematic_editor = gen.generateSchematic(extracted)
+            schematic_editor = gen.generateSchematic(extracted, schematicNetlistPath)
         # now starting parsing layout data
 
         # Create LVS results dialog
