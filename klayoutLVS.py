@@ -175,6 +175,8 @@ def klayoutLVSClick(layoutEditor):
             schem_nets,
             schem_devices,
             schematic_editor,
+            extractedNetlistPath if extractedNetlistPath.exists() else None,
+            schematicNetlistPath if schematicNetlistPath.exists() else None,
         )
         lvsNetsDlg.show()
 
@@ -281,7 +283,7 @@ def klayoutLVSClick(layoutEditor):
         try:
             lvsProcess.process.finished.disconnect()
         except RuntimeError:
-            pass
+            logger.warning("LVS process finished signal was not connected")
         lvsProcess.process.finished.connect(
             lambda: LVSProcessFinished(lvsReportFilePath, lvsExtractedNetlistPath, dlg)
         )
@@ -322,6 +324,10 @@ def klayoutLVSClick(layoutEditor):
         logger.info(f"LVS settings loaded from {filePath}")
 
     dlg = klayoutLVSDialogue(layoutEditor)
+    dlg.unitEdit.setText(str(process.gdsUnit))
+    dlg.precisionEdit.setText(str(process.gdsPrecision))
+    dlg.gdsExportBox.setChecked(True)
+    dlg.LVSRunPathEdit.setText(str(layoutEditor.gdsExportDirObj))
     dlg.runButton.clicked.connect(lambda: runKlayoutLVS(dlg))
     dlg.saveButton.clicked.connect(lambda: saveRunSet(dlg))
     dlg.loadButton.clicked.connect(lambda: loadRunSet(dlg))
