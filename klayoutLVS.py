@@ -139,6 +139,7 @@ def klayoutLVSClick(layoutEditor):
         logger.info(f"Parsed LVSDB: {parser.filepath}")
         extracted = parser.get_extracted_schematic(layoutEditor.cellName)
         schematic_editor = None
+        schematicNetlistPath = None
         if extracted:
             settings = dlg.collectSettings()
             schematicNetlistPath = pathlib.Path(settings["lvsRunPath"]) / (
@@ -175,8 +176,6 @@ def klayoutLVSClick(layoutEditor):
             schem_nets,
             schem_devices,
             schematic_editor,
-            extractedNetlistPath if extractedNetlistPath.exists() else None,
-            schematicNetlistPath if schematicNetlistPath.exists() else None,
         )
         lvsNetsDlg.show()
 
