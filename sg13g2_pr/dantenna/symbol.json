@@ -1,6 +1,7 @@
 [
     {
-        "viewType": "symbol"
+        "viewType": "symbol",
+        "schemaVersion": "1.0"
     },
     {
         "snapGrid": [

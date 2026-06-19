@@ -18,56 +18,54 @@
 
 from functools import lru_cache
 
-from PySide6.QtCore import QPointF
+from PySide6.QtCore import QPointF, QRectF
 from quantiphy import Quantity
 
 import revedaEditor.common.layoutShapes as lshp
 from revedaEditor.backend.pdkLoader import importPDKModule
 from .base import baseMosfet, baseCell
+from .mosfet import nmos, pmos
 
 laylyr = importPDKModule('layoutLayers')
 
 
-class nmos(baseMosfet):
-    @staticmethod
-    @lru_cache(maxsize=1)
-    def _get_nmos_params():
-        """Cache for NMOS technology parameters."""
-        tp = baseCell._techParams
-        return {
-            "defL": Quantity(tp["nmos_defL"]).real,
-            "defW": Quantity(tp["nmos_defW"]).real,
-            "defNG": Quantity(tp["nmos_defNG"]).real,
-            "minL": Quantity(tp["nmos_minL"]).real,
-            "minW": Quantity(tp["nmos_minW"]).real,
-        }
+class nmosHV(nmos):
+    """High-voltage NMOS transistor - extends standard NMOS with ThickGateOx layer."""
 
-    # NMOS-specific layers
-    ndiff_layer = laylyr.Activ_drawing
-    pdiffx_layer = laylyr.pSD_drawing
-    poly_layer_pin = laylyr.GatPoly_pin
-    well_layer = laylyr.NWell_drawing
-    well2_layer = laylyr.nBuLay_drawing
     tgo_layer = laylyr.ThickGateOx_drawing
 
-    def __init__(self, width: str = "4u", length: str = "0.13u", ng: str = "1"):
-        params = self._get_nmos_params()
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def _get_nmosHV_params():
+        """Cache for NMOSHV technology parameters."""
+        tp = baseCell._techParams
+        return {
+            "defL": Quantity(tp["nmosHV_defL"]).real,
+            "defW": Quantity(tp["nmosHV_defW"]).real,
+            "defNG": Quantity(tp["nmosHV_defNG"]).real,
+            "minL": Quantity(tp["nmosHV_minL"]).real,
+            "minW": Quantity(tp["nmosHV_minW"]).real,
+        }
+
+    def __init__(self, width: str = "4u", length: str = "0.72u", ng: str = "1"):
+        params = self._get_nmosHV_params()
         self.width = Quantity(width).real if width else params["defW"]
         self.length = Quantity(length).real if length else params["defL"]
         self.ng = int(float(ng)) if ng else params["defNG"]
-        super().__init__([])
+        super(nmos, self).__init__([])
 
+    @lru_cache
     def __call__(self, width: str, length: str, ng: str):
         tempShapesList = []
-        device_params = self._get_nmos_params()
+        device_params = self._get_nmosHV_params()
         common_params = self._get_common_params()
 
         self.width = Quantity(width).real if width else device_params["defW"]
         self.length = Quantity(length).real if length else device_params["defL"]
         self.ng = int(float(ng)) if ng else device_params["defNG"]
 
-        wf = self.GridFix(self.width * 1e6 / self.ng)
-        l = self.GridFix(self.length * 1e6)
+        wf = self.width * 1e6 / self.ng
+        l = self.length * 1e6
 
         # Calculate contact parameters
         contActMin, ncont, diff_cont_offset, diffoffset = self._calculate_contact_params(wf,
@@ -128,52 +126,63 @@ class nmos(baseMosfet):
         point2 = self.toSceneCoord(QPointF(xdiff_end, ydiff_end + diffoffset))
         tempShapesList.append(lshp.layoutRect(point1, point2, self.ndiff_layer))
 
+        # Add ThickGateOx layer (original: no diffoffset applied to TGO)
+        tp = baseCell._techParams
+        tgo_gate_over = tp["TGO_c"]  # ThickGateOx over GatPoly
+        tgo_activ_over = tp["TGO_a"]  # ThickGateOx over Active
+
+        tgo_point1 = self.toSceneCoord(QPointF(
+            xdiff_beg - tgo_activ_over,
+            ydiff_beg - common_params["gatpoly_Activ_over"] - tgo_gate_over))
+        tgo_point2 = self.toSceneCoord(QPointF(
+            xdiff_end + tgo_activ_over,
+            ydiff_end + common_params["gatpoly_Activ_over"] + tgo_gate_over))
+        tempShapesList.append(lshp.layoutRect(tgo_point1, tgo_point2, self.tgo_layer))
+
         self.shapes = tempShapesList
 
 
-class pmos(baseMosfet):
+class pmosHV(pmos):
+    """High-voltage PMOS transistor - extends standard PMOS with ThickGateOx layer."""
+
+    tgo_layer = laylyr.ThickGateOx_drawing
+
     @staticmethod
     @lru_cache(maxsize=1)
-    def _get_pmos_params():
-        """Cache for PMOS technology parameters."""
+    def _get_pmosHV_params():
+        """Cache for PMOSHV technology parameters."""
         tp = baseCell._techParams
         return {
-            "defL": Quantity(tp["pmos_defL"]).real,
-            "defW": Quantity(tp["pmos_defW"]).real,
-            "defNG": Quantity(tp["pmos_defNG"]).real,
-            "minL": Quantity(tp["pmos_minL"]).real,
-            "minW": Quantity(tp["pmos_minW"]).real,
+            "defL": Quantity(tp["pmosHV_defL"]).real,
+            "defW": Quantity(tp["pmosHV_defW"]).real,
+            "defNG": Quantity(tp["pmosHV_defNG"]).real,
+            "minL": Quantity(tp["pmosHV_minL"]).real,
+            "minW": Quantity(tp["pmosHV_minW"]).real,
             "psd_pActiv_over": tp["pSD_c"],
             "nwell_pActiv_over": tp["NW_c"],
             "smallw_gatpoly_cont_dist": tp["Cnt_c"] + tp["Gat_d"],
             "psd_PFET_over": tp["pSD_i"],
         }
 
-    # PMOS-specific layers
-    pdiff_layer = laylyr.Activ_drawing
-    pdiffx_layer = laylyr.pSD_drawing
-    poly_layer_pin = laylyr.GatPoly_pin
-    well_layer = laylyr.NWell_drawing
-
-    def __init__(self, width: str = "4u", length: str = "0.13u", ng: str = "1"):
-        params = self._get_pmos_params()
+    def __init__(self, width: str = "4u", length: str = "0.72u", ng: str = "1"):
+        params = self._get_pmosHV_params()
         self.width = Quantity(width).real if width else params["defW"]
         self.length = Quantity(length).real if length else params["defL"]
         self.ng = int(float(ng)) if ng else params["defNG"]
-        super().__init__([])
+        super(pmos, self).__init__([])
 
     @lru_cache
     def __call__(self, width: str, length: str, ng: str):
         tempShapesList = []
-        device_params = self._get_pmos_params()
+        device_params = self._get_pmosHV_params()
         common_params = self._get_common_params()
 
         self.width = Quantity(width).real if width else device_params["defW"]
         self.length = Quantity(length).real if length else device_params["defL"]
         self.ng = int(float(ng)) if ng else device_params["defNG"]
 
-        wf = self.GridFix(self.width * 1e6 / self.ng)
-        l = self.GridFix(self.length * 1e6)
+        wf = self.width * 1e6 / self.ng
+        l = self.length * 1e6
 
         # Calculate contact parameters
         contActMin, ncont, diff_cont_offset, diffoffset = self._calculate_contact_params(wf,
@@ -213,7 +222,6 @@ class pmos(baseMosfet):
             xpoly_end = xpoly_beg + l
             ypoly_end = ydiff_end + common_params["gatpoly_Activ_over"]
 
-            # Use poly_layer_pin for gate pin instead of metal1_layer_pin
             point1 = self.toSceneCoord(QPointF(xpoly_beg, ypoly_beg + diffoffset))
             point2 = self.toSceneCoord(QPointF(xpoly_end, ypoly_end + diffoffset))
             tempShapesList.append(lshp.layoutRect(point1, point2, self.gatpoly_layer))
@@ -221,7 +229,6 @@ class pmos(baseMosfet):
                 self.ihpAddThermalMosLayer(point1, point2, True, self.__class__.__name__))
 
             if i == 1:
-                from PySide6.QtCore import QRectF
                 center = QRectF(point1, point2).center()
                 tempShapesList.append(
                     lshp.layoutPin(point1, point2, "G", lshp.layoutPin.pinDirs[2],
@@ -269,5 +276,29 @@ class pmos(baseMosfet):
                                            ydiff_end + device_params[
                                                "nwell_pActiv_over"] + diffoffset + nwell_offset))
         tempShapesList.append(lshp.layoutRect(point1, point2, self.well_layer))
+
+        # Add ThickGateOx layer
+        tp = baseCell._techParams
+        tgo_gate_over = tp["TGO_c"]  # Overlay over GatPoly
+        tgo_activ_over = tp["TGO_a"]  # Overlay over Active
+
+        # ThickGateOx extents determined by active + nwell enclosure
+        tgo_x1 = xdiff_beg - tgo_activ_over
+        tgo_x2 = xdiff_end + tgo_activ_over
+        tgo_y1 = ydiff_beg - common_params["gatpoly_Activ_over"] - tgo_gate_over
+        tgo_y2 = ydiff_end + common_params["gatpoly_Activ_over"] + tgo_gate_over
+
+        # Original: if NWell extends further than TGO, use NWell extents
+        nwell_pActiv_over = device_params["nwell_pActiv_over"]
+        if nwell_pActiv_over > tgo_activ_over:
+            tgo_x1 = xdiff_beg - nwell_pActiv_over
+            tgo_x2 = xdiff_end + nwell_pActiv_over
+        if (nwell_pActiv_over + diffoffset - nwell_offset) > (common_params["gatpoly_Activ_over"] - tgo_gate_over):
+            tgo_y1 = ydiff_beg - nwell_pActiv_over + diffoffset - nwell_offset
+            tgo_y2 = ydiff_end + nwell_pActiv_over + diffoffset + nwell_offset
+
+        tgo_point1 = self.toSceneCoord(QPointF(tgo_x1, tgo_y1))
+        tgo_point2 = self.toSceneCoord(QPointF(tgo_x2, tgo_y2))
+        tempShapesList.append(lshp.layoutRect(tgo_point1, tgo_point2, self.tgo_layer))
 
         self.shapes = tempShapesList

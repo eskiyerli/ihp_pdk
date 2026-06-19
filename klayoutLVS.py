@@ -42,6 +42,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QPlainTextEdit,
     QPushButton,
     QRadioButton,
@@ -139,41 +140,20 @@ def klayoutLVSClick(layoutEditor):
         logger.info(f"Parsed LVSDB: {parser.filepath}")
         extracted = parser.get_extracted_schematic(layoutEditor.cellName)
 
-        # Create LVS results dialog before generating extracted schematic views so
-        # each lvs_schematic editor can notify it when that hierarchy level is opened.
-        nets = parser.get_nets_with_schematic_names(layoutEditor.cellName)
-        devices = parser.get_layout_devices(layoutEditor.cellName)
-        cells = parser.get_layout_cells_with_bbox()
-        crossrefs = parser.get_all_crossrefs_formatted()
-        
-        # Get extracted schematic data
-        extracted_schematic = parser.get_extracted_schematic(layoutEditor.cellName)
-        schem_nets = []
-        schem_devices = []
-        if extracted_schematic:
-            schem_nets = extracted_schematic.get('nets', [])
-            schem_devices = extracted_schematic.get('devices', [])
-        
+
+        # Create LVS results dialog with the schematic editor from the dialogue settings
         lvsNetsDlg = lvsr.lvsResultsDialogue(
             layoutEditor,
-            nets,
-            devices,
-            cells,
             parser,
-            crossrefs,
-            schem_nets,
-            schem_devices,
-            None,
+            layout_editor=layoutEditor,
+            schematic_editor=schematic_editor,
         )
 
-        schematic_editor = None
         schematicNetlistPath = None
         if extracted:
-            settings = dlg.collectSettings()
             schematicNetlistPath = pathlib.Path(settings["lvsRunPath"]) / (
-                f"{settings['schematicCellName']}_{settings['schematicViewName']}.cir"
+                f"{schematic_cell_name}_{schematic_view_name}.cir"
             )
-            revedaMain = QApplication.instance().appMainW
             gen = klayoutSchematicGenerator(
                 parser,
                 layoutEditor,
@@ -182,8 +162,8 @@ def klayoutLVSClick(layoutEditor):
                 logger,
                 highlight_callback=lvsNetsDlg.register_schematic_view,
             )
-            schematic_editor = gen.generateSchematic(extracted, schematicNetlistPath)
-            lvsNetsDlg.schematicEditor = schematic_editor
+            lvs_schematic_editor = gen.generateSchematic(extracted, schematicNetlistPath)
+            # Note: We keep the original schematic_editor for highlighting, not the lvs_schematic
 
         lvsNetsDlg.show()
 
@@ -211,7 +191,34 @@ def klayoutLVSClick(layoutEditor):
         schematicNetlistPathObj = (
             lvsRunPathObj / f"{schematicCellName}_{schematicViewName}.cir"
         )
+        # Get the schematic editor for the selected schematic cellview from the dialogue
+        settings = dlg.collectSettings()
+        schematic_lib_name = settings["schematicLibName"]
+        schematic_cell_name = settings["schematicCellName"]
+        schematic_view_name = settings["schematicViewName"]
+        
+        # Try to find or open the schematic editor for the selected schematic cellview
+        schematic_editor = None
+        revedaMain = QApplication.instance().appMainW
+        if revedaMain:
+            from revedaEditor.backend.dataDefinitions import viewNameTuple
+            view_key = viewNameTuple(schematic_lib_name, schematic_cell_name, schematic_view_name)
+            schematic_editor = revedaMain.openViews.get(view_key)
+            print(schematic_editor)
+            # If not already open, open it via the library view infrastructure
+            if schematic_editor is None:
+                try:
+                    libItem = libm.getLibItem(dlg.model, schematic_lib_name)
+                    cellItem = libm.getCellItem(libItem, schematic_cell_name)
+                    viewItem = libm.getViewItem(cellItem, schematic_view_name)
+                    if viewItem:
+                        viewItemT = ddef.viewItemTuple(libItem, cellItem, viewItem)
+                        schViewNameT=layoutEditor.libraryView.openCellView(viewItemT)
+                        schematic_editor = revedaMain.openViews.get(view_key)
 
+                except Exception as e:
+                    logger.warning(f"Failed to open schematic editor for {schematic_lib_name}:{schematic_cell_name}:{schematic_view_name}: {e}")
+        
         if gdsExport:
             layoutEditor.centralW.scene.exportCellGDS(
                 lvsRunPathObj, gdsUnit, gdsPrecision, process.dbu
@@ -663,6 +670,15 @@ class klayoutLVSDialogue(QDialog):
         }
 
     def applySettings(self, settings: dict) -> None:
+        """Apply settings dict to dialog fields.
+
+        Maps JSON keys to the corresponding dialog widgets. Missing keys are
+        silently skipped so that partial settings files work correctly.
+        Validates filesystem paths (klayoutPath, lvsRunPath) after applying
+        and logs warnings for paths that do not exist.
+
+        Validates: Requirements 11.4, 11.6
+        """
         if "klayoutPath" in settings:
             self.klayoutPathEdit.setText(settings["klayoutPath"])
         if "lvsRunPath" in settings:
@@ -701,6 +717,100 @@ class klayoutLVSDialogue(QDialog):
             elif runMode == "flat":
                 self.flatBtn.setChecked(True)
         self._lockLayoutSelection()
+
+        # Req 11.4: Validate filesystem paths and warn for missing ones
+        path_warnings = []
+        if "klayoutPath" in settings and settings["klayoutPath"]:
+            if not pathlib.Path(settings["klayoutPath"]).exists():
+                path_warnings.append(
+                    f"KLayout path does not exist: {settings['klayoutPath']}"
+                )
+        if "lvsRunPath" in settings and settings["lvsRunPath"]:
+            if not pathlib.Path(settings["lvsRunPath"]).exists():
+                path_warnings.append(
+                    f"LVS run path does not exist: {settings['lvsRunPath']}"
+                )
+        if path_warnings:
+            for w in path_warnings:
+                logger.warning(w)
+
+    def _save_settings_to_file(self):
+        """Prompt for file path and save current settings as JSON.
+
+        Uses QFileDialog with JSON filter. 4-space indent.
+        Validates: Requirements 11.1, 11.3
+        """
+        filepath, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save LVS Settings",
+            "",
+            "JSON Files (*.json);;All Files (*)",
+        )
+        if not filepath:
+            return  # User cancelled
+
+        settings = self.collectSettings()
+
+        try:
+            with open(filepath, "w") as f:
+                json.dump(settings, f, indent=4)
+            logger.info(f"LVS settings saved to {filepath}")
+        except OSError as e:
+            logger.error(f"Failed to save LVS settings to {filepath}: {e}")
+
+    def _load_settings_from_file(self):
+        """Prompt for file path and load settings from JSON.
+
+        Shows warning for invalid filesystem paths.
+        Logs errors for parse failures and retains current values.
+        Validates: Requirements 11.2, 11.4, 11.5, 11.6
+        """
+        filepath, _ = QFileDialog.getOpenFileName(
+            self,
+            "Load LVS Settings",
+            "",
+            "JSON Files (*.json);;All Files (*)",
+        )
+        if not filepath:
+            return  # User cancelled
+
+        # Try to parse the JSON file
+        try:
+            with open(filepath, "r") as f:
+                settings = json.load(f)
+        except (OSError, json.JSONDecodeError) as e:
+            # Req 11.5: Log error, retain current values
+            logger.error(f"Failed to load LVS settings from {filepath}: {e}")
+            return
+
+        # Req 11.4: Validate filesystem paths and warn for missing
+        warnings = []
+        if "klayoutPath" in settings:
+            p = pathlib.Path(settings["klayoutPath"])
+            if not p.exists():
+                warnings.append(
+                    f"KLayout path does not exist: {settings['klayoutPath']}"
+                )
+
+        if "lvsRunPath" in settings:
+            p = pathlib.Path(settings["lvsRunPath"])
+            if not p.exists():
+                warnings.append(
+                    f"LVS run path does not exist: {settings['lvsRunPath']}"
+                )
+
+        if warnings:
+            QMessageBox.warning(
+                self,
+                "Path Validation Warning",
+                "The following paths do not exist:\n\n"
+                + "\n".join(warnings)
+                + "\n\nRemaining settings will still be applied.",
+            )
+
+        # Req 11.6: Apply only keys present in file
+        self.applySettings(settings)
+        logger.info(f"LVS settings loaded from {filepath}")
 
     def appendLVSOutput(self, process) -> None:
         output = process.readAllStandardOutput().data().decode("utf-8")

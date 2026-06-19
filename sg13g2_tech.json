@@ -609,7 +609,20 @@
     "Rsil_c": 0.0,
     "Rsil_d": 0.18,
     "Rsil_e": 0.18,
-    "Rsil_f": 0.5
+    "Rsil_f": 0.5,
+    "Rppd_a": 0.5,
+    "Rppd_b": 0.18,
+    "Rppd_c": 0.2,
+    "Rppd_d": 0.18,
+    "Rppd_e": 0.5,
+    "Sal_c": 0.2,
+    "Sal_d": 0.2,
+    "Rhi_a": 0.5,
+    "Rhi_b": 0.0,
+    "Rhi_c": 0.18,
+    "Rhi_d": 0.2,
+    "Rhi_e": 0.18,
+    "Rhi_f": 0.5
   },
   "Layers": {
     "Activ": "1, 0",

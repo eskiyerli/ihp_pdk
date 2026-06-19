@@ -32,7 +32,7 @@ laylyr = importPDKModule('layoutLayers')
 class rsil(baseCell):
     contpolylayer = laylyr.GatPoly_drawing
     bodypolylayer = laylyr.PolyRes_drawing
-    reslayer = laylyr.RES_drawing
+    reslayer = laylyr.HeatRes_drawing
     extBlocklayer = laylyr.EXTBlock_drawing
     locintlayer = laylyr.Cont_drawing
     metlayer = laylyr.Metal1_drawing
@@ -67,7 +67,8 @@ class rsil(baseCell):
         conspace = tp["Cnt_b"]
         polyover = tp["Cnt_d"]
         li_poly_over = tp["Rsil_b"]
-        ext_over = tp["Rsil_e"]
+        ext_over = tp["Rsil_e"]      # contact EXTBlock enclosure (= psdover = 0.18 µm)
+        sal_ext_over = tp.get("Sal_c", 0.2)  # body/bend EXTBlock enclosure = SalBlock enclosure
         endcap = tp["M1_c1"]
         poly_cont_len = li_poly_over + consize + polyover
         contbar_poly_over = tp["CntB_d"]
@@ -78,9 +79,10 @@ class rsil(baseCell):
         psmin = Quantity(tp[Cell + "_minPS"]).real * 1e6
 
         lg, wg, ps = self.length * 1e6, self.width * 1e6, self.ps * 1e6
-        b = baseCell.fix(self.b + self._epsilon)
+        bend_count = baseCell.fix(self.b + self._epsilon)
         wcontact = wg
-        drawbar = internalCode = False
+        internalCode = True
+        drawbar = False
 
         if internalCode and wcontact - 2 * contbar_poly_over + self._epsilon >= contbar_min_len:
             drawbar = True
@@ -101,7 +103,7 @@ class rsil(baseCell):
         xpos2 = xpos1 + wcontact
         ypos2 = 0
         Dir = -1
-        stripes = b + 1
+        stripes = bend_count + 1
         if wg < wmin - self._epsilon:
             wg = wmin
             print("Width < " + str(wmin))
@@ -125,6 +127,10 @@ class rsil(baseCell):
         point1 = self.toSceneCoord(QPointF(xpos1, ypos1))
         point2 = self.toSceneCoord(QPointF(xpos2, ypos2 + poly_cont_len * Dir))
         tempShapeList.append(lshp.layoutRect(point1, point2, rsil.contpolylayer))
+        # EXTBlock for bottom contact area (extends ext_over into body above, ext_over below GatPoly)
+        point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos1 + ext_over))
+        point2 = self.toSceneCoord(QPointF(xpos2 + ext_over, ypos2 + (poly_cont_len + ext_over) * Dir))
+        tempShapeList.append(lshp.layoutRect(point1, point2, rsil.extBlocklayer))
         # number parallel conts: ncont, distance: distc:
         wcon = wcontact - 2.0 * polyover
         distc = consize + conspace
@@ -223,21 +229,10 @@ class rsil(baseCell):
             tempShapeList.append(lshp.layoutRect(point1, point2, rsil.bodypolylayer))
             tempShapeList.append(lshp.layoutRect(point1, point2, rsil.reslayer))
 
-            # EXTBlock
-            if i == 1:
-                point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos1))
-                point2 = self.toSceneCoord(QPointF(xpos2 + ext_over, ypos2))
-                tempShapeList.append(
-                    lshp.layoutRect(point1, point2, rsil.extBlocklayer)
-                )
-                # dbCreateRect(self, extBlocklayer,
-                #              Box(xpos1 - ext_over, ypos1, xpos2 + ext_over, ypos2))
-            else:
-                point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos1))
-                point2 = self.toSceneCoord(QPointF(xpos2 + ext_over, ypos2))
-                tempShapeList.append(
-                    lshp.layoutRect(point1, point2, rsil.extBlocklayer)
-                )
+            # EXTBlock for body stripe (same width as SalBlock, uses sal_ext_over = Sal_c)
+            point1 = self.toSceneCoord(QPointF(xpos1 - sal_ext_over, ypos1))
+            point2 = self.toSceneCoord(QPointF(xpos2 + sal_ext_over, ypos2))
+            tempShapeList.append(lshp.layoutRect(point1, point2, rsil.extBlocklayer))
 
             # **************************************************************
             # hor connection parts
@@ -255,31 +250,22 @@ class rsil(baseCell):
                 tempShapeList.append(lshp.layoutRect(point1, point2, rsil.reslayer))
 
                 # decide in which direction the part is drawn
+                # EXTBlock for bend (uses sal_ext_over = Sal_c in all directions)
                 if self.oddp(i):
                     point1 = self.toSceneCoord(
-                        QPointF(xpos1 - ext_over, ypos1 + ext_over)
+                        QPointF(xpos1 - sal_ext_over, ypos1 + sal_ext_over)
                     )
                     point2 = self.toSceneCoord(
-                        QPointF(xpos2 + ext_over, ypos2 - ext_over)
+                        QPointF(xpos2 + sal_ext_over, ypos2 - sal_ext_over)
                     )
-                    tempShapeList.append(
-                        lshp.layoutRect(point1, point2, rsil.extBlocklayer)
-                    )
-
-
                 else:
                     point1 = self.toSceneCoord(
-                        QPointF(xpos1 - ext_over, ypos1 - ext_over)
+                        QPointF(xpos1 - sal_ext_over, ypos1 - sal_ext_over)
                     )
                     point2 = self.toSceneCoord(
-                        QPointF(xpos2 + ext_over, ypos2 + ext_over)
+                        QPointF(xpos2 + sal_ext_over, ypos2 + sal_ext_over)
                     )
-                    tempShapeList.append(
-                        lshp.layoutRect(point1, point2, rsil.extBlocklayer)
-                    )
-                    # dbCreateRect(self, extBlocklayer,
-                    #              Box(xpos1 - ext_over, ypos1 - ext_over, xpos2 + ext_over,
-                    #                  ypos2 + ext_over))
+                tempShapeList.append(lshp.layoutRect(point1, point2, rsil.extBlocklayer))
 
                 xpos1 = xpos1 + wg + ps
                 ypos1 = ypos2
@@ -305,11 +291,10 @@ class rsil(baseCell):
         # always dot contacts with auto-generated LI
 
         # **************************************************************
-        # EXTBlock
-        # draw ExtBlock for bottom Cont Area
-        point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos1))
+        # EXTBlock for top contact area (extends ext_over into body, ext_over beyond GatPoly)
+        point1 = self.toSceneCoord(QPointF(xpos1 - ext_over, ypos2 - ext_over * Dir))
         point2 = self.toSceneCoord(
-            QPointF(xpos2 + ext_over, ypos2 + ext_over * Dir + poly_cont_len * Dir)
+            QPointF(xpos2 + ext_over, ypos2 + (poly_cont_len + ext_over) * Dir)
         )
         tempShapeList.append(lshp.layoutRect(point1, point2, rsil.extBlocklayer))
 
@@ -381,14 +366,11 @@ class rsil(baseCell):
             )
         )
         # MkPin(self, 'MINUS', 2, Box(xpos1+contbar_poly_over-endcap, ypos1, xpos2-contbar_poly_over+endcap, ypos2), metlayer)
-        resistance = self.CbResCalc("R", 0, lg * 1e-6, wg * 1e-6, b, ps * 1e-6, Cell)
+        resistance = self.CbResCalc("R", 0, lg * 1e-6, wg * 1e-6, bend_count,
+                        ps * 1e-6, Cell)
         labeltext = "{0} r={1:.3f}".format(Cell, resistance)
         labelpos = self.toSceneCoord(QPointF(wg / 2, lg / 2))
-        rlabeltuple = (
-            self._labelFontTuple[0],
-            self._labelFontTuple[1],
-            4 * self._labelFontTuple[2],
-        )
+        rlabeltuple = self._labelFontTuple
 
         # lbl
         tempShapeList.append(
@@ -442,7 +424,7 @@ class rsil(baseCell):
         rspec, rzspec, lwd, kappa, minW = (params["rspec"], params["rzspec"], params["lwd"],
                                            params["kappa"], params["minW"])
 
-        if w >= (minW - self._epsilon):
+        if w <= (minW - self._epsilon):
             w = minW
 
         # Convert to um for calculation
@@ -598,6 +580,7 @@ class cmim(baseCell):
         xcont_cnt = cont_over + self.xoffset
         ycont_cnt = cont_over + self.yoffset
         while ycont_cnt + cont_size + cont_over <= l + self._epsilon:
+            xcont_cnt = cont_over + self.xoffset
 
             while xcont_cnt + cont_size + cont_over <= w + self._epsilon:
                 point1 = self.toSceneCoord(QPointF(xcont_cnt, ycont_cnt))

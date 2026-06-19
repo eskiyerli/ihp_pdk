@@ -53,12 +53,14 @@ class baseCell(lshp.layoutPcell):
         else:
             return value
 
-    def __init__(self, shapes=list):
+    def __init__(self, shapes=None):
+        if shapes is None:
+            shapes = []
         super().__init__(shapes)
         fontFamilies = QFontDatabase().families()
         fontFamily = \
             [font for font in fontFamilies if QFontDatabase().isFixedPitch(font)][0]
-        self._fixedFont = QFont(fontFamily, 16)
+        self._fixedFont = QFont(fontFamily, 4)
         self._labelFontStyle = self._fixedFont.styleName()
         self._labelFontFamily = self._fixedFont.family()
         self._labelFontSize = self._fixedFont.pointSize()
@@ -144,7 +146,7 @@ class baseCell(lshp.layoutPcell):
         fabproc.dbu.
         """
         point *= fabproc.dbu
-        return point.toPoint()
+        return QPoint(round(point.x()), round(point.y()))
 
     @staticmethod
     def toSceneDimension(value: float) -> int:
@@ -163,7 +165,7 @@ class baseCell(lshp.layoutPcell):
         Returns:
             int: The converted integer scene dimension.
         """
-        return int(value * fabproc.dbu)
+        return round(value * fabproc.dbu)
 
     @staticmethod
     def toLayoutDimension(value: int) -> float:
