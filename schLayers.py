@@ -12,8 +12,8 @@
 # This module includes all the base definitions for schematic drawings.
 from dataclasses import replace
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QPen, QBrush
+from PySide6.QtCore import (Qt)
+from PySide6.QtGui import (QColor, QPen, QBrush)
 
 import revedaEditor.backend.dataDefinitions as ddef
 
@@ -22,7 +22,7 @@ import revedaEditor.backend.dataDefinitions as ddef
 wireLayer = ddef.edLayer(
     name="wire",
     pcolor=QColor("cyan"),
-    pwidth=3,
+    pwidth=2,
     pstyle=Qt.SolidLine,
     z=0,
     bcolor=QColor("cyan"),
@@ -34,20 +34,27 @@ wireErrorLayer = replace(wireLayer, name="wireError", pcolor=QColor("red"),
                          bcolor=QColor("red"), z=1)
 selectedWireLayer = replace(wireLayer, name="selectedWire", pcolor=QColor("blue"), bcolor=
 QColor("blue"), z=2)
-busLayer = replace(wireLayer, name="bus", pwidth=8)
-busErrorLayer = replace(wireErrorLayer, name="busError", pwidth=8)
-selectedBusLayer = replace(selectedWireLayer, name="selectedBus", pwidth=8)
 wireHilightLayer = ddef.edLayer(
     name="wireHilightLayer",
     pcolor=QColor("darkMagenta"),
-    pwidth=5,
+    pwidth=4,
     z=6,
     bcolor=QColor("darkMagenta"),
     bstyle=Qt.SolidPattern,
     visible=True,
     selectable=False,
 )
-busHilightLayer = replace(wireHilightLayer, name="busHilightLayer", pwidth=8)
+wireProbeLayer = ddef.edLayer(
+    name="wireProbeLayer",
+    pcolor=QColor("orange"),
+    pwidth=2,
+    pstyle=Qt.DashDotLine,
+    z=6,
+    bcolor=QColor("orange"),
+    bstyle=Qt.SolidPattern,
+    visible=True,
+    selectable=False,
+)
 guideLineLayer = replace(
     wireLayer, name="guideLine", pcolor=QColor("gray"), pstyle=Qt.DashLine, z=7
 )
@@ -106,39 +113,59 @@ draftLayer = ddef.edLayer(
 schematicPinPen = QPen(
     schematicPinLayer.pcolor, schematicPinLayer.pwidth, schematicPinLayer.pstyle
 )
+schematicPinPen.setCosmetic(True)
 selectedSchematicPinPen = QPen(
     selectedSchematicPinLayer.pcolor,
     selectedSchematicPinLayer.pwidth,
     selectedSchematicPinLayer.pstyle,
 )
+selectedSchematicPinPen.setCosmetic(True)
 textPen = QPen(textLayer.pcolor, textLayer.pwidth, textLayer.pstyle)
+textPen.setCosmetic(True)
 selectedTextPen = QPen(
     selectedTextLayer.pcolor, selectedTextLayer.pwidth, selectedTextLayer.pstyle
 )
+selectedTextPen.setCosmetic(True)
 guideLinePen = QPen(guideLineLayer.pcolor, guideLineLayer.pwidth, guideLineLayer.pstyle)
+guideLinePen.setCosmetic(True)
 wirePen = QPen(wireLayer.pcolor, wireLayer.pwidth, wireLayer.pstyle)
-wirePen.setCosmetic(False)
+wirePen.setCosmetic(True)
+
 selectedWirePen = QPen(
     selectedWireLayer.pcolor, selectedWireLayer.pwidth, selectedWireLayer.pstyle
 )
+selectedWirePen.setCosmetic(True)
 stretchWirePen = QPen(QColor("red"), wireLayer.pwidth, wireLayer.pstyle)
+stretchWirePen.setCosmetic(True)
 errorWirePen = QPen(wireErrorLayer.pcolor, wireErrorLayer.pwidth, wireErrorLayer.pstyle)
-busPen = QPen(busLayer.pcolor, busLayer.pwidth, busLayer.pstyle)
-selectedBusPen = QPen(selectedBusLayer.pcolor, selectedBusLayer.pwidth,
-                      selectedBusLayer.pstyle)
-stretchBusPen = QPen(QColor("red"), busLayer.pwidth, busLayer.pstyle)
-errorBusPen = QPen(busErrorLayer.pcolor, busErrorLayer.pwidth, busErrorLayer.pstyle)
+errorWirePen.setCosmetic(True)
 ignoreSymbolPen = QPen(
     ignoreSymbolLayer.pcolor, ignoreSymbolLayer.pwidth, ignoreSymbolLayer.pstyle
 )
+ignoreSymbolPen.setCosmetic(True)
 hilightPen = QPen(
     wireHilightLayer.pcolor, wireHilightLayer.pwidth, wireHilightLayer.pstyle
 )
-busHilightPen = QPen(wireHilightLayer.pcolor, busLayer.pwidth, wireHilightLayer.pstyle)
+hilightPen.setCosmetic(True)
+probePens = []
+_probeColors = [
+    QColor("orange"),
+    QColor("cyan"),
+    QColor("lime"),
+    QColor("magenta"),
+    QColor("yellow"),
+    QColor("red"),
+    QColor("deepskyblue"),
+    QColor("hotpink"),
+]
+for _c in _probeColors:
+    _p = QPen(_c, wireProbeLayer.pwidth, wireProbeLayer.pstyle)
+    _p.setCosmetic(True)
+    probePens.append(_p)
 otherPen = QPen(otherLayer.pcolor, otherLayer.pwidth, otherLayer.pstyle)
+otherPen.setCosmetic(True)
 draftPen = QPen(draftLayer.pcolor, draftLayer.pwidth, draftLayer.pstyle)
 draftPen.setCosmetic(True)
-guideLinePen.setCosmetic(True)
 
 # schematic brushes
 schematicPinBrush = QBrush(schematicPinLayer.bcolor, schematicPinLayer.bstyle)

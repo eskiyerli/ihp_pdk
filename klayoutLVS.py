@@ -122,6 +122,7 @@ def klayoutLVSClick(layoutEditor):
         filePath: pathlib.Path,
         extractedNetlistPath: pathlib.Path,
         dlg: "klayoutLVSDialogue",
+        schematic_editor=None,
     ):
         logger.info(f"LVS process finished. Report: {filePath}")
         dlg.console.appendPlainText(f"\n--- LVS Finished. Report: {filePath} ---")
@@ -141,19 +142,39 @@ def klayoutLVSClick(layoutEditor):
         extracted = parser.get_extracted_schematic(layoutEditor.cellName)
 
 
+        # Gather cross-reference and schematic-side data for the results dialog
+        crossrefs = parser.get_all_crossrefs_formatted()
+        schem_cell_name = layoutEditor.cellName
+        xref = parser.get_crossref(layoutEditor.cellName)
+        if xref and xref.get("schematic_name"):
+            schem_cell_name = xref["schematic_name"]
+        schem_nets = parser.get_schematic_nets(schem_cell_name)
+        schem_devices = parser.get_schematic_devices(schem_cell_name)
+
+        # Compute source schematic netlist path for hierarchy tree
+        lvsSettings = dlg.collectSettings()
+        sourceNetlistPath = pathlib.Path(lvsSettings["lvsRunPath"]) / (
+            f"{lvsSettings['schematicCellName']}_{lvsSettings['schematicViewName']}.cir"
+        )
+
         # Create LVS results dialog with the schematic editor from the dialogue settings
         lvsNetsDlg = lvsr.lvsResultsDialogue(
             layoutEditor,
-            parser,
-            layout_editor=layoutEditor,
+            parser.get_nets(layoutEditor.cellName),
+            parser.get_layout_devices(layoutEditor.cellName),
+            parser.get_layout_cells_with_bbox(),
+            parser=parser,
+            crossrefs=crossrefs,
+            schem_nets=schem_nets,
+            schem_devices=schem_devices,
             schematic_editor=schematic_editor,
+            source_netlist_path=sourceNetlistPath,
         )
 
         schematicNetlistPath = None
         if extracted:
-            schematicNetlistPath = pathlib.Path(settings["lvsRunPath"]) / (
-                f"{schematic_cell_name}_{schematic_view_name}.cir"
-            )
+            schematicNetlistPath = sourceNetlistPath
+            revedaMain = QApplication.instance().appMainW
             gen = klayoutSchematicGenerator(
                 parser,
                 layoutEditor,
@@ -163,7 +184,10 @@ def klayoutLVSClick(layoutEditor):
                 highlight_callback=lvsNetsDlg.register_schematic_view,
             )
             lvs_schematic_editor = gen.generateSchematic(extracted, schematicNetlistPath)
-            # Note: We keep the original schematic_editor for highlighting, not the lvs_schematic
+            if lvs_schematic_editor is not None:
+                lvs_schematic_editor.show()
+                lvs_schematic_editor.raise_()
+                lvs_schematic_editor.activateWindow()
 
         lvsNetsDlg.show()
 
@@ -204,7 +228,6 @@ def klayoutLVSClick(layoutEditor):
             from revedaEditor.backend.dataDefinitions import viewNameTuple
             view_key = viewNameTuple(schematic_lib_name, schematic_cell_name, schematic_view_name)
             schematic_editor = revedaMain.openViews.get(view_key)
-            print(schematic_editor)
             # If not already open, open it via the library view infrastructure
             if schematic_editor is None:
                 try:
@@ -213,11 +236,21 @@ def klayoutLVSClick(layoutEditor):
                     viewItem = libm.getViewItem(cellItem, schematic_view_name)
                     if viewItem:
                         viewItemT = ddef.viewItemTuple(libItem, cellItem, viewItem)
-                        schViewNameT=layoutEditor.libraryView.openCellView(viewItemT)
+                        layoutEditor.libraryView.openCellView(viewItemT)
                         schematic_editor = revedaMain.openViews.get(view_key)
 
                 except Exception as e:
                     logger.warning(f"Failed to open schematic editor for {schematic_lib_name}:{schematic_cell_name}:{schematic_view_name}: {e}")
+
+            # Ensure the schematic scene is loaded so nets/devices can be extracted.
+            if schematic_editor is not None:
+                try:
+                    if not hasattr(schematic_editor, 'centralW') or schematic_editor.centralW is None:
+                        schematic_editor.init_UI()
+                    if schematic_editor.centralW.scene is not None:
+                        schematic_editor.loadSchematic()
+                except Exception as e:
+                    logger.warning(f"Failed to load schematic for {schematic_cell_name}: {e}")
         
         if gdsExport:
             layoutEditor.centralW.scene.exportCellGDS(
@@ -299,7 +332,7 @@ def klayoutLVSClick(layoutEditor):
         except RuntimeError:
             logger.warning("LVS process finished signal was not connected")
         lvsProcess.process.finished.connect(
-            lambda: LVSProcessFinished(lvsReportFilePath, lvsExtractedNetlistPath, dlg)
+            lambda: LVSProcessFinished(lvsReportFilePath, lvsExtractedNetlistPath, dlg, schematic_editor)
         )
 
     def createSchematicNetlist(dlg, lvsRunPathObj):
