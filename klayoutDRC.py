@@ -21,18 +21,22 @@
 #     License: Mozilla Public License 2.0
 #     Licensor: Revolution Semiconductor (Registered in the Netherlands)
 
+import json
+import logging
 import pathlib
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QGroupBox, QHBoxLayout,
                                QFileDialog, QComboBox, QLabel, QPlainTextEdit,
                                QDialogButtonBox, QPushButton, QFormLayout,
                                QScrollArea, QSplitter, QWidget, QCheckBox)
+from quantiphy import Quantity
 
 import revedaEditor.backend.editFunctions as edf
 import revedaEditor.gui.layoutDialogues as ldlg
 from revedaEditor.backend.pdkLoader import importPDKModule
-from quantiphy import Quantity
-import json
+
+logger = logging.getLogger("reveda")
 
 process = importPDKModule('process')
 
@@ -42,6 +46,21 @@ def klayoutDRCClick(editorwindow):
     # if klayoutDRCModule is None:
     #     editorwindow.logger.error('PDK does not allow DRC verification with KLayout.')
     #     return
+
+    def loadRunSet(dlg):
+        filePath, _ = QFileDialog.getOpenFileName(
+            dlg, caption="Load DRC Settings", filter="JSON Files (*.json)"
+        )
+        if not filePath:
+            return
+        try:
+            with open(filePath) as f:
+                settings = json.load(f)
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.error(f"Failed to load DRC settings from {filePath}: {exc}")
+            return
+        dlg.applySettings(settings)
+        logger.info(f"DRC settings loaded from {filePath}")
 
     def saveRunSet(dlg):
         klayoutPath = dlg.klayoutPathEdit.text().strip()
@@ -121,6 +140,7 @@ def klayoutDRCClick(editorwindow):
     rulesFiles = [pathItem.stem for pathItem in list(drcPath.glob("*.lydrc"))]
     dlg.DRCRunSetCB.addItems(rulesFiles)
     dlg.saveButton.clicked.connect(lambda: saveRunSet(dlg))
+    dlg.loadButton.clicked.connect(lambda: loadRunSet(dlg))
     dlg.runButton.clicked.connect(lambda: runKlayoutDRC(dlg))
     settingsPathObj = (editorwindow.gdsExportDirObj / 'drcSettings.json')
     if settingsPathObj.exists():
@@ -226,9 +246,11 @@ class drcKLayoutDialogue(QDialog):
 
         self.runButton = QPushButton("Run DRC")
         self.saveButton = QPushButton("Save DRC Config")
+        self.loadButton = QPushButton("Load DRC Config")
         self.closeButton = QPushButton("Close")
         self.buttonBox = QDialogButtonBox()
         # self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel)
+        self.buttonBox.addButton(self.loadButton, QDialogButtonBox.ActionRole)
         self.buttonBox.addButton(self.saveButton, QDialogButtonBox.ActionRole)
         self.buttonBox.addButton(self.runButton, QDialogButtonBox.ActionRole)
         self.buttonBox.addButton(self.closeButton, QDialogButtonBox.RejectRole)
@@ -266,6 +288,29 @@ class drcKLayoutDialogue(QDialog):
         outerLayout.addWidget(splitter)
         self.setLayout(outerLayout)
         self.show()
+
+    def applySettings(self, settings: dict) -> None:
+        """Apply settings dict to dialog fields.
+
+        Missing keys are silently skipped so that partial settings files
+        work correctly.
+        """
+        if "klayoutPath" in settings:
+            self.klayoutPathEdit.setText(settings["klayoutPath"])
+        if "cellName" in settings:
+            self.cellNameEdit.setText(settings["cellName"])
+        if "drcRunSetName" in settings:
+            self.DRCRunSetCB.setCurrentText(settings["drcRunSetName"])
+        if "drcRunLimit" in settings:
+            self.DRCRunLimitEdit.setText(str(settings["drcRunLimit"]))
+        if "drcRunPath" in settings:
+            self.DRCRunPathEdit.setText(settings["drcRunPath"])
+        if "gdsExport" in settings:
+            self.gdsExportBox.setChecked(bool(settings["gdsExport"]))
+        if "gdsUnit" in settings and settings["gdsUnit"]:
+            self.unitEdit.setText(str(settings["gdsUnit"]))
+        if "gdsPrecision" in settings and settings["gdsPrecision"]:
+            self.precisionEdit.setText(str(settings["gdsPrecision"]))
 
     def onkfilePathButtonClicked(self):
         self.klayoutPathEdit.setText(

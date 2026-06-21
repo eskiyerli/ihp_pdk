@@ -243,11 +243,15 @@ def klayoutLVSClick(layoutEditor):
                     logger.warning(f"Failed to open schematic editor for {schematic_lib_name}:{schematic_cell_name}:{schematic_view_name}: {e}")
 
             # Ensure the schematic scene is loaded so nets/devices can be extracted.
+            # Only load if the scene is empty — calling loadSchematic() on an
+            # already-loaded editor duplicates all items because loadDesign()
+            # does not clear the scene first.
             if schematic_editor is not None:
                 try:
                     if not hasattr(schematic_editor, 'centralW') or schematic_editor.centralW is None:
                         schematic_editor.init_UI()
-                    if schematic_editor.centralW.scene is not None:
+                    if schematic_editor.centralW.scene is not None and \
+                            len(schematic_editor.centralW.scene.items()) == 0:
                         schematic_editor.loadSchematic()
                 except Exception as e:
                     logger.warning(f"Failed to load schematic for {schematic_cell_name}: {e}")
@@ -258,7 +262,7 @@ def klayoutLVSClick(layoutEditor):
             )
 
         if createNetlist:
-            createSchematicNetlist(dlg, lvsRunPathObj)
+            createSchematicNetlist(dlg, lvsRunPathObj, schematic_editor)
         else:
             logger.info(
                 "Schematic netlist generation is disabled; running in NET_ONLY mode."
@@ -326,30 +330,37 @@ def klayoutLVSClick(layoutEditor):
         lvsProcess.process.readyReadStandardError.connect(
             lambda: dlg.appendLVSError(lvsProcess.process)
         )
-        # Disconnect finished signal first to prevent multiple callback executions
-        try:
-            lvsProcess.process.finished.disconnect()
-        except RuntimeError:
-            logger.warning("LVS process finished signal was not connected")
+        # Connect LVS-specific callback alongside the ProcessManager's own
+        # finished slot (process_finished), which removes the process from
+        # running_processes and frees the slot.  Do NOT disconnect the
+        # ProcessManager slot — otherwise the process is never cleaned up and
+        # consecutive runs exhaust the max-processes limit.
         lvsProcess.process.finished.connect(
             lambda: LVSProcessFinished(lvsReportFilePath, lvsExtractedNetlistPath, dlg, schematic_editor)
         )
 
-    def createSchematicNetlist(dlg, lvsRunPathObj):
+    def createSchematicNetlist(dlg, lvsRunPathObj, schematic_editor=None):
         settings = dlg.collectSettings()
         schematicLibName: str = settings["schematicLibName"]
         schematicCellName: str = settings["schematicCellName"]
         schematicViewName: str = settings["schematicViewName"]
-        libItem = libm.getLibItem(dlg.model, schematicLibName)
-        cellItem = libm.getCellItem(libItem, schematicCellName)
-        viewItem = libm.getViewItem(cellItem, schematicViewName)
-        schematicE: schematicEditor = schematicEditor(
-            viewItem, dlg.model.libraryDict, dlg.layoutEditor.libraryView
-        )
-        schematicE.loadSchematic()
         schematicNetlistPathObj: pathlib.Path = (
             lvsRunPathObj / f"{schematicCellName}_{schematicViewName}.cir"
         )
+        # Reuse the already-open schematic editor if available; otherwise
+        # create a temporary one for netlisting.  Creating a new
+        # schematicEditor and calling loadSchematic() would register it in
+        # openViews, overwriting the user's actual open editor.
+        if schematic_editor is not None:
+            schematicE = schematic_editor
+        else:
+            libItem = libm.getLibItem(dlg.model, schematicLibName)
+            cellItem = libm.getCellItem(libItem, schematicCellName)
+            viewItem = libm.getViewItem(cellItem, schematicViewName)
+            schematicE: schematicEditor = schematicEditor(
+                viewItem, dlg.model.libraryDict, dlg.layoutEditor.libraryView
+            )
+            schematicE.loadSchematic()
         netlistObj = xyceNetlist(schematicE, schematicNetlistPathObj, False, True, True)
         if netlistObj:
             with _measureDuration():
