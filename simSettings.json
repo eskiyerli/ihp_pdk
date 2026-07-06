@@ -1,0 +1,240 @@
+{
+    "version": "1.0",
+    "corners": {
+        "tt": "TT",
+        "ff": "FF",
+        "ss": "SS",
+        "sf": "SF",
+        "fs": "FS"
+    },
+    "defaultCorner": "tt",
+    "simulators": {
+        "VACASK": {
+            "modelLibraries": [
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/vacask/models/cornerCAP.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/vacask/models/cornerDIO.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/vacask/models/cornerHBT.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/vacask/models/cornerMOShv.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/vacask/models/cornerMOSlv.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/vacask/models/cornerRES.lib",
+                    "modelSection": "tt"
+                }
+            ],
+            "includePaths": [
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/capacitors_mod.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/diodes.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/resistors_mod.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/sg13g2_bondpad.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/sg13g2_dschottky_nbl1_mod.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/sg13g2_esd.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/sg13g2_hbt_mod.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/sg13g2_moshv_mod.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/sg13g2_moslv_mod.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/sg13g2_svaricaphv_mod.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/models/sg13g2_vacask_common.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/osdi/mosvar.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/osdi/psp103.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/osdi/psp103_nqs.lib",
+                    ""
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/osdi/r3_cmc.lib",
+                    ""
+                ]
+            ],
+            "modulePaths": [
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/osdi"
+                ]
+            ]
+        },
+        "Xyce": {
+            "modelLibraries": [
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/xyce/cornerCAP.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/xyce/cornerHBT.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/xyce/cornerMOShv.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/xyce/cornerMOSlv.lib",
+                    "modelSection": "tt"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/xyce/cornerRES.lib",
+                    "modelSection": "tt"
+                }
+            ],
+            "includePaths": [
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/capacitors_mod.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/capacitors_stat.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/diodes.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/resistors.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/resistors_mod.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/resistors_parm.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/resistors_stat.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_bondpad.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_esd.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_hbt_mod.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_hbt_stat.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_moshv_mod.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_moshv_parm.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_moshv_stat.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_moslv_mod.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_moslv_parm.lib"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/xyce/sg13g2_moslv_stat.lib"
+                ]
+            ],
+            "modulePaths": [
+                [
+                    true,
+                    "${PDK_ROOT}/va_modules"
+                ]
+            ]
+        },
+        "Ngspice": {
+            "modelLibraries": [],
+            "includePaths": [],
+            "modulePaths": []
+        }
+    }
+}
