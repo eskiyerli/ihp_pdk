@@ -1,95 +1,87 @@
 {
     "version": "1.0",
-    "corners": {
-        "tt": "TT",
-        "ff": "FF",
-        "ss": "SS",
-        "sf": "SF",
-        "fs": "FS"
-    },
-    "defaultCorner": "tt",
     "simulators": {
         "VACASK": {
             "modelLibraries": [
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/vacask/models/cornerCAP.lib",
-                    "modelSection": "tt"
+                    "modelSection": "cap_typ"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/vacask/models/cornerDIO.lib",
-                    "modelSection": "tt"
+                    "modelSection": "dio_tt"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/vacask/models/cornerHBT.lib",
-                    "modelSection": "tt"
+                    "modelSection": "hbt_typ"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/vacask/models/cornerMOShv.lib",
-                    "modelSection": "tt"
+                    "modelSection": "mos_tt"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/vacask/models/cornerMOSlv.lib",
-                    "modelSection": "tt"
+                    "modelSection": "mos_tt"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/vacask/models/cornerRES.lib",
-                    "modelSection": "tt"
+                    "modelSection": "res_typ"
                 }
             ],
             "includePaths": [
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/capacitors_mod.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/diodes.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/resistors_mod.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/sg13g2_bondpad.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/sg13g2_dschottky_nbl1_mod.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/sg13g2_esd.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/sg13g2_hbt_mod.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/sg13g2_moshv_mod.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/sg13g2_moslv_mod.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/models/sg13g2_svaricaphv_mod.lib",
                     ""
                 ],
@@ -99,22 +91,22 @@
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/osdi/mosvar.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/osdi/psp103.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/osdi/psp103_nqs.lib",
                     ""
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/vacask/osdi/r3_cmc.lib",
                     ""
                 ]
@@ -122,7 +114,11 @@
             "modulePaths": [
                 [
                     true,
-                    "${PDK_ROOT}/models/vacask/osdi"
+                    "${PDK_ROOT}/models/vacask/osdi/linux"
+                ],
+                [
+                    true,
+                    "${PDK_ROOT}/models/vacask/osdi/windows"
                 ]
             ]
         },
@@ -131,27 +127,27 @@
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/xyce/cornerCAP.lib",
-                    "modelSection": "tt"
+                    "modelSection": "cap_typ"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/xyce/cornerHBT.lib",
-                    "modelSection": "tt"
+                    "modelSection": "hbt_typ"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/xyce/cornerMOShv.lib",
-                    "modelSection": "tt"
+                    "modelSection": "mos_tt"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/xyce/cornerMOSlv.lib",
-                    "modelSection": "tt"
+                    "modelSection": "mos_tt"
                 },
                 {
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/xyce/cornerRES.lib",
-                    "modelSection": "tt"
+                    "modelSection": "res_typ"
                 }
             ],
             "includePaths": [
@@ -228,6 +224,10 @@
                 [
                     true,
                     "${PDK_ROOT}/va_modules"
+                ],
+                [
+                    false,
+                    "${PDK_ROOT}/va_modules/xyce_v7p8"
                 ]
             ]
         },

@@ -85,16 +85,16 @@ class ptap1(baseCell):
         # Find min/max coordinates from contact array
         if shapes_cont:
             first_rect = shapes_cont[0]
-            min_x = first_rect.topLeft.x()
-            min_y = first_rect.topLeft.y()
-            max_x = first_rect.bottomRight.x()
-            max_y = first_rect.bottomRight.y()
+            min_x = first_rect.start.x()
+            min_y = first_rect.start.y()
+            max_x = first_rect.end.x()
+            max_y = first_rect.end.y()
 
             for rect in shapes_cont[1:]:
-                min_x = min(min_x, rect.topLeft.x())
-                min_y = min(min_y, rect.topLeft.y())
-                max_x = max(max_x, rect.bottomRight.x())
-                max_y = max(max_y, rect.bottomRight.y())
+                min_x = min(min_x, rect.start.x())
+                min_y = min(min_y, rect.start.y())
+                max_x = max(max_x, rect.end.x())
+                max_y = max(max_y, rect.end.y())
 
             # Expand by metal overhang
             meta_min_x = min_x - self.toSceneDimension(cont_metal_over)
@@ -267,16 +267,16 @@ class ntap1(baseCell):
         # Calculate bounding box from contact array
         if shapes_cont:
             first_rect = shapes_cont[0]
-            min_x = first_rect.topLeft.x()
-            min_y = first_rect.topLeft.y()
-            max_x = first_rect.bottomRight.x()
-            max_y = first_rect.bottomRight.y()
+            min_x = first_rect.start.x()
+            min_y = first_rect.start.y()
+            max_x = first_rect.end.x()
+            max_y = first_rect.end.y()
 
             for rect in shapes_cont[1:]:
-                min_x = min(min_x, rect.topLeft.x())
-                min_y = min(min_y, rect.topLeft.y())
-                max_x = max(max_x, rect.bottomRight.x())
-                max_y = max(max_y, rect.bottomRight.y())
+                min_x = min(min_x, rect.start.x())
+                min_y = min(min_y, rect.start.y())
+                max_x = max(max_x, rect.end.x())
+                max_y = max(max_y, rect.end.y())
 
             # Expand by metal overhang
             meta_min_x = min_x - self.toSceneDimension(cont_metal_over)

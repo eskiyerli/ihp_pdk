@@ -355,3 +355,13 @@ class sg13_svaricap(baseInst):
 class sub(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
+
+
+class cap_cpara(baseInst):
+    def __init__(self, labels_dict:dict):
+        super().__init__(labels_dict)
+
+
+class cap_rfcmim(baseInst):
+    def __init__(self, labels_dict:dict):
+        super().__init__(labels_dict)

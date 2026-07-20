@@ -1,0 +1,13 @@
+[
+    {
+        "viewType": "symbol",
+        "schemaVersion": "1.0"
+    },
+    {
+        "snapGrid": [
+            20,
+            10
+        ],
+        "snapConnectDistance": 20
+    }
+]

@@ -28,6 +28,7 @@ from .passive import rsil, cmim
 from .passive_res_variants import rhigh, rppd
 from .rf_mosfet import rfnmos, rfpmos
 from .tap_contacts import ntap1, ptap1
+from .inductors import inductor2
 from .bjt import npn13G2, npn13G2V, npn13G2L, pnpMPA
 from .diodes import dantenna, dpantenna
 from .nofiller_stack import NoFillerStack
@@ -46,6 +47,7 @@ pcells = {
     'rfpmos': rfpmos,
     'ntap1': ntap1,
     'ptap1': ptap1,
+    'inductor2': inductor2,
     'npn13G2': npn13G2,
     'npn13G2V': npn13G2V,
     'npn13G2L': npn13G2L,

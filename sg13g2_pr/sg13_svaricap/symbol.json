@@ -445,5 +445,10 @@
     "type": "attr",
     "nam": "pinOrder",
     "def": "G2, bn, G1, NW"
-  }
+  },
+    {
+        "type": "attr",
+        "nam": "VacaskNetlistLine",
+        "def": "@instName (%pinOrder) %modelName w=@w l=@l Nx=@Nx"
+    }
 ]

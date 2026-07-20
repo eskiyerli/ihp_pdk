@@ -495,5 +495,10 @@
         "type": "attr",
         "nam": "pinOrder",
         "def": "M, P"
+    },
+    {
+        "type": "attr",
+        "nam": "VacaskNetlistLine",
+        "def": "@instName (%pinOrder) %modelName w=@w l=@l m=@m b=@b"
     }
 ]

@@ -349,5 +349,10 @@
         "type": "attr",
         "nam": "pinOrder",
         "def": "collector, base, emitter"
+    },
+    {
+        "type": "attr",
+        "nam": "VacaskNetlistLine",
+        "def": "@instName (%pinOrder) %modelName a=@a p=@p m=@m"
     }
 ]

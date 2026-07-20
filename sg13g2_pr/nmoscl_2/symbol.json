@@ -295,5 +295,10 @@
         "type": "attr",
         "nam": "pinOrder",
         "def": "vss, vdd"
+    },
+    {
+        "type": "attr",
+        "nam": "VacaskNetlistLine",
+        "def": "@instName (%pinOrder) %modelName m=@m"
     }
 ]

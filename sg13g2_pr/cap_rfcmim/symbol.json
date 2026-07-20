@@ -5,8 +5,281 @@
     },
     {
         "snapGrid": [
-            10,
+            20,
             10
+        ],
+        "snapConnectDistance": 20
+    },
+    {
+        "type": "label",
+        "st": [
+            40,
+            8
+        ],
+        "nam": "@instName",
+        "def": "[@instName]",
+        "txt": "[@instName]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 16,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -132.0
+        ],
+        "fl": [
+            1,
+            1
         ]
+    },
+    {
+        "type": "line",
+        "st": [
+            0,
+            10
+        ],
+        "end": [
+            0,
+            120
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            30,
+            -80
+        ],
+        "nam": "@w",
+        "def": "[@w:w=%:w=10u]",
+        "txt": "[@w:w=%:w=10u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 8,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -80.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            -40,
+            10
+        ],
+        "end": [
+            40,
+            10
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            0,
+            -120
+        ],
+        "end": [
+            0,
+            -20
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            -120,
+            0
+        ],
+        "nam": "bn",
+        "pd": "Inout",
+        "pt": "Signal",
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            130,
+            -40
+        ],
+        "nam": "@l",
+        "def": "[@l:l=%:l=10u]",
+        "txt": "[@l:l=%:l=10u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 8,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -50.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            0,
+            -120
+        ],
+        "nam": "c0",
+        "pd": "Inout",
+        "pt": "Signal",
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            -40,
+            -20
+        ],
+        "end": [
+            40,
+            -20
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            0,
+            120
+        ],
+        "nam": "c1",
+        "pd": "Inout",
+        "pt": "Signal",
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            80,
+            0
+        ],
+        "nam": "@wfeed",
+        "def": "[@wfeed:wfeed=%:wfeed=5u]",
+        "txt": "[@wfeed:wfeed=%:wfeed=5u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 8,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -30.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "attr",
+        "nam": "SpiceNetlistLine",
+        "def": "%spiceprefix@instName %pinOrder %modelName w=@w l=@l wfeed=@wfeed"
+    },
+    {
+        "type": "attr",
+        "nam": "modelName",
+        "def": "cap_rfcmim"
+    },
+    {
+        "type": "attr",
+        "nam": "spiceprefix",
+        "def": "X"
+    },
+    {
+        "type": "attr",
+        "nam": "pinOrder",
+        "def": "c0, c1, bn"
+    },
+    {
+        "type": "attr",
+        "nam": "lvsNetlistLine",
+        "def": "C@instName %pinOrder %lvs_model w=@w l=@l wfeed=@wfeed"
+    },
+    {
+        "type": "attr",
+        "nam": "lvs_model",
+        "def": "rfcmim"
+    },
+    {
+        "type": "attr",
+        "nam": "VacaskNetlistLine",
+        "def": "@instName (%pinOrder) %modelName w=@w l=@l wfeed=@wfeed"
     }
 ]

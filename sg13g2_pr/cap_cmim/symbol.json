@@ -7,7 +7,8 @@
         "snapGrid": [
             10,
             10
-        ]
+        ],
+        "snapConnectDistance": 20
     },
     {
         "type": "line",
@@ -315,7 +316,7 @@
         "val": "",
         "vis": true,
         "lt": "NLPLabel",
-        "ht": "12",
+        "ht": 12,
         "al": "Left",
         "or": "R0",
         "use": "Normal",
@@ -357,5 +358,10 @@
         "type": "attr",
         "nam": "pinOrder",
         "def": "c0, c1"
+    },
+    {
+        "type": "attr",
+        "nam": "VacaskNetlistLine",
+        "def": "@instName (%pinOrder) %modelName w=@w l=@l $mfactor=@m"
     }
 ]
