@@ -1,0 +1,33 @@
+{
+  "pdks": [
+    {
+      "name": "ihp_pdk",
+      "pdk_name": "IHP SG13G2",
+      "type": "source",
+      "process": "SG13G2 130nm BiCMOS",
+      "version": "0.2.0",
+      "pdk_version": "0.2.0",
+      "license": "Apache 2.0",
+      "description": "IHP SG13G2 130nm SiGe BiCMOS PDK (source). Includes schematic/symbol/layout layers, parametric cells, DRC and LVS integration with KLayout.",
+      "url": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.2.0/ihp_pdk-source.zip"
+    },
+    {
+      "name": "ihp_pdk",
+      "pdk_name": "IHP SG13G2 (Binary)",
+      "type": "binary",
+      "process": "SG13G2 130nm BiCMOS",
+      "version": "0.2.0",
+      "pdk_version": "0.2.0",
+      "license": "Apache 2.0",
+      "description": "IHP SG13G2 130nm SiGe BiCMOS PDK (precompiled binary). Faster load times, no source code. Platform-specific builds for Windows and Linux.",
+      "binary_urls": {
+        "windows-amd64-py313": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.2.0/ihp_pdk-windows-amd64-py3.13.zip",
+        "windows-amd64-py312": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.2.0/ihp_pdk-windows-amd64-py3.12.zip",
+        "linux-x86_64-py313": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.2.0/ihp_pdk-linux-x86_64-py3.13.zip",
+        "linux-x86_64-py312": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.2.0/ihp_pdk-linux-x86_64-py3.12.zip",
+        "windows-amd64": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.2.0/ihp_pdk-windows-amd64-py3.13.zip",
+        "linux-x86_64": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.2.0/ihp_pdk-linux-x86_64-py3.13.zip"
+      }
+    }
+  ]
+}

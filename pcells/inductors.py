@@ -81,25 +81,25 @@ class inductorBase(baseCell):
 
     # Layer definitions
     TM2:ddef.layLayer = laylyr.TopMetal2_drawing
-    TM1 = laylyr.TopMetal1_drawing
-    TM2p = laylyr.TopMetal2_pin
-    TM1p = laylyr.TopMetal1_pin
-    TV2 = laylyr.TopVia2_drawing
-    IND = laylyr.IND_drawing
-    INDp = laylyr.IND_pin
-    PWellBlock = laylyr.PWell_block
-    NoActFiller = laylyr.Activ_nofill
-    NoGatFiller = laylyr.GatPoly_nofill
-    NoMet1Filler = laylyr.Metal1_nofill
-    NoMet2Filler = laylyr.Metal2_nofill
-    NoMet3Filler = laylyr.Metal3_nofill
-    NoMet4Filler = laylyr.Metal4_nofill
-    NoMet5Filler = laylyr.Metal5_nofill
-    NoTMet1Filler = laylyr.TopMetal1_nofill
-    NoTMet2Filler = laylyr.TopMetal2_nofill
-    NoRCX = laylyr.NoRCX_drawing
-    substrateE = laylyr.LBE_drawing
-    textLayer = laylyr.TEXT_drawing
+    TM1:ddef.layLayer  = laylyr.TopMetal1_drawing
+    TM2p:ddef.layLayer  = laylyr.TopMetal2_pin
+    TM1p:ddef.layLayer  = laylyr.TopMetal1_pin
+    TV2:ddef.layLayer  = laylyr.TopVia2_drawing
+    IND:ddef.layLayer  = laylyr.IND_drawing
+    INDp:ddef.layLayer = laylyr.IND_pin
+    PWellBlock:ddef.layLayer  = laylyr.PWell_block
+    NoActFiller:ddef.layLayer  = laylyr.Activ_nofill
+    NoGatFiller:ddef.layLayer = laylyr.GatPoly_nofill
+    NoMet1Filler:ddef.layLayer = laylyr.Metal1_nofill
+    NoMet2Filler:ddef.layLayer = laylyr.Metal2_nofill
+    NoMet3Filler:ddef.layLayer = laylyr.Metal3_nofill
+    NoMet4Filler:ddef.layLayer = laylyr.Metal4_nofill
+    NoMet5Filler:ddef.layLayer = laylyr.Metal5_nofill
+    NoTMet1Filler:ddef.layLayer = laylyr.TopMetal1_nofill
+    NoTMet2Filler:ddef.layLayer = laylyr.TopMetal2_nofill
+    NoRCX:ddef.layLayer = laylyr.NoRCX_drawing
+    substrateE:ddef.layLayer = laylyr.LBE_drawing
+    textLayer:ddef.layLayer  = laylyr.TEXT_drawing
 
     # Subclass overrides
     _cellName = "inductor2"
@@ -172,6 +172,14 @@ class inductorBase(baseCell):
             blockqrc: Block QRC layer ("True"/"False")
             subE: Substrate etching ("True"/"False")
         """
+        # Save parameters to instance attributes for serialization
+        self.w = w
+        self.s = s
+        self.d = d
+        self.nr_r = nr_r
+        self.blockqrc = blockqrc
+        self.subE = subE
+
         # Parse parameters
         w = self.GridFix(Quantity(w).real * 5e5) * 2
         s = self.GridFix(Quantity(s).real * 1e6)

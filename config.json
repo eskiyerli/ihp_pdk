@@ -2,6 +2,7 @@
   "pdk_name": "IHP SG13G2",
   "pdk_version": "0.2.0",
   "technology": "SG13G2 130nm BiCMOS",
+  "description": "IHP SG13G2 130nm SiGe BiCMOS PDK for Revolution EDA. Includes schematic/symbol/layout layers, parametric cells, DRC and LVS integration with KLayout.",
   "copyright": "Apache 2.0 license",
   "binary": 0,
   "menu_items": [
