@@ -41,9 +41,10 @@
 
 //* a four terminal regular npn13G2 device 
 subckt npn13G2(c b e bn)
-parameters nx=1 dtemp=0 ny=1 le=0.96e-6 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0
+parameters nx=1 dtemp=0 ny=1 le=0.96e-6 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0 mm_ok=1
 
-qnpn13g2 (c b e s1 t) npn13G2_NX_vbic  dtemp=dtemp $mfactor=1
+parameters qarea=agauss(1,0.1,(mm_ok!=1?0:1))
+qnpn13g2 (c b e s1 t) npn13G2_NX_vbic  dtemp=dtemp $mfactor=1 area=qarea
 
 model npn13G2_NX_vbic vbic13_5t ( 
   type=1 
@@ -78,9 +79,10 @@ ends
 //* the fifth terminal is temperature output
 
 subckt npn13G2_5t(c b e bn t)
-parameters nx=1 dtemp=0 ny=1 le=0.96e-6 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0
+parameters nx=1 dtemp=0 ny=1 le=0.96e-6 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0 mm_ok=1
 
-qnpn13g2 (c b e s1 t) npn13G2_NX_vbic  dtemp=dtemp $mfactor=1
+parameters qarea=agauss(1,0.1,(mm_ok!=1?0:1))
+qnpn13g2 (c b e s1 t) npn13G2_NX_vbic  dtemp=dtemp $mfactor=1 area=qarea
 
 model npn13G2_NX_vbic vbic13_5t ( 
   type=1 
@@ -135,9 +137,10 @@ ends
 
 //* a four therminal version of npn13G2l device
 subckt npn13G2l(c b e bn)
-parameters nx=1 le=2.50e-6 dtemp=0 ny=1 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0
+parameters nx=1 le=2.50e-6 dtemp=0 ny=1 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0 mm_ok=1
 
-qnpn13g2l (c b e s1 t) npn13G2l_NX_vbic  dtemp=dtemp $mfactor=1
+parameters qarea=agauss(1,0.1,(mm_ok!=1?0:1))
+qnpn13g2l (c b e s1 t) npn13G2l_NX_vbic  dtemp=dtemp $mfactor=1 area=qarea
 
 model npn13G2l_NX_vbic vbic13_5t ( 
   type=1 
@@ -177,9 +180,10 @@ ends
 
 //* a five terminal version of npn13G2l device
 subckt npn13G2l_5t(c b e bn t)
-parameters nx=1 le=2.50e-6 dtemp=0 ny=1 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0
+parameters nx=1 le=2.50e-6 dtemp=0 ny=1 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0 mm_ok=1
 
-qnpn13g2l (c b e s1 t) npn13G2l_NX_vbic  dtemp=dtemp $mfactor=1
+parameters qarea=agauss(1,0.1,(mm_ok!=1?0:1))
+qnpn13g2l (c b e s1 t) npn13G2l_NX_vbic  dtemp=dtemp $mfactor=1 area=qarea
 
 model npn13G2l_NX_vbic vbic13_5t ( 
   type=1 
@@ -242,9 +246,10 @@ ends
 
 //* a four terminal npn13G2v device model 
 subckt npn13G2v(c b e bn)
-parameters nx=1 le=2.50e-6 dtemp=0 ny=1 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0
+parameters nx=1 le=2.50e-6 dtemp=0 ny=1 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0 mm_ok=1
 
-qnpn13g2v (c b e s1 t) npn13G2v_NX_vbic  dtemp=dtemp $mfactor=1
+parameters qarea=agauss(1,0.1,(mm_ok!=1?0:1))
+qnpn13g2v (c b e s1 t) npn13G2v_NX_vbic  dtemp=dtemp $mfactor=1 area=qarea
 
 model npn13G2v_NX_vbic vbic13_5t ( 
   type=1 
@@ -284,9 +289,10 @@ ends
 
 //* a five terminal npn13G2v device model 
 subckt npn13G2v_5t(c b e bn t)
-parameters nx=1 le=2.50e-6 dtemp=0 ny=1 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0
+parameters nx=1 le=2.50e-6 dtemp=0 ny=1 we=0.12e-6 el=le*1e6 selft=1 sw_nqs=0 mm_ok=1
 
-qnpn13g2v (c b e s1 t) npn13G2v_NX_vbic  dtemp=dtemp $mfactor=1
+parameters qarea=agauss(1,0.1,(mm_ok!=1?0:1))
+qnpn13g2v (c b e s1 t) npn13G2v_NX_vbic  dtemp=dtemp $mfactor=1 area=qarea
 
 model npn13G2v_NX_vbic vbic13_5t ( 
   type=1 

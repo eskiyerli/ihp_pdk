@@ -1,12 +1,14 @@
 [
     {
-        "viewType": "symbol"
+        "viewType": "symbol",
+        "schemaVersion": "1.0"
     },
     {
         "snapGrid": [
             10,
             10
-        ]
+        ],
+        "snapConnectDistance": 20
     },
     {
         "type": "line",
@@ -537,6 +539,6 @@
     {
         "type": "attr",
         "nam": "VacaskNetlistLine",
-        "def": "@instName (%pinOrder) %modelName w=@w l=@l ng=@ng m=@m"
+        "def": "@instName ( %pinOrder ) %modelName w=@w l=@l ng=@ng m=@m"
     }
 ]

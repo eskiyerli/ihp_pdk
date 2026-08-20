@@ -1,0 +1,274 @@
+# GitHub Actions workflow for building IHP PDK binaries with Nuitka
+# Triggered on version tags (e.g. v0.2.0) or manually via workflow_dispatch.
+# Produces platform-specific zip artifacts and attaches them to a GitHub Release.
+
+name: Build IHP PDK Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      python_version:
+        description: 'Python version to build with'
+        required: false
+        default: '3.13'
+
+permissions:
+  contents: write
+
+env:
+  PDK_NAME: ihp_pdk
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows-amd64
+            python: '3.13'
+          - os: windows-latest
+            platform: windows-amd64
+            python: '3.12'
+          - os: ubuntu-latest
+            platform: linux-x86_64
+            python: '3.13'
+          - os: ubuntu-latest
+            platform: linux-x86_64
+            python: '3.12'
+
+    runs-on: ${{ matrix.os }}
+    name: Build ${{ matrix.platform }} py${{ matrix.python }}
+
+    steps:
+      - name: Checkout ihp_pdk
+        uses: actions/checkout@v4
+
+      - name: Checkout revolution-eda (build dependency)
+        uses: actions/checkout@v4
+        with:
+          repository: eskiyerli/revolution-eda
+          path: revolution-eda
+          token: ${{ secrets.REVEDA_PAT }}
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install nuitka ordered-set zstandard
+          python -m pip install PySide6 quantiphy numpy
+
+      - name: Install revolution-eda as editable (provides revedaEditor imports)
+        run: |
+          python -m pip install -e revolution-eda
+        shell: bash
+
+      - name: Determine version
+        id: version
+        run: |
+          echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Build PDK with Nuitka (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $PyVer = "${{ matrix.python }}".Replace(".", "")
+          $ArtifactName = "${{ matrix.platform }}-py${{ matrix.python }}"
+          $OutputDir = "dist\$ArtifactName"
+
+          New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
+
+          python -m nuitka `
+            --mode=package `
+            --msvc=latest `
+            --include-package=$env:PDK_NAME `
+            --include-package="${env:PDK_NAME}.pcells" `
+            --include-package="${env:PDK_NAME}.lvs" `
+            --include-package="${env:PDK_NAME}.drc" `
+            --output-dir=$OutputDir `
+            --assume-yes-for-downloads `
+            --no-pyi-file `
+            --jobs=2 `
+            --lto=no `
+            .
+
+          # Locate compiled output
+          $DistFolder = Join-Path $OutputDir "${env:PDK_NAME}.dist"
+          $FinalFolder = Join-Path $OutputDir $env:PDK_NAME
+          if (Test-Path $DistFolder) {
+            Rename-Item -Path $DistFolder -NewName $env:PDK_NAME
+          }
+
+          # Copy data directories
+          $DataDirs = @("stipples", "drc", "lvs", "models", "va_modules", "sg13g2_pr", "docs")
+          foreach ($dir in $DataDirs) {
+            if (Test-Path $dir) {
+              $DstDir = Join-Path $FinalFolder $dir
+              if (Test-Path $DstDir) { Remove-Item -Recurse -Force $DstDir }
+              Copy-Item -Path $dir -Destination $DstDir -Recurse -Force
+            }
+          }
+
+          # Copy data files
+          $DataFiles = @("config.json", "sg13g2_tech.json", "modelLibSettings.json")
+          foreach ($file in $DataFiles) {
+            if (Test-Path $file) {
+              Copy-Item -Path $file -Destination (Join-Path $FinalFolder $file) -Force
+            }
+          }
+
+          # Set binary flag in config.json
+          $ConfigPath = Join-Path $FinalFolder "config.json"
+          $config = Get-Content $ConfigPath -Raw | ConvertFrom-Json
+          $config.binary = 1
+          $config | ConvertTo-Json -Depth 10 | Set-Content $ConfigPath -Encoding UTF8
+
+          # Clean build artifacts
+          $BuildFolder = Join-Path $OutputDir "${env:PDK_NAME}.build"
+          if (Test-Path $BuildFolder) { Remove-Item -Recurse -Force $BuildFolder }
+
+          # Create zip (root folder inside zip is ihp_pdk/)
+          $ZipName = "dist\${env:PDK_NAME}-${ArtifactName}.zip"
+          Compress-Archive -Path $FinalFolder -DestinationPath $ZipName -Force
+
+      - name: Build PDK with Nuitka (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          PY_VER="${{ matrix.python }}"
+          ARTIFACT_NAME="${{ matrix.platform }}-py${PY_VER}"
+          OUTPUT_DIR="dist/${ARTIFACT_NAME}"
+
+          mkdir -p "$OUTPUT_DIR"
+
+          python -m nuitka \
+            --mode=package \
+            --include-package=${PDK_NAME} \
+            --include-package=${PDK_NAME}.pcells \
+            --include-package=${PDK_NAME}.lvs \
+            --include-package=${PDK_NAME}.drc \
+            --output-dir="$OUTPUT_DIR" \
+            --assume-yes-for-downloads \
+            --no-pyi-file \
+            --jobs=2 \
+            --lto=no \
+            .
+
+          # Locate compiled output
+          DIST_FOLDER="${OUTPUT_DIR}/${PDK_NAME}.dist"
+          FINAL_FOLDER="${OUTPUT_DIR}/${PDK_NAME}"
+          if [ -d "$DIST_FOLDER" ]; then
+            mv "$DIST_FOLDER" "$FINAL_FOLDER"
+          fi
+
+          # Copy data directories
+          for dir in stipples drc lvs models va_modules sg13g2_pr docs; do
+            if [ -d "$dir" ]; then
+              rm -rf "${FINAL_FOLDER}/${dir}"
+              cp -r "$dir" "${FINAL_FOLDER}/${dir}"
+            fi
+          done
+
+          # Copy data files
+          for file in config.json sg13g2_tech.json modelLibSettings.json; do
+            if [ -f "$file" ]; then
+              cp "$file" "${FINAL_FOLDER}/${file}"
+            fi
+          done
+
+          # Set binary flag in config.json
+          CONFIG_PATH="${FINAL_FOLDER}/config.json"
+          python -c "
+          import json
+          with open('${CONFIG_PATH}', 'r') as f:
+              config = json.load(f)
+          config['binary'] = 1
+          with open('${CONFIG_PATH}', 'w') as f:
+              json.dump(config, f, indent=2)
+          "
+
+          # Clean build artifacts
+          rm -rf "${OUTPUT_DIR}/${PDK_NAME}.build"
+
+          # Create zip
+          cd "$OUTPUT_DIR"
+          zip -r "../../dist/${PDK_NAME}-${ARTIFACT_NAME}.zip" "${PDK_NAME}/"
+          cd ../..
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PDK_NAME }}-${{ matrix.platform }}-py${{ matrix.python }}
+          path: dist/${{ env.PDK_NAME }}-${{ matrix.platform }}-py${{ matrix.python }}.zip
+
+  # Build source distribution
+  source:
+    runs-on: ubuntu-latest
+    name: Build source archive
+    steps:
+      - name: Checkout ihp_pdk
+        uses: actions/checkout@v4
+
+      - name: Create source zip
+        shell: bash
+        run: |
+          # Create a clean source archive excluding .git, __pycache__, build artifacts
+          mkdir -p dist
+          zip -r "dist/${PDK_NAME}-source.zip" . \
+            -x ".git/*" \
+            -x "__pycache__/*" \
+            -x "*/__pycache__/*" \
+            -x "dist/*" \
+            -x ".github/*" \
+            -x "*.pyc" \
+            -x ".VSCodeCounter/*" \
+            -x ".vscode/*"
+
+      - name: Upload source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PDK_NAME }}-source
+          path: dist/${{ env.PDK_NAME }}-source.zip
+
+  # Create GitHub Release and attach all artifacts
+  release:
+    needs: [build, source]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    name: Create Release
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List artifacts
+        run: find artifacts -type f -name "*.zip" | sort
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: IHP PDK ${{ github.ref_name }}
+          body: |
+            ## IHP SG13G2 PDK Release ${{ github.ref_name }}
+
+            ### Installation
+            Use **Tools → PDK → Setup PDK** in Revolution EDA to install automatically.
+
+            ### Available packages
+            - **Source**: `ihp_pdk-source.zip` — full Python source, works on all platforms
+            - **Binary (Windows)**: precompiled `.pyd` modules for Python 3.12 and 3.13
+            - **Binary (Linux)**: precompiled `.so` modules for Python 3.12 and 3.13
+          files: artifacts/*.zip
+          draft: false
+          prerelease: false

@@ -36,10 +36,10 @@ gdsPrecision = Quantity("1 nm")
 #     maxSpacing: float
 processVias = [
     ddef.viaDefTuple(
-        "contBar", laylyr.Cont_drawing, "", 0.34, 0.34, 0.16, 0.16, 0.18, 10.0
+        "contBar", laylyr.Cont_drawing, "", 0.34, 0.34, 0.16, 0.16, 0.28, 10.0
     ),
     ddef.viaDefTuple(
-        "cont", laylyr.Cont_drawing, "", 0.16, 0.16, 0.16, 0.16, 0.18, 10.0
+        "cont", laylyr.Cont_drawing, "", 0.16, 0.16, 0.16, 0.16, 0.28, 10.0
     ),
     ddef.viaDefTuple(
         "viamim",
