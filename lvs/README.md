@@ -60,7 +60,8 @@ run_lvs.py [--layout=<layout_path>]
            [--topcell=<topcell_name>] [--run_mode=<run_mode>]
            [--no_net_names] [--spice_comments] [--net_only] [--no_simplify]
            [--no_series_res] [--no_parallel_res] [--combine_devices] [--top_lvl_pins]
-           [--purge] [--purge_nets] [--ignore_top_ports_mismatch]
+           [--disable_tap_extraction]
+           [--purge] [--purge_nets] [--purge_devices] [--ignore_top_ports_mismatch]
            [--implicit_nets=<nets>]
 ```
 
@@ -94,11 +95,15 @@ run_lvs.py [--layout=<layout_path>]
 
 - `--combine_devices`                 Enables device combination for both layout and schematic netlists.
 
+- `--disable_tap_extraction`          Skips `ntap1`/`ptap1` device extraction so taps are not required in the schematic.
+
 - `--top_lvl_pins`                    Creates pins for top-level circuits in both layout and schematic netlists.
 
 - `--purge`                           Removes unused nets from both layout and schematic netlists.
 
 - `--purge_nets`                      Purges floating nets from both layout and schematic netlists.
+
+- `--purge_devices`                   Purges unused devices from both layout and schematic netlists.
 
 - `--ignore_top_ports_mismatch`       Ignores top-level port mismatches during comparison mode.
 

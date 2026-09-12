@@ -22,6 +22,7 @@
 #    Licensor: Revolution Semiconductor (Registered in the Netherlands)
 #
 
+import math
 from quantiphy import Quantity
 
 
@@ -136,6 +137,88 @@ class idiodevss_4kv(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
         self.m = Quantity(self._labelsDict["@m"].labelValue)
+
+
+class inductorBase(baseInst):
+    """
+    Base callback class for SG13G2 inductors.
+    Evaluates inductance (L_parm), resistance (R_parm), and quality factor (Q_parm)
+    from instance labels (@w, @s, @d, @nr_r).
+    """
+    default_d = "15.48u"
+    default_nr = "1"
+
+    def __init__(self, labels_dict: dict):
+        super().__init__(labels_dict)
+        self.w = Quantity(self._getLabelVal(["@w", "@W"], "2u"))
+        self.s = Quantity(self._getLabelVal(["@s", "@S"], "2.1u"))
+        self.d = Quantity(self._getLabelVal(["@d", "@D"], getattr(self, "default_d", "15.48u")))
+        self.nr_r = Quantity(self._getLabelVal(["@nr_r", "@nr", "@N"], getattr(self, "default_nr", "1")))
+
+    def _getLabelVal(self, keys: list, default: str):
+        for k in keys:
+            if k in self._labelsDict:
+                val = getattr(self._labelsDict[k], "labelValue", self._labelsDict[k])
+                if val not in (None, "", "?"):
+                    return str(val)
+        return default
+
+    def L_parm(self):
+        """Estimate series inductance (H) using Modified Wheeler formula for octagons."""
+        d_in = self.d.real
+        w = self.w.real
+        s = self.s.real
+        n = float(self.nr_r.real)
+
+        d_out = d_in + 2 * n * w + 2 * (n - 1) * s
+        d_avg = 0.5 * (d_in + d_out)
+        fill_factor = (d_out - d_in) / (d_out + d_in) if (d_out + d_in) > 0 else 0.0
+
+        k1, k2 = 2.25, 3.55
+        mu_0 = 4 * math.pi * 1e-7
+        return k1 * mu_0 * (n ** 2) * d_avg / (1 + k2 * fill_factor) if (1 + k2 * fill_factor) > 0 else 0.0
+
+    def R_parm(self):
+        """Estimate series resistance (Ohm) including skin effect on TM2 at 5 GHz."""
+        d_in = self.d.real
+        w = self.w.real
+        s = self.s.real
+        n = float(self.nr_r.real)
+        freq_hz = 5.0e9
+
+        d_out = d_in + 2 * n * w + 2 * (n - 1) * s
+        d_avg = 0.5 * (d_in + d_out)
+        l_total = 4 * n * d_avg
+
+        rho_tm2 = 0.007 * 3.0e-6
+        mu_0 = 4 * math.pi * 1e-7
+        delta = math.sqrt(rho_tm2 / (math.pi * freq_hz * mu_0))
+        t_eff = 3.0e-6 * (1 - math.exp(-3.0e-6 / delta))
+
+        return (rho_tm2 * l_total) / (w * t_eff) if (w * t_eff) > 0 else 0.0
+
+    def Q_parm(self):
+        """Estimate quality factor at 5 GHz."""
+        w_rad = 2 * math.pi * 5.0e9
+        r_val = self.R_parm()
+        return (w_rad * self.L_parm()) / r_val if r_val > 0 else 0.0
+
+
+class inductor2(inductorBase):
+    """Callback class for 2-terminal octagonal inductor."""
+    default_d = "15.48u"
+    default_nr = "1"
+
+
+class inductor3(inductorBase):
+    """Callback class for 3-terminal center-tapped octagonal inductor."""
+    default_d = "25.84u"
+    default_nr = "2"
+
+
+class inductor(inductorBase):
+    """Generic inductor alias."""
+    pass
 
 
 class nmoscl_2(baseInst):
@@ -354,14 +437,4 @@ class sg13_svaricap(baseInst):
 
 class sub(baseInst):
     def __init__(self, labels_dict: dict):
-        super().__init__(labels_dict)
-
-
-class cap_cpara(baseInst):
-    def __init__(self, labels_dict:dict):
-        super().__init__(labels_dict)
-
-
-class cap_rfcmim(baseInst):
-    def __init__(self, labels_dict:dict):
         super().__init__(labels_dict)

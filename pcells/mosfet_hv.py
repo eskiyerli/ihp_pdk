@@ -115,7 +115,7 @@ class nmosHV(nmos):
             self._draw_metal_and_contacts(tempShapesList, xcont_beg, xcont_end, yMet1,
                                           yMet2,
                                           ydiff_beg, ydiff_end, diffoffset,
-                                          "D" if i == 1 else "", common_params)
+                                          "D" if (i % 2 == 1) else "S", common_params)
             self._draw_diffusion_rect(tempShapesList, xcont_beg, ycont_beg, xcont_end,
                                       common_params["cont_size"],
                                       common_params["cont_Activ_overRec"], self.ndiff_layer)
@@ -228,11 +228,11 @@ class pmosHV(pmos):
             tempShapesList.extend(
                 self.ihpAddThermalMosLayer(point1, point2, True, self.__class__.__name__))
 
+            center = QRectF(point1, point2).center()
+            tempShapesList.append(
+                lshp.layoutPin(point1, point2, "G", lshp.layoutPin.pinDirs[2],
+                               lshp.layoutPin.pinTypes[0], self.poly_layer_pin))
             if i == 1:
-                center = QRectF(point1, point2).center()
-                tempShapesList.append(
-                    lshp.layoutPin(point1, point2, "G", lshp.layoutPin.pinDirs[2],
-                                   lshp.layoutPin.pinTypes[0], self.poly_layer_pin))
                 tempShapesList.append(lshp.layoutLabel(center, "G", *self._labelFontTuple,
                                                        lshp.layoutLabel.LABEL_ALIGNMENTS[0],
                                                        lshp.layoutLabel.LABEL_ORIENTS[0],
@@ -245,7 +245,7 @@ class pmosHV(pmos):
             self._draw_metal_and_contacts(tempShapesList, xcont_beg, xcont_end, yMet1,
                                           yMet2,
                                           ydiff_beg, ydiff_end, diffoffset,
-                                          "D" if i == 1 else "", common_params)
+                                          "D" if (i % 2 == 1) else "S", common_params)
             self._draw_diffusion_rect(tempShapesList, xcont_beg, ycont_beg, xcont_end,
                                       common_params["cont_size"],
                                       common_params["cont_Activ_overRec"], self.pdiff_layer)

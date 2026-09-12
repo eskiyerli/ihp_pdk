@@ -163,6 +163,8 @@ PURGE_NETS = bool_check?($purge_nets)
 
 logger.info("Selected PURGE_NETS option: #{PURGE_NETS}")
 
+PURGE_DEVICES = bool_check?($purge_devices)
+
 # SIMPLIFY
 SIMPLIFY = !bool_check?($no_simplify)
 
@@ -177,6 +179,8 @@ logger.info("Selected SERIES_RES option: #{SERIES_RES}")
 PARALLEL_RES = !bool_check?($no_parallel_res)
 
 logger.info("Selected PARALLEL_RES option: #{PARALLEL_RES}")
+
+DISABLE_TAP_EXTRACTION = bool_check?($disable_tap_extraction)
 
 # === RUN MODE ===
 case $run_mode
@@ -452,6 +456,9 @@ apply_netlist_options = lambda do |target_netlist, label|
 
   log_option_action.call(label, 'purge_nets', PURGE_NETS)
   target_netlist.purge_nets if PURGE_NETS
+
+  log_option_action.call(label, 'purge_devices', PURGE_DEVICES)
+  target_netlist.purge_devices if PURGE_DEVICES
 end
 
 if NET_ONLY

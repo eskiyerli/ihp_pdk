@@ -116,6 +116,7 @@ class inductorBase(baseCell):
         self.blockqrc = blockqrc
         self.subE = subE
         super().__init__([])
+        self(w, s, d, nr_r, blockqrc, subE)
 
     @staticmethod
     def _evenp(value):
@@ -158,9 +159,8 @@ class inductorBase(baseCell):
             layer
         ))
 
-    @lru_cache
-    def __call__(self, w: str, s: str, d: str, nr_r: str,
-                 blockqrc: str, subE: str):
+    def __call__(self, w: str = None, s: str = None, d: str = None,
+                 nr_r: str = None, blockqrc: str = None, subE: str = None):
         """
         Generate the inductor layout.
 
@@ -172,13 +172,20 @@ class inductorBase(baseCell):
             blockqrc: Block QRC layer ("True"/"False")
             subE: Substrate etching ("True"/"False")
         """
+        w = self.w if w is None else w
+        s = self.s if s is None else s
+        d = self.d if d is None else d
+        nr_r = self.nr_r if nr_r is None else nr_r
+        blockqrc = self.blockqrc if blockqrc is None else blockqrc
+        subE = self.subE if subE is None else subE
+
         # Save parameters to instance attributes for serialization
-        self.w = w
-        self.s = s
-        self.d = d
-        self.nr_r = nr_r
-        self.blockqrc = blockqrc
-        self.subE = subE
+        self.w = str(w)
+        self.s = str(s)
+        self.d = str(d)
+        self.nr_r = str(nr_r)
+        self.blockqrc = str(blockqrc)
+        self.subE = str(subE)
 
         # Parse parameters
         w = self.GridFix(Quantity(w).real * 5e5) * 2
@@ -572,5 +579,27 @@ class inductor2(inductorBase):
 
     def __init__(self, w: str = "2u", s: str = "2.1u",
                  d: str = "15.48u", nr_r: str = "1",
+                 blockqrc: str = "True", subE: str = "False"):
+        super().__init__(w, s, d, nr_r, blockqrc, subE)
+
+
+class inductor3(inductorBase):
+    """
+    3-terminal octagonal spiral inductor with center tap.
+
+    Parameters:
+        w: Trace width (default "2u")
+        s: Trace spacing (default "2.1u")
+        d: Inner diameter (default "25.84u")
+        nr_r: Number of turns (default "2")
+        blockqrc: Block QRC layer (default "True")
+        subE: Substrate etching (default "False")
+    """
+    _cellName = "inductor3"
+    _isType2 = False
+    _isType3 = True
+
+    def __init__(self, w: str = "2u", s: str = "2.1u",
+                 d: str = "25.84u", nr_r: str = "2",
                  blockqrc: str = "True", subE: str = "False"):
         super().__init__(w, s, d, nr_r, blockqrc, subE)

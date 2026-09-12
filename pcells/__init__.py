@@ -27,12 +27,29 @@ from .mosfet_hv import nmosHV, pmosHV
 from .passive import rsil, cmim
 from .passive_res_variants import rhigh, rppd
 from .rf_mosfet import rfnmos, rfpmos
-from .tap_contacts import ntap1, ptap1
-from .inductors import inductor2
+from .rf_mosfet_hv import rfnmosHV, rfpmosHV
+from .tap_contacts import ntap1, ptap1, subtap
+from .inductors import inductor2, inductor3
 from .bjt import npn13G2, npn13G2V, npn13G2L, pnpMPA
 from .diodes import dantenna, dpantenna
 from .nofiller_stack import NoFillerStack
 from .schottky import schottky
+from .via_stack import via_stack
+from .esd import (
+    esd,
+    diodevdd_2kv,
+    diodevss_2kv,
+    diodevdd_4kv,
+    diodevss_4kv,
+    nmoscl_2,
+    nmoscl_4,
+)
+from .rfcmim import rfcmim
+from .svaricap import SVaricap
+from .bondpad import bondpad
+from .sealring import sealring
+from .isolbox import isolbox
+from .guardRing import guardRing
 
 pcells = {
     'rsil': rsil,
@@ -45,9 +62,13 @@ pcells = {
     'pmosHV': pmosHV,
     'rfnmos': rfnmos,
     'rfpmos': rfpmos,
+    'rfnmosHV': rfnmosHV,
+    'rfpmosHV': rfpmosHV,
     'ntap1': ntap1,
     'ptap1': ptap1,
+    'subtap': subtap,
     'inductor2': inductor2,
+    'inductor3': inductor3,
     'npn13G2': npn13G2,
     'npn13G2V': npn13G2V,
     'npn13G2L': npn13G2L,
@@ -55,5 +76,19 @@ pcells = {
     'dantenna': dantenna,
     'dpantenna': dpantenna,
     'NoFillerStack': NoFillerStack,
-    'schottky': schottky
+    'schottky': schottky,
+    'via_stack': via_stack,
+    'esd': esd,
+    'diodevdd_2kv': diodevdd_2kv,
+    'diodevss_2kv': diodevss_2kv,
+    'diodevdd_4kv': diodevdd_4kv,
+    'diodevss_4kv': diodevss_4kv,
+    'nmoscl_2': nmoscl_2,
+    'nmoscl_4': nmoscl_4,
+    'rfcmim': rfcmim,
+    'SVaricap': SVaricap,
+    'bondpad': bondpad,
+    'sealring': sealring,
+    'isolbox': isolbox,
+    'guardRing': guardRing,
 }

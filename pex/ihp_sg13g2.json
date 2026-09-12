@@ -1,0 +1,296 @@
+{
+  "name": "IHP SG13G2",
+  "description": "Values from IHP-Open-PDK ihp-sg13g2-extract.tech, all process corners",
+  "dbu": 1000.0,
+  "units_note": "Resistance: Ohms/sq. Via resistance: Ohms/cut. Capacitance: fF/um^2 (area), fF/um (perimeter/fringe/sidewall).",
+  "corners": {
+    "nom": {
+      "description": "Nominal corner",
+      "resistance": {
+        "GatPoly": 7.0,
+        "Metal1": 0.110,
+        "Metal2": 0.088,
+        "Metal3": 0.088,
+        "Metal4": 0.088,
+        "Metal5": 0.088,
+        "TopMetal1": 0.018,
+        "TopMetal2": 0.011
+      },
+      "via_resistance": {
+        "Cont": 17.0,
+        "via1": 9.0,
+        "via2": 9.0,
+        "via3": 9.0,
+        "via4": 9.0,
+        "TopVia1": 2.2,
+        "TopVia2": 1.1
+      },
+      "capacitance": {
+        "GatPoly": { "area_cap": 0.087433, "fringe_cap": 0.044537, "sidewall_cap": 0.011722 },
+        "Metal1":  { "area_cap": 0.035015, "fringe_cap": 0.039585, "sidewall_cap": 0.028735 },
+        "Metal2":  { "area_cap": 0.018180, "fringe_cap": 0.034798, "sidewall_cap": 0.040981 },
+        "Metal3":  { "area_cap": 0.011994, "fringe_cap": 0.031352, "sidewall_cap": 0.037679 },
+        "Metal4":  { "area_cap": 0.008948, "fringe_cap": 0.029083, "sidewall_cap": 0.049526 },
+        "Metal5":  { "area_cap": 0.007136, "fringe_cap": 0.027527, "sidewall_cap": 0.053129 },
+        "TopMetal1": { "area_cap": 0.005649, "fringe_cap": 0.037383, "sidewall_cap": 0.162172 },
+        "TopMetal2": { "area_cap": 0.003233, "fringe_cap": 0.031175, "sidewall_cap": 0.227323 }
+      },
+      "coupling": {
+        "Metal1_GatPoly":     { "area_cap": 0.078653, "fringe_cap_upper": 0.049378, "fringe_cap_lower": 0.023229 },
+        "Metal2_Metal1":      { "area_cap": 0.067225, "fringe_cap_upper": 0.049543, "fringe_cap_lower": 0.031073 },
+        "Metal3_Metal2":      { "area_cap": 0.067225, "fringe_cap_upper": 0.049537, "fringe_cap_lower": 0.036907 },
+        "Metal4_Metal3":      { "area_cap": 0.067225, "fringe_cap_upper": 0.049537, "fringe_cap_lower": 0.040019 },
+        "Metal5_Metal4":      { "area_cap": 0.067225, "fringe_cap_upper": 0.049517, "fringe_cap_lower": 0.041956 },
+        "TopMetal1_Metal5":   { "area_cap": 0.042708, "fringe_cap_upper": 0.065859, "fringe_cap_lower": 0.036377 },
+        "TopMetal2_TopMetal1": { "area_cap": 0.012965, "fringe_cap_upper": 0.044735, "fringe_cap_lower": 0.033071 }
+      }
+    },
+    "hrhc": {
+      "description": "High resistance, high capacitance corner",
+      "resistance": {
+        "GatPoly": 7.0,
+        "Metal1": 0.135,
+        "Metal2": 0.103,
+        "Metal3": 0.103,
+        "Metal4": 0.103,
+        "Metal5": 0.103,
+        "TopMetal1": 0.021,
+        "TopMetal2": 0.015
+      },
+      "via_resistance": {
+        "Cont": 22.0,
+        "via1": 20.0,
+        "via2": 20.0,
+        "via3": 20.0,
+        "via4": 20.0,
+        "TopVia1": 4.0,
+        "TopVia2": 2.2
+      },
+      "capacitance": {
+        "GatPoly": { "area_cap": 0.087433, "fringe_cap": 0.046122, "sidewall_cap": 0.012642 },
+        "Metal1":  { "area_cap": 0.036926, "fringe_cap": 0.043020, "sidewall_cap": 0.031919 },
+        "Metal2":  { "area_cap": 0.019561, "fringe_cap": 0.038041, "sidewall_cap": 0.045307 },
+        "Metal3":  { "area_cap": 0.013001, "fringe_cap": 0.034328, "sidewall_cap": 0.041742 },
+        "Metal4":  { "area_cap": 0.009736, "fringe_cap": 0.031977, "sidewall_cap": 0.054727 },
+        "Metal5":  { "area_cap": 0.007782, "fringe_cap": 0.030269, "sidewall_cap": 0.058661 },
+        "TopMetal1": { "area_cap": 0.006170, "fringe_cap": 0.040652, "sidewall_cap": 0.179867 },
+        "TopMetal2": { "area_cap": 0.003543, "fringe_cap": 0.032765, "sidewall_cap": 0.203404 }
+      },
+      "coupling": {
+        "Metal1_GatPoly":     { "area_cap": 0.085931, "fringe_cap_upper": 0.054206, "fringe_cap_lower": 0.025311 },
+        "Metal2_Metal1":      { "area_cap": 0.073947, "fringe_cap_upper": 0.054490, "fringe_cap_lower": 0.034474 },
+        "Metal3_Metal2":      { "area_cap": 0.073947, "fringe_cap_upper": 0.054480, "fringe_cap_lower": 0.040756 },
+        "Metal4_Metal3":      { "area_cap": 0.073947, "fringe_cap_upper": 0.054475, "fringe_cap_lower": 0.044115 },
+        "Metal5_Metal4":      { "area_cap": 0.073947, "fringe_cap_upper": 0.054450, "fringe_cap_lower": 0.046350 },
+        "TopMetal1_Metal5":   { "area_cap": 0.046978, "fringe_cap_upper": 0.072158, "fringe_cap_lower": 0.040065 },
+        "TopMetal2_TopMetal1": { "area_cap": 0.014261, "fringe_cap_upper": 0.046744, "fringe_cap_lower": 0.036433 }
+      }
+    },
+    "lrhc": {
+      "description": "Low resistance, high capacitance corner",
+      "resistance": {
+        "GatPoly": 7.0,
+        "Metal1": 0.085,
+        "Metal2": 0.073,
+        "Metal3": 0.073,
+        "Metal4": 0.073,
+        "Metal5": 0.073,
+        "TopMetal1": 0.015,
+        "TopMetal2": 0.007
+      },
+      "via_resistance": {
+        "Cont": 8.0,
+        "via1": 5.0,
+        "via2": 5.0,
+        "via3": 5.0,
+        "via4": 5.0,
+        "TopVia1": 1.0,
+        "TopVia2": 0.5
+      },
+      "capacitance": {
+        "GatPoly": { "area_cap": 0.087433, "fringe_cap": 0.046122, "sidewall_cap": 0.012642 },
+        "Metal1":  { "area_cap": 0.036926, "fringe_cap": 0.043020, "sidewall_cap": 0.031919 },
+        "Metal2":  { "area_cap": 0.019561, "fringe_cap": 0.038041, "sidewall_cap": 0.045307 },
+        "Metal3":  { "area_cap": 0.013001, "fringe_cap": 0.034328, "sidewall_cap": 0.041742 },
+        "Metal4":  { "area_cap": 0.009736, "fringe_cap": 0.031977, "sidewall_cap": 0.054727 },
+        "Metal5":  { "area_cap": 0.007782, "fringe_cap": 0.030269, "sidewall_cap": 0.058661 },
+        "TopMetal1": { "area_cap": 0.006170, "fringe_cap": 0.040652, "sidewall_cap": 0.179867 },
+        "TopMetal2": { "area_cap": 0.003543, "fringe_cap": 0.032765, "sidewall_cap": 0.203404 }
+      },
+      "coupling": {
+        "Metal1_GatPoly":     { "area_cap": 0.085931, "fringe_cap_upper": 0.054206, "fringe_cap_lower": 0.025311 },
+        "Metal2_Metal1":      { "area_cap": 0.073947, "fringe_cap_upper": 0.054490, "fringe_cap_lower": 0.034474 },
+        "Metal3_Metal2":      { "area_cap": 0.073947, "fringe_cap_upper": 0.054480, "fringe_cap_lower": 0.040756 },
+        "Metal4_Metal3":      { "area_cap": 0.073947, "fringe_cap_upper": 0.054475, "fringe_cap_lower": 0.044115 },
+        "Metal5_Metal4":      { "area_cap": 0.073947, "fringe_cap_upper": 0.054450, "fringe_cap_lower": 0.046350 },
+        "TopMetal1_Metal5":   { "area_cap": 0.046978, "fringe_cap_upper": 0.072158, "fringe_cap_lower": 0.040065 },
+        "TopMetal2_TopMetal1": { "area_cap": 0.014261, "fringe_cap_upper": 0.046744, "fringe_cap_lower": 0.036433 }
+      }
+    },
+    "hrlc": {
+      "description": "High resistance, low capacitance corner",
+      "resistance": {
+        "GatPoly": 7.0,
+        "Metal1": 0.135,
+        "Metal2": 0.103,
+        "Metal3": 0.103,
+        "Metal4": 0.103,
+        "Metal5": 0.103,
+        "TopMetal1": 0.021,
+        "TopMetal2": 0.015
+      },
+      "via_resistance": {
+        "Cont": 22.0,
+        "via1": 20.0,
+        "via2": 20.0,
+        "via3": 20.0,
+        "via4": 20.0,
+        "TopVia1": 4.0,
+        "TopVia2": 2.2
+      },
+      "capacitance": {
+        "GatPoly": { "area_cap": 0.087433, "fringe_cap": 0.042892, "sidewall_cap": 0.010828 },
+        "Metal1":  { "area_cap": 0.032933, "fringe_cap": 0.036070, "sidewall_cap": 0.025605 },
+        "Metal2":  { "area_cap": 0.016737, "fringe_cap": 0.031517, "sidewall_cap": 0.036643 },
+        "Metal3":  { "area_cap": 0.010956, "fringe_cap": 0.028351, "sidewall_cap": 0.032701 },
+        "Metal4":  { "area_cap": 0.008143, "fringe_cap": 0.026293, "sidewall_cap": 0.044364 },
+        "Metal5":  { "area_cap": 0.006480, "fringe_cap": 0.024897, "sidewall_cap": 0.047572 },
+        "TopMetal1": { "area_cap": 0.005119, "fringe_cap": 0.034096, "sidewall_cap": 0.146353 },
+        "TopMetal2": { "area_cap": 0.002922, "fringe_cap": 0.029547, "sidewall_cap": 0.229554 }
+      },
+      "coupling": {
+        "Metal1_GatPoly":     { "area_cap": 0.071275, "fringe_cap_upper": 0.044528, "fringe_cap_lower": 0.021109 },
+        "Metal2_Metal1":      { "area_cap": 0.060502, "fringe_cap_upper": 0.044595, "fringe_cap_lower": 0.027713 },
+        "Metal3_Metal2":      { "area_cap": 0.060502, "fringe_cap_upper": 0.044590, "fringe_cap_lower": 0.033084 },
+        "Metal4_Metal3":      { "area_cap": 0.060502, "fringe_cap_upper": 0.044595, "fringe_cap_lower": 0.035938 },
+        "Metal5_Metal4":      { "area_cap": 0.060502, "fringe_cap_upper": 0.044580, "fringe_cap_lower": 0.037816 },
+        "TopMetal1_Metal5":   { "area_cap": 0.038437, "fringe_cap_upper": 0.059547, "fringe_cap_lower": 0.032698 },
+        "TopMetal2_TopMetal1": { "area_cap": 0.011668, "fringe_cap_upper": 0.042662, "fringe_cap_lower": 0.029719 }
+      }
+    },
+    "lrlc": {
+      "description": "Low resistance, low capacitance corner",
+      "resistance": {
+        "GatPoly": 7.0,
+        "Metal1": 0.085,
+        "Metal2": 0.073,
+        "Metal3": 0.073,
+        "Metal4": 0.073,
+        "Metal5": 0.073,
+        "TopMetal1": 0.015,
+        "TopMetal2": 0.007
+      },
+      "via_resistance": {
+        "Cont": 8.0,
+        "via1": 5.0,
+        "via2": 5.0,
+        "via3": 5.0,
+        "via4": 5.0,
+        "TopVia1": 1.0,
+        "TopVia2": 0.5
+      },
+      "capacitance": {
+        "GatPoly": { "area_cap": 0.087433, "fringe_cap": 0.042892, "sidewall_cap": 0.010828 },
+        "Metal1":  { "area_cap": 0.032933, "fringe_cap": 0.036070, "sidewall_cap": 0.025605 },
+        "Metal2":  { "area_cap": 0.016737, "fringe_cap": 0.031517, "sidewall_cap": 0.036643 },
+        "Metal3":  { "area_cap": 0.010956, "fringe_cap": 0.028351, "sidewall_cap": 0.032701 },
+        "Metal4":  { "area_cap": 0.008143, "fringe_cap": 0.026293, "sidewall_cap": 0.044364 },
+        "Metal5":  { "area_cap": 0.006480, "fringe_cap": 0.024897, "sidewall_cap": 0.047572 },
+        "TopMetal1": { "area_cap": 0.005119, "fringe_cap": 0.034096, "sidewall_cap": 0.146353 },
+        "TopMetal2": { "area_cap": 0.002922, "fringe_cap": 0.029547, "sidewall_cap": 0.229554 }
+      },
+      "coupling": {
+        "Metal1_GatPoly":     { "area_cap": 0.071275, "fringe_cap_upper": 0.044528, "fringe_cap_lower": 0.021109 },
+        "Metal2_Metal1":      { "area_cap": 0.060502, "fringe_cap_upper": 0.044595, "fringe_cap_lower": 0.027713 },
+        "Metal3_Metal2":      { "area_cap": 0.060502, "fringe_cap_upper": 0.044590, "fringe_cap_lower": 0.033084 },
+        "Metal4_Metal3":      { "area_cap": 0.060502, "fringe_cap_upper": 0.044595, "fringe_cap_lower": 0.035938 },
+        "Metal5_Metal4":      { "area_cap": 0.060502, "fringe_cap_upper": 0.044580, "fringe_cap_lower": 0.037816 },
+        "TopMetal1_Metal5":   { "area_cap": 0.038437, "fringe_cap_upper": 0.059547, "fringe_cap_lower": 0.032698 },
+        "TopMetal2_TopMetal1": { "area_cap": 0.011668, "fringe_cap_upper": 0.042662, "fringe_cap_lower": 0.029719 }
+      }
+    }
+  },
+  "layers": [
+    {
+      "name": "GatPoly",
+      "layer_number": 5,
+      "purpose": "gate",
+      "thickness": 0.18,
+      "height": 0.1,
+      "min_width": 0.13,
+      "min_spacing": 0.18
+    },
+    {
+      "name": "Metal1",
+      "layer_number": 8,
+      "purpose": "routing",
+      "thickness": 0.36,
+      "height": 0.42,
+      "min_width": 0.16,
+      "min_spacing": 0.18
+    },
+    {
+      "name": "Metal2",
+      "layer_number": 10,
+      "purpose": "routing",
+      "thickness": 0.36,
+      "height": 1.1,
+      "min_width": 0.20,
+      "min_spacing": 0.21
+    },
+    {
+      "name": "Metal3",
+      "layer_number": 30,
+      "purpose": "routing",
+      "thickness": 0.36,
+      "height": 1.78,
+      "min_width": 0.20,
+      "min_spacing": 0.21
+    },
+    {
+      "name": "Metal4",
+      "layer_number": 50,
+      "purpose": "routing",
+      "thickness": 0.36,
+      "height": 2.46,
+      "min_width": 0.20,
+      "min_spacing": 0.21
+    },
+    {
+      "name": "Metal5",
+      "layer_number": 67,
+      "purpose": "routing",
+      "thickness": 0.36,
+      "height": 3.37,
+      "min_width": 0.44,
+      "min_spacing": 0.46
+    },
+    {
+      "name": "TopMetal1",
+      "layer_number": 126,
+      "purpose": "routing",
+      "thickness": 1.3,
+      "height": 4.53,
+      "min_width": 1.8,
+      "min_spacing": 1.8
+    },
+    {
+      "name": "TopMetal2",
+      "layer_number": 134,
+      "purpose": "routing",
+      "thickness": 3.0,
+      "height": 6.43,
+      "min_width": 2.0,
+      "min_spacing": 2.0
+    }
+  ],
+  "vias": [
+    { "name": "Cont",    "lower_layer": "GatPoly",  "upper_layer": "Metal1",    "width": 0.16, "height": 0.16 },
+    { "name": "via1",    "lower_layer": "Metal1",   "upper_layer": "Metal2",    "width": 0.19, "height": 0.19 },
+    { "name": "via2",    "lower_layer": "Metal2",   "upper_layer": "Metal3",    "width": 0.19, "height": 0.19 },
+    { "name": "via3",    "lower_layer": "Metal3",   "upper_layer": "Metal4",    "width": 0.19, "height": 0.19 },
+    { "name": "via4",    "lower_layer": "Metal4",   "upper_layer": "Metal5",    "width": 0.19, "height": 0.19 },
+    { "name": "TopVia1", "lower_layer": "Metal5",   "upper_layer": "TopMetal1", "width": 0.5,  "height": 0.5  },
+    { "name": "TopVia2", "lower_layer": "TopMetal1","upper_layer": "TopMetal2", "width": 0.5,  "height": 0.5  }
+  ]
+}

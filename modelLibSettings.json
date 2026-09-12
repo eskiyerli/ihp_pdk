@@ -32,6 +32,11 @@
                     "select": true,
                     "modelPath": "${PDK_ROOT}/models/vacask/models/cornerRES.lib",
                     "modelSection": "res_typ"
+                },
+                {
+                    "select": true,
+                    "modelPath": "${PDK_ROOT}/models/vacask/models/inductors.lib",
+                    "modelSection": ""
                 }
             ],
             "includePaths": [
@@ -89,36 +94,12 @@
                     true,
                     "${PDK_ROOT}/models/vacask/models/sg13g2_vacask_common.lib",
                     ""
-                ],
-                [
-                    false,
-                    "${PDK_ROOT}/models/vacask/osdi/mosvar.lib",
-                    ""
-                ],
-                [
-                    false,
-                    "${PDK_ROOT}/models/vacask/osdi/psp103.lib",
-                    ""
-                ],
-                [
-                    false,
-                    "${PDK_ROOT}/models/vacask/osdi/psp103_nqs.lib",
-                    ""
-                ],
-                [
-                    false,
-                    "${PDK_ROOT}/models/vacask/osdi/r3_cmc.lib",
-                    ""
                 ]
             ],
             "modulePaths": [
                 [
                     true,
-                    "${PDK_ROOT}/models/vacask/osdi/linux"
-                ],
-                [
-                    true,
-                    "${PDK_ROOT}/models/vacask/osdi/windows"
+                    "${PDK_ROOT}/models/vacask/osdi"
                 ]
             ]
         },
@@ -224,10 +205,6 @@
                 [
                     true,
                     "${PDK_ROOT}/va_modules"
-                ],
-                [
-                    false,
-                    "${PDK_ROOT}/va_modules/xyce_v7p8"
                 ]
             ]
         },

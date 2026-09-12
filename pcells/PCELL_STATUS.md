@@ -4,7 +4,7 @@ This document summarizes the parametric cell (pcell) implementations in the ihp_
 
 ## Summary
 
-**Total PCells Implemented: 20**
+**Total PCells Implemented: 21**
 
 All pcells registered in the module's `__init__.py` are fully implemented with layout generation logic.
 
@@ -34,6 +34,7 @@ All pcells registered in the module's `__init__.py` are fully implemented with l
 | | schottky | schottky.py | N+/Metal Schottky diode with guard rings and thermal vias | w, l, Nx, Ny (array), m (multiplier) | ✅ Implemented |
 | **Tap Contacts** | ntap1 | tap_contacts.py | N-type substrate tap contact (N-well with nBuLay) | width, length | ✅ Implemented |
 | | ptap1 | tap_contacts.py | P-type substrate tap contact (P+ diffusion) | width, length | ✅ Implemented |
+| **Guard Rings** | guardRing | guardRing.py | Multi-part p+ substrate guard ring around a rectangle | w, h, ringWidth, gap | ✅ Implemented |
 | **Utility** | NoFillerStack | nofiller_stack.py | DRC filler exclusion marker (per-layer nofill rectangles) | w, l, noAct, noGP, noM1-5, noTM1-2 | ✅ Implemented |
 
 ## Implementation Notes
@@ -88,6 +89,7 @@ ihp_pdk/pcells/
 ├── diodes.py                # ESD diodes (dantenna, dpantenna)
 ├── schottky.py              # Schottky diode
 ├── tap_contacts.py          # Substrate taps (ntap1, ptap1)
+├── guardRing.py             # Multi-part p+ substrate guard ring
 └── nofiller_stack.py        # Filler exclusion marker
 ```
 

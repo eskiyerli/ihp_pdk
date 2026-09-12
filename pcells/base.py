@@ -115,6 +115,44 @@ class baseCell(lshp.layoutPcell):
 
         return mlist
 
+    def _draw_contact_array(
+        self, w, l, cont_size, cont_dist, cont_diff_over
+    ):
+        """Draw contact array for tap."""
+        shapes = []
+
+        # Calculate number of contacts
+        distc = cont_size + cont_dist
+        ncont_x = self.fix((w - 2 * cont_diff_over + cont_dist) / distc + self._epsilon)
+        ncont_y = self.fix((l - 2 * cont_diff_over + cont_dist) / distc + self._epsilon)
+
+        if ncont_x <= 0 or ncont_y <= 0:
+            return shapes
+
+        # Calculate spacing
+        dsx = 0 if ncont_x == 1 else (w - 2 * cont_diff_over - ncont_x * cont_size) / (ncont_x - 1)
+        dsy = 0 if ncont_y == 1 else (l - 2 * cont_diff_over - ncont_y * cont_size) / (ncont_y - 1)
+
+        x_start = (w - cont_size) / 2 if ncont_x == 1 else cont_diff_over
+        y_start = (l - cont_size) / 2 if ncont_y == 1 else cont_diff_over
+
+        # Generate contact array
+        x = x_start
+        for i in range(ncont_x):
+            y = y_start
+            for j in range(ncont_y):
+                x_fixed = self.GridFix(x)
+                y_fixed = self.GridFix(y)
+                point1 = self.toSceneCoord(QPointF(x_fixed, y_fixed))
+                point2 = self.toSceneCoord(
+                    QPointF(x_fixed + cont_size, y_fixed + cont_size)
+                )
+                shapes.append(lshp.layoutRect(point1, point2, self.cont_layer))
+                y += cont_size + dsy
+            x += cont_size + dsx
+
+        return shapes
+
     def ihpAddThermalLayer(self, heatLayer: ddef.layLayer, point1: QPoint,
                            point2: QPoint, addThermalText: bool, labelText: str):
         shapes = [lshp.layoutRect(point1, point2, heatLayer)]
@@ -260,11 +298,12 @@ class baseMosfet(baseCell):
         shapes_list.extend(self.ihpAddThermalMosLayer(point1, point2, True,
                                                       self.__class__.__name__))
 
+        center = QRectF(point1, point2).center()
+        polyPinLayer = getattr(self, "poly_layer_pin", laylyr.GatPoly_pin)
+        shapes_list.append(
+            lshp.layoutPin(point1, point2, "G", lshp.layoutPin.pinDirs[2],
+                           lshp.layoutPin.pinTypes[0], polyPinLayer))
         if is_first_gate:
-            center = QRectF(point1, point2).center()
-            shapes_list.append(
-                lshp.layoutPin(point1, point2, "G", lshp.layoutPin.pinDirs[2],
-                               lshp.layoutPin.pinTypes[0], self.metal1_layer_pin))
             shapes_list.append(
                 lshp.layoutLabel(center.toPoint(), "G", *self._labelFontTuple,
                                  lshp.layoutLabel.LABEL_ALIGNMENTS[0],

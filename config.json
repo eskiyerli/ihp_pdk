@@ -10,7 +10,7 @@
       "location": "menuBar",
       "menu": "Check",
       "action": "KLayoutDRC",
-      "text": "DRC with KLayout",
+      "text": "DRC with KLayout...",
       "module": "klayoutDRC",
       "callback": "klayoutDRCClick",
       "shortcut": "Ctrl+Shift+D",
@@ -22,10 +22,33 @@
       "location": "menuBar",
       "menu": "Check",
       "action": "KLayoutLVS",
-      "text": "LVS with KLayout",
+      "text": "LVS with KLayout...",
       "module": "klayoutLVS",
       "callback": "klayoutLVSClick",
       "shortcut": "Ctrl+Shift+L",
+      "apply": [
+        "layoutEditor"
+      ]
+    },
+    {
+      "location": "menuBar",
+      "menu": "Check",
+      "action": "RCExtraction",
+      "text": "RC Extraction (PEX)...",
+      "module": "pexExtraction",
+      "callback": "pexExtractionClick",
+      "shortcut": "Ctrl+Shift+X",
+      "apply": [
+        "layoutEditor"
+      ]
+    },
+    {
+      "location": "menuBar",
+      "menu": "Edit/Guard Ring",
+      "action": "SubstrateTapRing",
+      "text": "Substrate Tap (p+)...",
+      "module": "guardRing",
+      "callback": "guardRingClick",
       "apply": [
         "layoutEditor"
       ]

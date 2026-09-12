@@ -28,20 +28,19 @@ import logging
 import pathlib
 import time
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QStandardItemModel
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtGui import QAction, QIcon, QStandardItemModel
 from PySide6.QtWidgets import (
     QApplication,
     QButtonGroup,
     QCheckBox,
     QComboBox,
-    QDialog,
-    QDialogButtonBox,
     QFileDialog,
     QFormLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QMainWindow,
     QMessageBox,
     QPlainTextEdit,
     QPushButton,
@@ -59,6 +58,7 @@ import revedaEditor.backend.libraryMethods as libm
 import revedaEditor.gui.lvsResults as lvsr
 from revedaEditor.backend.pdkLoader import importPDKModule
 from revedaEditor.fileio.extractedSchematic import klayoutSchematicGenerator
+from revedaEditor.fileio.spiceNetlist import parse_extracted_netlist
 
 from revedaEditor.gui.schematicEditor import schematicEditor, xyceNetlist
 
@@ -69,6 +69,123 @@ logger = logging.getLogger("reveda")
 
 SYMBOL_PIN_DISTANCE = 80
 SYMBOL_STUB_LENGHT = 20
+
+
+def collectSceneConnectivityHints(scene, extractedNetlist, dbu):
+    """Extract naming/connectivity hints from a layout scene.
+
+    Returns ``(devicePinAnchors, portFootprints, pcellBridges)``:
+      * devicePinAnchors: list of (net_id, LayRect) built by matching each
+        device (Pcell) terminal pin to the extracted-netlist device it belongs
+        to. The net_id is that terminal's net -- exactly what the device lines
+        reference -- so a routing group landing on the pin is named that net
+        and the parasitics connect to the correct transistor terminal.
+      * portFootprints: (netName, LayRect) from top-level pins (ports).
+      * pcellBridges: per-instance PcellBridge(pin_name, LayRect) so routing
+        that lands on the same device terminal is tied into one net.
+
+    Matching scene instances to extracted devices: the extracted netlist may
+    split a multi-finger device into several devices, each carrying a layout
+    position (in microns). We match each device *pin* to the nearest extracted
+    device (by pin-centre vs device position) and read that device's terminal
+    -> net map, so per-finger nets resolve correctly.
+
+    Uses ``sceneBoundingRect`` so nested/rotated pin footprints are already in
+    scene (dbu) coordinates, matching the layout.json geometry.
+    """
+    import revedaEditor.common.layoutShapes as lshp
+    from revedaEditor.rcextraction.layoutGeometry import LayRect, PcellBridge
+
+    def _layRect(item):
+        r = item.sceneBoundingRect()
+        return LayRect(r.left(), r.top(), r.right(), r.bottom())
+
+    devicePinAnchors = []
+    portFootprints = []
+    pcellBridges = []
+    if scene is None:
+        return devicePinAnchors, portFootprints, pcellBridges
+
+    # Extracted devices with a layout position (microns -> dbu) and their
+    # terminal -> net map, for pin->net resolution by proximity.
+    extractedDevices = []
+    if extractedNetlist:
+        for dev in extractedNetlist.get("devices", []):
+            pos = dev.get("position")
+            terminals = dev.get("terminals", {})
+            if isinstance(pos, dict) and terminals:
+                extractedDevices.append((
+                    float(pos.get("x", 0.0)) * dbu,
+                    float(pos.get("y", 0.0)) * dbu,
+                    terminals,
+                ))
+
+    def _netForPin(pinName, cx, cy):
+        """Net id for a pin: the nearest extracted device that has this pin."""
+        best = None
+        bestDist = float("inf")
+        pinUpper = pinName.upper()
+        for dx, dy, terminals in extractedDevices:
+            matchedNet = None
+            for tName, netId in terminals.items():
+                if tName.upper() == pinUpper:
+                    matchedNet = netId
+                    break
+            if matchedNet is None:
+                continue
+            dist = (dx - cx) ** 2 + (dy - cy) ** 2
+            if dist < bestDist:
+                bestDist = dist
+                best = matchedNet
+        return best
+
+    for item in scene.items():
+        # Top-level pins define ports (parentItem is None => not inside an
+        # instance).
+        if isinstance(item, lshp.layoutPin) and item.parentItem() is None:
+            name = (item.pinName or "").strip()
+            if name:
+                portFootprints.append((name, _layRect(item)))
+            continue
+
+        # Instances/Pcells contribute their child pins as device-terminal
+        # anchors (for naming) and bridges (for connectivity).
+        if isinstance(item, (lshp.layoutInstance, lshp.layoutPcell)):
+            bridges = []
+            for child in item.childItems():
+                if isinstance(child, lshp.layoutPin):
+                    pinName = (child.pinName or "").strip()
+                    if not pinName:
+                        continue
+                    rect = _layRect(child)
+                    cx = 0.5 * (rect.x1 + rect.x2)
+                    cy = 0.5 * (rect.y1 + rect.y2)
+                    pinUpper = pinName.upper()
+                    layerName = getattr(getattr(child, "layer", None), "name", "Metal1")
+                    bridges.append(PcellBridge(pinName, rect, layerName))
+                    netId = _netForPin(pinName, cx, cy)
+                    if netId is not None:
+                        devicePinAnchors.append((str(netId), rect, layerName))
+                    if extractedNetlist:
+                        bestDev = None
+                        bestDevDist = float("inf")
+                        for dev in extractedNetlist.get("devices", []):
+                            pos = dev.get("position")
+                            if isinstance(pos, dict):
+                                dx = float(pos.get("x", 0.0)) * dbu
+                                dy = float(pos.get("y", 0.0)) * dbu
+                                dist = (dx - cx) ** 2 + (dy - cy) ** 2
+                                if dist < bestDevDist:
+                                    bestDevDist = dist
+                                    bestDev = dev
+                        if bestDev is not None:
+                            bestDev.setdefault("terminal_locations", {})[pinUpper] = {
+                                "x": cx, "y": cy, "layer": layerName
+                            }
+            if bridges:
+                pcellBridges.append(bridges)
+
+    return devicePinAnchors, portFootprints, pcellBridges
 
 
 @contextmanager
@@ -100,12 +217,12 @@ def klayoutLVSClick(layoutEditor):
             # Iterate through cells in this library (level 1)
             for cellRow in range(libItem.rowCount()):
                 cellItem = libItem.child(cellRow)  # cellItem
-                if cellItem.cellName == extractedCellName:
+                if cellItem.cellName == extractedCellName or str(cellItem.cellName).casefold() == str(extractedCellName).casefold():
                     # Found the cell, now look for symbol view (level 2)
                     for viewRow in range(cellItem.rowCount()):
                         viewItem = cellItem.child(viewRow)  # viewItem
                         if viewItem.viewName == "symbol":
-                            return ddef.viewNameTuple(libName, extractedCellName, "symbol")
+                            return ddef.viewNameTuple(libName, cellItem.cellName, "symbol")
 
         return None
 
@@ -123,6 +240,7 @@ def klayoutLVSClick(layoutEditor):
         extractedNetlistPath: pathlib.Path,
         dlg: "klayoutLVSDialogue",
         schematic_editor=None,
+        referenceNetlistPath: pathlib.Path | None = None,
     ):
         logger.info(f"LVS process finished. Report: {filePath}")
         dlg.console.appendPlainText(f"\n--- LVS Finished. Report: {filePath} ---")
@@ -139,7 +257,9 @@ def klayoutLVSClick(layoutEditor):
         parser = LVSDBParser(filePath, layoutLayers)
         parser.load()
         logger.info(f"Parsed LVSDB: {parser.filepath}")
-        extracted = parser.get_extracted_schematic(layoutEditor.cellName)
+
+        # Use extracted netlist as single source of truth for lvs_schematic
+        extracted = parse_extracted_netlist(extractedNetlistPath, layoutEditor.cellName)
 
 
         # Gather cross-reference and schematic-side data for the results dialog
@@ -151,11 +271,77 @@ def klayoutLVSClick(layoutEditor):
         schem_nets = parser.get_schematic_nets(schem_cell_name)
         schem_devices = parser.get_schematic_devices(schem_cell_name)
 
-        # Compute source schematic netlist path for hierarchy tree
+        # Export the RCX database for RC extraction (PEX) when requested.
+        # It is written into the LVS run directory (alongside the other LVS
+        # artifacts) rather than the cell directory: the cell directory is
+        # scanned by the library browser, which would misinterpret a stray
+        # .rcx.json as an (unopenable) cellview. The PEX dialog defaults its
+        # RCX input to this same location.
+        pexSettings = dlg.collectSettings()
+        if pexSettings.get("exportPex"):
+            try:
+                import orjson
+                from revedaEditor.rcextraction.rcxExport import exportRcxDatabase
+
+                layoutLayersModule = importPDKModule("layoutLayers")
+                # Real routing geometry comes from the layout.json cellview,
+                # not the LVSDB (whose per-net shapes are on internal layers
+                # with no physical dimensions).
+                with layoutEditor.file.open("rb") as layoutFile:
+                    layoutElements = orjson.loads(layoutFile.read())
+
+                # Device-terminal anchors, port footprints and Pcell bridges
+                # come from the live layout scene, where pins are already
+                # instantiated in scene coordinates. Device pins carry the net
+                # ids the extracted-netlist device lines reference, so net
+                # naming connects parasitics to the right terminals.
+                devicePinAnchors, portFootprints, pcellBridges = (
+                    collectSceneConnectivityHints(
+                        layoutEditor.centralW.scene, extracted, process.dbu
+                    )
+                )
+
+                lvsEquivalent = bool(xref.get("equivalent")) if xref else False
+                rcxOutputPath = (
+                    pathlib.Path(pexSettings["lvsRunPath"])
+                    / f"{layoutEditor.cellName}.rcx.json"
+                )
+                exportRcxDatabase(
+                    layoutEditor.cellName,
+                    layoutElements,
+                    extracted,
+                    layoutLayersModule,
+                    process,
+                    rcxOutputPath,
+                    process.dbu,
+                    lvsEquivalent,
+                    devicePinAnchors=devicePinAnchors,
+                    portFootprints=portFootprints,
+                    pcellBridges=pcellBridges,
+                )
+                dlg.console.appendPlainText(
+                    f"--- Exported RCX database for PEX: {rcxOutputPath} ---"
+                )
+            except Exception as rcxError:
+                logger.error(f"Failed to export RCX database: {rcxError}")
+                dlg.console.appendPlainText(
+                    f"--- ERROR: RCX export failed: {rcxError} ---"
+                )
+
+        # Compute source reference netlist path for hierarchy tree. In netlist
+        # mode this is the user-supplied file; in schematic mode it is the
+        # generated <cell>_<view>.cir.
         lvsSettings = dlg.collectSettings()
-        sourceNetlistPath = pathlib.Path(lvsSettings["lvsRunPath"]) / (
-            f"{lvsSettings['schematicCellName']}_{lvsSettings['schematicViewName']}.cir"
-        )
+        if referenceNetlistPath is not None:
+            sourceNetlistPath = pathlib.Path(referenceNetlistPath)
+        elif lvsSettings.get("lvsSourceMode") == "netlist" and lvsSettings.get(
+            "netlistFilePath"
+        ):
+            sourceNetlistPath = pathlib.Path(lvsSettings["netlistFilePath"])
+        else:
+            sourceNetlistPath = pathlib.Path(lvsSettings["lvsRunPath"]) / (
+                f"{lvsSettings['schematicCellName']}_{lvsSettings['schematicViewName']}.cir"
+            )
 
         # Create LVS results dialog with the schematic editor from the dialogue settings
         lvsNetsDlg = lvsr.lvsResultsDialogue(
@@ -169,6 +355,7 @@ def klayoutLVSClick(layoutEditor):
             schem_devices=schem_devices,
             schematic_editor=schematic_editor,
             source_netlist_path=sourceNetlistPath,
+            extracted_netlist_path=extractedNetlistPath,
         )
 
         schematicNetlistPath = None
@@ -194,6 +381,9 @@ def klayoutLVSClick(layoutEditor):
     def runKlayoutLVS(dlg):
         settings = dlg.collectSettings()
         klayoutPath = settings["klayoutPath"]
+        sourceMode = settings.get("lvsSourceMode", "schematic")
+        netlistMode = sourceMode == "netlist"
+        netlistFilePath = settings.get("netlistFilePath", "")
         schematicCellName = settings["schematicCellName"]
         schematicViewName = settings["schematicViewName"]
         layoutCellName = settings["layoutCellName"]
@@ -212,66 +402,92 @@ def klayoutLVSClick(layoutEditor):
         lvsModule = importPDKModule("lvs")
         lvsPath = pathlib.Path(lvsModule.__file__).parent.resolve()
         lvsRulePath = lvsPath / "sg13g2.lvs"
-        schematicNetlistPathObj = (
-            lvsRunPathObj / f"{schematicCellName}_{schematicViewName}.cir"
-        )
-        # Get the schematic editor for the selected schematic cellview from the dialogue
-        settings = dlg.collectSettings()
-        schematic_lib_name = settings["schematicLibName"]
-        schematic_cell_name = settings["schematicCellName"]
-        schematic_view_name = settings["schematicViewName"]
-        
-        # Try to find or open the schematic editor for the selected schematic cellview
+
+        # The reference netlist compared against the layout. In schematic mode
+        # it is generated from the chosen schematic cellview; in netlist mode
+        # the user supplies an existing netlist file, so no schematic editor is
+        # opened or netlisted.
         schematic_editor = None
-        revedaMain = QApplication.instance().appMainW
-        if revedaMain:
-            from revedaEditor.backend.dataDefinitions import viewNameTuple
-            view_key = viewNameTuple(schematic_lib_name, schematic_cell_name, schematic_view_name)
-            schematic_editor = revedaMain.openViews.get(view_key)
-            # If not already open, open it via the library view infrastructure
-            if schematic_editor is None:
-                try:
-                    libItem = libm.getLibItem(dlg.model, schematic_lib_name)
-                    cellItem = libm.getCellItem(libItem, schematic_cell_name)
-                    viewItem = libm.getViewItem(cellItem, schematic_view_name)
-                    if viewItem:
-                        viewItemT = ddef.viewItemTuple(libItem, cellItem, viewItem)
-                        layoutEditor.libraryView.openCellView(viewItemT)
-                        schematic_editor = revedaMain.openViews.get(view_key)
+        if netlistMode:
+            if not netlistFilePath:
+                logger.error(
+                    "Netlist mode selected but no netlist file was specified."
+                )
+                dlg.console.appendPlainText(
+                    "ERROR: No netlist file specified for netlist-mode LVS."
+                )
+                return
+            schematicNetlistPathObj = pathlib.Path(netlistFilePath)
+            if not schematicNetlistPathObj.exists():
+                logger.error(
+                    f"Netlist file not found at {schematicNetlistPathObj}."
+                )
+                dlg.console.appendPlainText(
+                    f"ERROR: Netlist file not found: {schematicNetlistPathObj}"
+                )
+                return
+            # net_only comparison is meaningless without a reference netlist;
+            # force a full compare against the supplied netlist.
+            netOnly = False
+        else:
+            schematicNetlistPathObj = (
+                lvsRunPathObj / f"{schematicCellName}_{schematicViewName}.cir"
+            )
+            # Get the schematic editor for the selected schematic cellview
+            schematic_lib_name = settings["schematicLibName"]
+            schematic_cell_name = settings["schematicCellName"]
+            schematic_view_name = settings["schematicViewName"]
 
-                except Exception as e:
-                    logger.warning(f"Failed to open schematic editor for {schematic_lib_name}:{schematic_cell_name}:{schematic_view_name}: {e}")
+            # Try to find or open the schematic editor for the selected cellview
+            revedaMain = QApplication.instance().appMainW
+            if revedaMain:
+                from revedaEditor.backend.dataDefinitions import viewNameTuple
+                view_key = viewNameTuple(schematic_lib_name, schematic_cell_name, schematic_view_name)
+                schematic_editor = revedaMain.openViews.get(view_key)
+                # If not already open, open it via the library view infrastructure
+                if schematic_editor is None:
+                    try:
+                        libItem = libm.getLibItem(dlg.model, schematic_lib_name)
+                        cellItem = libm.getCellItem(libItem, schematic_cell_name)
+                        viewItem = libm.getViewItem(cellItem, schematic_view_name)
+                        if viewItem:
+                            viewItemT = ddef.viewItemTuple(libItem, cellItem, viewItem)
+                            layoutEditor.libraryView.openCellView(viewItemT)
+                            schematic_editor = revedaMain.openViews.get(view_key)
 
-            # Ensure the schematic scene is loaded so nets/devices can be extracted.
-            # Only load if the scene is empty — calling loadSchematic() on an
-            # already-loaded editor duplicates all items because loadDesign()
-            # does not clear the scene first.
-            if schematic_editor is not None:
-                try:
-                    if not hasattr(schematic_editor, 'centralW') or schematic_editor.centralW is None:
-                        schematic_editor.init_UI()
-                    if schematic_editor.centralW.scene is not None and \
-                            len(schematic_editor.centralW.scene.items()) == 0:
-                        schematic_editor.loadSchematic()
-                except Exception as e:
-                    logger.warning(f"Failed to load schematic for {schematic_cell_name}: {e}")
-        
+                    except Exception as e:
+                        logger.warning(f"Failed to open schematic editor for {schematic_lib_name}:{schematic_cell_name}:{schematic_view_name}: {e}")
+
+                # Ensure the schematic scene is loaded so nets/devices can be extracted.
+                # Only load if the scene is empty — calling loadSchematic() on an
+                # already-loaded editor duplicates all items because loadDesign()
+                # does not clear the scene first.
+                if schematic_editor is not None:
+                    try:
+                        if not hasattr(schematic_editor, 'centralW') or schematic_editor.centralW is None:
+                            schematic_editor.init_UI()
+                        if schematic_editor.centralW.scene is not None and \
+                                len(schematic_editor.centralW.scene.items()) == 0:
+                            schematic_editor.loadSchematic()
+                    except Exception as e:
+                        logger.warning(f"Failed to load schematic for {schematic_cell_name}: {e}")
+
         if gdsExport:
             layoutEditor.centralW.scene.exportCellGDS(
                 lvsRunPathObj, gdsUnit, gdsPrecision, process.dbu
             )
 
-        if createNetlist:
+        if not netlistMode and createNetlist:
             createSchematicNetlist(dlg, lvsRunPathObj, schematic_editor)
-        else:
+        elif not netlistMode:
             logger.info(
                 "Schematic netlist generation is disabled; running in NET_ONLY mode."
             )
 
         if not netOnly and not schematicNetlistPathObj.exists():
             logger.error(
-                f"Schematic netlist file not found at {schematicNetlistPathObj}. "
-                f"Please check the netlist creation settings and try again."
+                f"Reference netlist file not found at {schematicNetlistPathObj}. "
+                f"Please check the netlist settings and try again."
             )
             return
 
@@ -336,7 +552,13 @@ def klayoutLVSClick(layoutEditor):
         # ProcessManager slot — otherwise the process is never cleaned up and
         # consecutive runs exhaust the max-processes limit.
         lvsProcess.process.finished.connect(
-            lambda: LVSProcessFinished(lvsReportFilePath, lvsExtractedNetlistPath, dlg, schematic_editor)
+            lambda: LVSProcessFinished(
+                lvsReportFilePath,
+                lvsExtractedNetlistPath,
+                dlg,
+                schematic_editor,
+                referenceNetlistPath=schematicNetlistPathObj,
+            )
         )
 
     def createSchematicNetlist(dlg, lvsRunPathObj, schematic_editor=None):
@@ -386,23 +608,46 @@ def klayoutLVSClick(layoutEditor):
     dlg.precisionEdit.setText(str(process.gdsPrecision))
     dlg.gdsExportBox.setChecked(True)
     dlg.LVSRunPathEdit.setText(str(layoutEditor.gdsExportDirObj))
-    dlg.runButton.clicked.connect(lambda: runKlayoutLVS(dlg))
-    dlg.saveButton.clicked.connect(lambda: saveRunSet(dlg))
-    dlg.loadButton.clicked.connect(lambda: loadRunSet(dlg))
+    dlg.runLVSAction.triggered.connect(lambda: runKlayoutLVS(dlg))
     dlg.show()
 
 
-class klayoutLVSDialogue(QDialog):
+class klayoutLVSDialogue(QMainWindow):
     def __init__(self, parentEditor):
         super().__init__(parentEditor)
         self.layoutEditor = parentEditor
         self.model = parentEditor.libraryView.libraryModel
         self.setWindowTitle("KLayout LVS")
-        self.setMinimumSize(1100, 800)
+        self.setWindowModality(Qt.WindowModality.NonModal)
+        self.setMinimumSize(1200, 900)
+        self._settings = QSettings("Revolution Semiconductor", "Revolution EDA")
+        self._recentSettingsKey = "ihpKlayoutLVS/recentSettings"
+        self._createMenuBar()
         self.mainLayout = QVBoxLayout()
+
+        # Source mode selector: compare the layout against a schematic cellview
+        # (netlisted on the fly) or against an existing netlist file directly.
+        # The latter lets designs that only have a netlist (no schematic) run
+        # LVS.
+        sourceModeGroupBox = QGroupBox("Reference Source")
+        sourceModeLayout = QHBoxLayout()
+        self.sourceModeGroup = QButtonGroup(self)
+        self.schematicModeBtn = QRadioButton("Schematic")
+        self.netlistModeBtn = QRadioButton("Netlist")
+        self.schematicModeBtn.setChecked(True)
+        self.sourceModeGroup.addButton(self.schematicModeBtn)
+        self.sourceModeGroup.addButton(self.netlistModeBtn)
+        self.schematicModeBtn.toggled.connect(self._onSourceModeChanged)
+        sourceModeLayout.addWidget(self.schematicModeBtn)
+        sourceModeLayout.addWidget(self.netlistModeBtn)
+        sourceModeLayout.addStretch()
+        sourceModeGroupBox.setLayout(sourceModeLayout)
+        self.mainLayout.addWidget(sourceModeGroupBox)
+
         hLayout = QHBoxLayout()
         self.mainLayout.addLayout(hLayout)
         schematicGroupBox = QGroupBox("Schematic")
+        self.schematicGroupBox = schematicGroupBox
         schematicLayout = QFormLayout()
         schematicGroupBox.setLayout(schematicLayout)
         self.schematicLibListCB = QComboBox()
@@ -465,6 +710,25 @@ class klayoutLVSDialogue(QDialog):
 
         hLayout.addWidget(layoutGroupBox)
 
+        # Existing-netlist source: used when "Netlist" mode is selected.
+        # Hidden by default; the schematic group is shown instead.
+        self.netlistGroupBox = QGroupBox("Netlist File")
+        netlistFileLayout = QFormLayout()
+        self.netlistGroupBox.setLayout(netlistFileLayout)
+        netlistPathRow = QHBoxLayout()
+        self.netlistFilePathEdit = edf.longLineEdit()
+        self.netlistFilePathEdit.setToolTip(
+            "SPICE netlist to compare the layout against. Must define the "
+            "top cell as a subcircuit matching the layout top cell name."
+        )
+        self.netlistBrowseBtn = QPushButton("Browse...")
+        self.netlistBrowseBtn.clicked.connect(self.onNetlistFileButtonClicked)
+        netlistPathRow.addWidget(self.netlistFilePathEdit, 5)
+        netlistPathRow.addWidget(self.netlistBrowseBtn, 1)
+        netlistFileLayout.addRow(edf.boldLabel("Netlist Path:"), netlistPathRow)
+        self.netlistGroupBox.setVisible(False)
+        hLayout.addWidget(self.netlistGroupBox)
+
         exportGroupBox = QGroupBox("GDS Export Options")
         self.exportGDSLayout = QFormLayout()
         self.exportGDSLayout.setSpacing(10)
@@ -489,6 +753,13 @@ class klayoutLVSDialogue(QDialog):
         self.netlistBox = QCheckBox()
         self.netlistBox.setChecked(True)
         netlistLayout.addRow(edf.boldLabel("Create Schematic Netlist:"), self.netlistBox)
+        self.exportPexBox = QCheckBox()
+        self.exportPexBox.setToolTip(
+            "Write a <cell>.rcx.json extraction database into the LVS run "
+            "directory so RC Extraction (PEX) can run directly on the LVS "
+            "result."
+        )
+        netlistLayout.addRow(edf.boldLabel("Export for PEX:"), self.exportPexBox)
         self.mainLayout.addWidget(netlistGroupBox)
 
         lvsOptionsGroup = QGroupBox("LVS Options")
@@ -498,18 +769,12 @@ class klayoutLVSDialogue(QDialog):
         klayoutPathDialogueLayout.addWidget(edf.boldLabel("KLayout Executable Path:"), 1)
         self.klayoutPathEdit = edf.longLineEdit()
         klayoutPathDialogueLayout.addWidget(self.klayoutPathEdit, 5)
-        self.rootPathButton = QPushButton("...")
-        self.rootPathButton.clicked.connect(self.onkfilePathButtonClicked)
-        klayoutPathDialogueLayout.addWidget(self.rootPathButton, 1)
         lvsOptionsLayout.addLayout(klayoutPathDialogueLayout)
 
         lvsRunPathLayout = QHBoxLayout()
         lvsRunPathLayout.addWidget(edf.boldLabel("LVS Run Path:"), 1)
         self.LVSRunPathEdit = edf.longLineEdit()
         lvsRunPathLayout.addWidget(self.LVSRunPathEdit, 5)
-        self.lvsRunPathButton = QPushButton("...")
-        self.lvsRunPathButton.clicked.connect(self.onLVSRunPathButtonClicked)
-        lvsRunPathLayout.addWidget(self.lvsRunPathButton, 1)
         lvsOptionsLayout.addLayout(lvsRunPathLayout)
 
         lvsRunLimitDialogueLayout = QHBoxLayout()
@@ -540,8 +805,10 @@ class klayoutLVSDialogue(QDialog):
             ("no_series_res", "No Series Resistors"),
             ("no_parallel_res", "No Parallel Resistors"),
             ("combine_devices", "Combine Devices"),
+            ("disable_tap_extraction", "Disable Tap Extraction"),
             ("purge", "Remove Floating Devices"),
             ("purge_nets", "Remove Floating Nets"),
+            ("purge_devices", "Remove Unused Devices"),
         ]
         self.lvsSwitchGroups: dict[str, QButtonGroup] = {}
         lvsSwitchesLayout = QFormLayout()
@@ -580,25 +847,13 @@ class klayoutLVSDialogue(QDialog):
         lvsOptionsGroup.setLayout(lvsOptionsLayout)
         self.mainLayout.addWidget(lvsOptionsGroup)
 
-        self.runButton = QPushButton("Run LVS")
-        self.saveButton = QPushButton("Save LVS Config")
-        self.loadButton = QPushButton("Load LVS Config")
-        self.closeButton = QPushButton("Close")
-        self.buttonBox = QDialogButtonBox()
-        self.buttonBox.addButton(self.loadButton, QDialogButtonBox.ActionRole)
-        self.buttonBox.addButton(self.saveButton, QDialogButtonBox.ActionRole)
-        self.buttonBox.addButton(self.runButton, QDialogButtonBox.ActionRole)
-        self.buttonBox.addButton(self.closeButton, QDialogButtonBox.RejectRole)
-        self.buttonBox.rejected.connect(self.reject)
-        self.mainLayout.addWidget(self.buttonBox)
-
         # Wrap the form in a scroll area (left panel of splitter)
         formWidget = QWidget()
         formWidget.setLayout(self.mainLayout)
         scrollArea = QScrollArea()
         scrollArea.setWidget(formWidget)
         scrollArea.setWidgetResizable(True)
-        scrollArea.setMinimumWidth(580)
+        scrollArea.setMinimumWidth(620)
 
         # Console panel (right panel of splitter)
         consoleWidget = QWidget()
@@ -607,10 +862,7 @@ class klayoutLVSDialogue(QDialog):
         self.console = QPlainTextEdit()
         self.console.setReadOnly(True)
         self.console.setMinimumWidth(400)
-        clearConsoleButton = QPushButton("Clear Console")
-        clearConsoleButton.clicked.connect(self.console.clear)
         consoleLayout.addWidget(self.console)
-        consoleLayout.addWidget(clearConsoleButton)
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(scrollArea)
@@ -620,8 +872,115 @@ class klayoutLVSDialogue(QDialog):
 
         outerLayout = QHBoxLayout()
         outerLayout.addWidget(splitter)
-        self.setLayout(outerLayout)
+        centralWidget = QWidget()
+        centralWidget.setLayout(outerLayout)
+        self.setCentralWidget(centralWidget)
         self.show()
+
+    def _createMenuBar(self):
+        menuBar = self.menuBar()
+        menuBar.setNativeMenuBar(False)
+        fileMenu = menuBar.addMenu("&File")
+        self.loadSettingsAction = QAction(
+            QIcon(":/icons/document-import.png"), "Load LVS Settings...", self
+        )
+        self.loadSettingsAction.triggered.connect(lambda: self._load_settings_from_file())
+        fileMenu.addAction(self.loadSettingsAction)
+        self.saveSettingsAction = QAction(
+            QIcon(":/icons/disk.png"), "Save LVS Settings...", self
+        )
+        self.saveSettingsAction.triggered.connect(lambda: self._save_settings_to_file())
+        fileMenu.addAction(self.saveSettingsAction)
+        fileMenu.addSeparator()
+        self.recentSettingsMenu = fileMenu.addMenu("Recent LVS Settings")
+        self._updateRecentSettingsMenu()
+        fileMenu.addSeparator()
+        self.closeAction = QAction(QIcon(":/icons/external.png"), "Close", self)
+        self.closeAction.triggered.connect(self.close)
+        fileMenu.addAction(self.closeAction)
+
+        self.runLVSAction = QAction(
+            QIcon(":/icons/application-run.png"), "Run LVS", self
+        )
+        self.runLVSAction.setShortcut("F5")
+        runMenu = menuBar.addMenu("&Run")
+        runMenu.addAction(self.runLVSAction)
+
+        toolsMenu = menuBar.addMenu("&Tools")
+        self.selectKlayoutAction = QAction(
+            QIcon(":/icons/external.png"), "Select KLayout Executable...", self
+        )
+        self.selectKlayoutAction.triggered.connect(self.onkfilePathButtonClicked)
+        toolsMenu.addAction(self.selectKlayoutAction)
+        self.selectRunPathAction = QAction(
+            QIcon(":/icons/document.png"), "Select LVS Run Path...", self
+        )
+        self.selectRunPathAction.triggered.connect(self.onLVSRunPathButtonClicked)
+        toolsMenu.addAction(self.selectRunPathAction)
+        toolsMenu.addSeparator()
+        self.clearConsoleAction = QAction(
+            QIcon(":/icons/eraser.png"), "Clear LVS Output", self
+        )
+        self.clearConsoleAction.triggered.connect(lambda: self.console.clear())
+        toolsMenu.addAction(self.clearConsoleAction)
+
+        self.lvsToolBar = self.addToolBar("LVS")
+        self.lvsToolBar.setObjectName("lvsToolBar")
+        self.lvsToolBar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.lvsToolBar.addAction(self.runLVSAction)
+        self.lvsToolBar.addSeparator()
+        self.lvsToolBar.addAction(self.loadSettingsAction)
+        self.lvsToolBar.addAction(self.saveSettingsAction)
+        self.lvsToolBar.addSeparator()
+        self.lvsToolBar.addAction(self.selectKlayoutAction)
+        self.lvsToolBar.addAction(self.selectRunPathAction)
+        self.lvsToolBar.addAction(self.clearConsoleAction)
+        self.lvsToolBar.addSeparator()
+        self.lvsToolBar.addAction(self.closeAction)
+
+    def _recent_settings(self) -> list[str]:
+        values = self._settings.value(self._recentSettingsKey, [])
+        if isinstance(values, str):
+            values = [values]
+        return [str(path) for path in values if path]
+
+    def _updateRecentSettingsMenu(self):
+        self.recentSettingsMenu.clear()
+        recentPaths = self._recent_settings()
+        if not recentPaths:
+            action = self.recentSettingsMenu.addAction("No recent settings")
+            action.setEnabled(False)
+            return
+        for path in recentPaths:
+            settingsPath = pathlib.Path(path)
+            displayName = self._recent_settings_display_name(settingsPath)
+            action = self.recentSettingsMenu.addAction(displayName)
+            action.setToolTip(path)
+            if settingsPath.exists():
+                action.triggered.connect(
+                    lambda checked=False, path=path: self._load_settings_from_file(path)
+                )
+            else:
+                action.setEnabled(False)
+
+    @staticmethod
+    def _recent_settings_display_name(settingsPath: pathlib.Path) -> str:
+        try:
+            with settingsPath.open("r", encoding="utf-8") as settingsFile:
+                settings = json.load(settingsFile)
+        except (OSError, json.JSONDecodeError):
+            return "Unknown LVS Cell"
+
+        layoutCell = str(settings.get("layoutCellName", "")).strip()
+        schematicCell = str(settings.get("schematicCellName", "")).strip()
+        if layoutCell and schematicCell and layoutCell != schematicCell:
+            return f"{layoutCell} (schematic: {schematicCell})"
+        return layoutCell or schematicCell or "Unknown LVS Cell"
+
+    def _add_recent_settings(self, filepath: str):
+        paths = [filepath] + [path for path in self._recent_settings() if path != filepath]
+        self._settings.setValue(self._recentSettingsKey, paths[:5])
+        self._updateRecentSettingsMenu()
 
     def changeSchematicCells(self):
         self.schematicLibItem = libm.getLibItem(
@@ -657,6 +1016,26 @@ class klayoutLVSDialogue(QDialog):
         )
         self.schematicCellViewListCB.clear()
         self.schematicCellViewListCB.addItems(schematicCellViewList)
+
+    def _onSourceModeChanged(self, *args):
+        """Toggle schematic vs netlist reference widgets based on source mode."""
+        schematicMode = self.schematicModeBtn.isChecked()
+        self.schematicGroupBox.setVisible(schematicMode)
+        self.netlistGroupBox.setVisible(not schematicMode)
+        # Schematic netlist generation only applies when a schematic is the
+        # reference; an existing netlist file is used as-is.
+        self.netlistBox.setEnabled(schematicMode)
+        if not schematicMode:
+            self.netlistBox.setChecked(False)
+
+    def onNetlistFileButtonClicked(self):
+        filePath, _ = QFileDialog.getOpenFileName(
+            self,
+            caption="Select Netlist File",
+            filter="Netlist Files (*.cir *.sp *.spice *.net *.cdl);;All Files (*)",
+        )
+        if filePath:
+            self.netlistFilePathEdit.setText(filePath)
 
     def exportGDSRows(self):
         if self.gdsExportBox.isChecked():
@@ -696,6 +1075,8 @@ class klayoutLVSDialogue(QDialog):
         precisionText = self.precisionEdit.text().strip()
         return {
             "klayoutPath": self.klayoutPathEdit.text().strip(),
+            "lvsSourceMode": "netlist" if self.netlistModeBtn.isChecked() else "schematic",
+            "netlistFilePath": self.netlistFilePathEdit.text().strip(),
             "schematicLibName": self.schematicLibListCB.currentText().strip(),
             "schematicCellName": self.schematicCellListCB.currentText().strip(),
             "schematicViewName": self.schematicCellViewListCB.currentText().strip(),
@@ -706,6 +1087,7 @@ class klayoutLVSDialogue(QDialog):
             "lvsRunPath": self.LVSRunPathEdit.text().strip(),
             "gdsExport": 1 if self.gdsExportBox.isChecked() else 0,
             "createNetlist": self.netlistBox.isChecked(),
+            "exportPex": self.exportPexBox.isChecked(),
             "gdsUnit": Quantity(unitText).real if unitText else 0,
             "gdsPrecision": Quantity(precisionText).real if precisionText else 0,
             "implicitNets": self.implicitNetsEdit.text().strip(),
@@ -725,6 +1107,14 @@ class klayoutLVSDialogue(QDialog):
         """
         if "klayoutPath" in settings:
             self.klayoutPathEdit.setText(settings["klayoutPath"])
+        if "netlistFilePath" in settings:
+            self.netlistFilePathEdit.setText(settings["netlistFilePath"])
+        if "lvsSourceMode" in settings:
+            if str(settings["lvsSourceMode"]).lower() == "netlist":
+                self.netlistModeBtn.setChecked(True)
+            else:
+                self.schematicModeBtn.setChecked(True)
+            self._onSourceModeChanged()
         if "lvsRunPath" in settings:
             self.LVSRunPathEdit.setText(settings["lvsRunPath"])
         if "lvsRunLimit" in settings:
@@ -733,6 +1123,8 @@ class klayoutLVSDialogue(QDialog):
             self.gdsExportBox.setChecked(bool(settings["gdsExport"]))
         if "createNetlist" in settings:
             self.netlistBox.setChecked(bool(settings["createNetlist"]))
+        if "exportPex" in settings:
+            self.exportPexBox.setChecked(bool(settings["exportPex"]))
         if "gdsUnit" in settings and settings["gdsUnit"]:
             self.unitEdit.setText(str(settings["gdsUnit"]))
         if "gdsPrecision" in settings and settings["gdsPrecision"]:
@@ -784,10 +1176,11 @@ class klayoutLVSDialogue(QDialog):
         Uses QFileDialog with JSON filter. 4-space indent.
         Validates: Requirements 11.1, 11.3
         """
+        defaultPath = pathlib.Path(self.layoutEditor.gdsExportDirObj) / "lvsSettings.json"
         filepath, _ = QFileDialog.getSaveFileName(
             self,
             "Save LVS Settings",
-            "",
+            str(defaultPath),
             "JSON Files (*.json);;All Files (*)",
         )
         if not filepath:
@@ -798,23 +1191,25 @@ class klayoutLVSDialogue(QDialog):
         try:
             with open(filepath, "w") as f:
                 json.dump(settings, f, indent=4)
+            self._add_recent_settings(filepath)
             logger.info(f"LVS settings saved to {filepath}")
         except OSError as e:
             logger.error(f"Failed to save LVS settings to {filepath}: {e}")
 
-    def _load_settings_from_file(self):
+    def _load_settings_from_file(self, filepath: str | None = None):
         """Prompt for file path and load settings from JSON.
 
         Shows warning for invalid filesystem paths.
         Logs errors for parse failures and retains current values.
         Validates: Requirements 11.2, 11.4, 11.5, 11.6
         """
-        filepath, _ = QFileDialog.getOpenFileName(
-            self,
-            "Load LVS Settings",
-            "",
-            "JSON Files (*.json);;All Files (*)",
-        )
+        if filepath is None:
+            filepath, _ = QFileDialog.getOpenFileName(
+                self,
+                "Load LVS Settings",
+                "",
+                "JSON Files (*.json);;All Files (*)",
+            )
         if not filepath:
             return  # User cancelled
 
@@ -854,6 +1249,7 @@ class klayoutLVSDialogue(QDialog):
 
         # Req 11.6: Apply only keys present in file
         self.applySettings(settings)
+        self._add_recent_settings(filepath)
         logger.info(f"LVS settings loaded from {filepath}")
 
     def appendLVSOutput(self, process) -> None:

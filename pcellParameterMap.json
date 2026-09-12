@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "mappings": {
+    "sg13_lv_nmos": {
+      "width": "@w",
+      "length": "@l",
+      "ng": "@ng"
+    },
+    "sg13_lv_pmos": {
+      "width": "@w",
+      "length": "@l",
+      "ng": "@ng"
+    }
+  }
+}
