@@ -421,6 +421,31 @@
     {
         "type": "label",
         "st": [
+            40,
+            -30
+        ],
+        "nam": "@ps",
+        "def": "[@ps:ps=%:ps=0.18u]",
+        "txt": "[@ps:ps=%:ps=0.18u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 8,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            40.0,
+            -40.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
             -30,
             -10
         ],
@@ -490,12 +515,12 @@
     {
         "type": "attr",
         "nam": "SpiceNetlistLine",
-        "def": "%spiceprefix@instName %pinOrder %modelName w=@w l=@l m=@m b=@b"
+        "def": "%spiceprefix@instName %pinOrder %modelName w=@w l=@l m=@m b=@b ps=@ps"
     },
     {
         "type": "attr",
         "nam": "lvsNetlistLine",
-        "def": "R@instName %pinOrder @cellName w=@w l=@l m=@m b=@b"
+        "def": "R@instName %pinOrder @cellName w=@w l=@l m=@m b=@b ps=@ps"
     },
     {
         "type": "attr",
@@ -520,6 +545,6 @@
     {
         "type": "attr",
         "nam": "VacaskNetlistLine",
-        "def": "@instName (%pinOrder) %modelName w=@w l=@l m=@m b=@b"
+        "def": "@instName (%pinOrder) %modelName w=@w l=@l m=@m b=@b ps=@ps"
     }
 ]

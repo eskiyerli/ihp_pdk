@@ -630,10 +630,13 @@ class CustomReader < RBA::NetlistSpiceReaderDelegate
       device.set_parameter('P',
                            (params['P'] || params['PERIM'] || (((params['W'] || 0.0) + (params['L'] || 0.0)) * 2)) * 1e6)
     elsif RES_DEV.include?(model.downcase)
+      bends = params['B'] || 0.0
       device.set_parameter('w', (params['W'] || 0.0) * 1e6)
       device.set_parameter('l', (params['L'] || 0.0) * 1e6)
-      device.set_parameter('ps', (params['PS'] || 0.0) * 1e6)
-      device.set_parameter('b', params['B'] || 0.0)
+      # ps is only extracted when the resistor has bends; keep schematic
+      # ps=0 for b=0 so straight resistors don't false-mismatch.
+      device.set_parameter('ps', bends.positive? ? (params['PS'] || 0.0) * 1e6 : 0.0)
+      device.set_parameter('b', bends)
       device.set_parameter('m', params['M'] || 1.0)
     else
       device.set_parameter('W', (params['W'] || params['WIDTH'] || 0.0) * (params['M'] || 1.0) * 1e6)

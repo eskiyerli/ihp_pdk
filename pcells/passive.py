@@ -32,7 +32,11 @@ laylyr = importPDKModule('layoutLayers')
 class rsil(baseCell):
     contpolylayer = laylyr.GatPoly_drawing
     bodypolylayer = laylyr.PolyRes_drawing
-    reslayer = laylyr.HeatRes_drawing
+    # RES marker (GDS 24/0). The IHP LVS resistor extraction identifies the
+    # rsil body via this layer (res_drw = get_polygons(24, 0)). HeatRes (GDS
+    # 52/0) is a thermal-simulation layer and is ignored by device extraction,
+    # so marking the body with HeatRes leaves rsil unextracted in LVS.
+    reslayer = laylyr.RES_drawing
     extBlocklayer = laylyr.EXTBlock_drawing
     locintlayer = laylyr.Cont_drawing
     metlayer = laylyr.Metal1_drawing

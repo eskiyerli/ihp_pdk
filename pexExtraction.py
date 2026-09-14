@@ -157,6 +157,15 @@ class pexExtractionDialogue(QDialog):
         self.couplingCheck.setChecked(True)
         optionsLayout.addRow("", self.couplingCheck)
 
+        self.resistanceCheck = QCheckBox("Extract parasitic resistance (RC)")
+        self.resistanceCheck.setChecked(True)
+        self.resistanceCheck.setToolTip(
+            "Uncheck for capacitance-only extraction (C / CC):\n"
+            "each net collapses to a single node and only\n"
+            "capacitors are emitted."
+        )
+        optionsLayout.addRow("", self.resistanceCheck)
+
         optionsGroup.setLayout(optionsLayout)
         mainLayout.addWidget(optionsGroup)
 
@@ -258,6 +267,8 @@ class pexExtractionDialogue(QDialog):
         corner = self.cornerCombo.currentText()
         fmt = self.formatCombo.currentText()
         coupling = self.couplingCheck.isChecked()
+        resistance = self.resistanceCheck.isChecked()
+        mode = ("RC" if resistance else "C") + ("C" if coupling else "")
 
         self.statusLabel.setText("Running extraction...")
         self.buttonBox.setEnabled(False)
@@ -276,7 +287,9 @@ class pexExtractionDialogue(QDialog):
                 logger.warning(f"LVS did NOT pass for cell '{rcxDb.cell_name}'.")
 
             # Run extraction
-            result = extract(rcxDb, techData, coupling=coupling)
+            result = extract(
+                rcxDb, techData, coupling=coupling, resistance=resistance
+            )
 
             # Write output
             writer = get_writer(fmt)
@@ -296,7 +309,8 @@ class pexExtractionDialogue(QDialog):
                 f"Devices: {len(result.devices)}\n"
                 f"Resistors: {result.total_r}\n"
                 f"Capacitors: {result.total_c}\n"
-                f"Corner: {corner}\n\n"
+                f"Corner: {corner}\n"
+                f"Mode: {mode}\n\n"
                 f"Output: {outputPath}\n"
                 f"Cellview: pex_{fmt}"
             )

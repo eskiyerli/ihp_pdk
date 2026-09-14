@@ -44,7 +44,7 @@
     },
     {
       "location": "menuBar",
-      "menu": "Edit/Guard Ring",
+      "menu": "Create/Guard Ring",
       "action": "SubstrateTapRing",
       "text": "Substrate Tap (p+)...",
       "module": "guardRing",

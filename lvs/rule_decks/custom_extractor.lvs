@@ -183,7 +183,9 @@ class GeneralNTerminalExtractor < RBA::GenericDeviceExtractor
     if bends.positive?
       poly_sp_polygon = meas_mk.interacting(dev)
       poly_sp = get_notch_min(poly_sp_polygon, 10 * length)
-      length = length + width
+      # NOTE: upstream adds 'width' to length here (l = segment incl. one
+      # turn share). Our pcell/model convention defines l as the drawn
+      # per-stripe length, so no correction is applied.
     end
 
     # Default values
