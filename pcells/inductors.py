@@ -497,9 +497,10 @@ class inductorBase(baseCell):
             self._mkPin(tempShapes, -x1 - w / 2, -0.01, -x1 + w / 2, 0.01,
                         'LA', self.INDp)
 
-        # Pin labels
-        self._mkLabel(tempShapes, x1, 0, 'LB', self.textLayer)
-        self._mkLabel(tempShapes, -x1, 0, 'LA', self.textLayer)
+        # Pin labels - must be on IND.text (27/25): the LVS deck classifies
+        # the LA/LB/LC ports from ind_text labels, not TEXT.drawing.
+        self._mkLabel(tempShapes, x1, 0, 'LB', laylyr.IND_text)
+        self._mkLabel(tempShapes, -x1, 0, 'LA', laylyr.IND_text)
 
         # Cell name label
         self._mkLabel(tempShapes, 0, y2 + cateta_sm / 2 + lat_sm,

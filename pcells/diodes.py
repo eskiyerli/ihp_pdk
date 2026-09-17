@@ -67,7 +67,7 @@ class dantenna(baseCell):
         self.length = length
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str):
         """
         Generate dantenna N-type ESD diode layout.
@@ -284,7 +284,7 @@ class dpantenna(baseCell):
         self.length = length
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str):
         """
         Generate dpantenna P-type ESD diode layout in isolated well.

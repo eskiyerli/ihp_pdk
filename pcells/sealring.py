@@ -111,7 +111,7 @@ class sealring(baseCell):
             layer
         ))
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, l: str, w: str, addLabel: str, addSlit: str):
         """
         Generate seal ring layout.

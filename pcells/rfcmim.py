@@ -73,7 +73,7 @@ class rfcmim(baseCell):
         self.wfeed = wfeed
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, w: str, l: str, wfeed: str):
         """
         Generate rfcmim layout.

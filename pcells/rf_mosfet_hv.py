@@ -68,7 +68,7 @@ class rfnmosHV(rfnmos):
         # Skip rfnmos.__init__ and go directly to baseRfMosfet
         baseRfMosfet.__init__(self, [])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str, ng: str, cnt_rows: str,
                  Met2Cont: str, gat_ring: str, guard_ring: str):
         tempShapesList = []
@@ -197,7 +197,7 @@ class rfpmosHV(rfpmos):
         # Skip rfpmos.__init__ and go directly to baseRfMosfet
         baseRfMosfet.__init__(self, [])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str, ng: str, cnt_rows: str,
                  Met2Cont: str, gat_ring: str, guard_ring: str):
         tempShapesList = []

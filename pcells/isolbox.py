@@ -132,7 +132,7 @@ class isolbox(baseCell):
                              self.contLayer)
                 x += contW + contS
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, l: str, w: str, wellwidth: str,
                  diode_layer: str, cont_ring: str, pwell_w: str):
         """

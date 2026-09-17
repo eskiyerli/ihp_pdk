@@ -54,7 +54,7 @@ class nmosHV(nmos):
         self.ng = int(float(ng)) if ng else params["defNG"]
         super(nmos, self).__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str, ng: str):
         tempShapesList = []
         device_params = self._get_nmosHV_params()
@@ -171,7 +171,7 @@ class pmosHV(pmos):
         self.ng = int(float(ng)) if ng else params["defNG"]
         super(pmos, self).__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str, ng: str):
         tempShapesList = []
         device_params = self._get_pmosHV_params()

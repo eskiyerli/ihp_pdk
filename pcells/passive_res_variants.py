@@ -76,7 +76,7 @@ class rhigh(rsil):
         self.ps = ps
         baseCell.__init__(self, [])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, length: str, width: str, b: str, ps: str):
         """
         Generate rhigh resistor layout.
@@ -199,7 +199,7 @@ class rppd(rsil):
         self.ps = ps
         baseCell.__init__(self, [])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, length: str, width: str, b: str, ps: str):
         """
         Generate rppd resistor layout.

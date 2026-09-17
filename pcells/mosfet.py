@@ -162,7 +162,7 @@ class pmos(baseMosfet):
         self.ng = int(float(ng)) if ng else params["defNG"]
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str, ng: str):
         tempShapesList = []
         device_params = self._get_pmos_params()

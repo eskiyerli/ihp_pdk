@@ -121,7 +121,7 @@ class SVaricap(baseCell):
                              self.contLayer)
                 x += contW + contS
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, w: str, l: str, Nx: str):
         """
         Generate SVaricap layout.

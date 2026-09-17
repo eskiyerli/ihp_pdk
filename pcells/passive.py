@@ -57,7 +57,7 @@ class rsil(baseCell):
         self.ps = ps
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, length: str, width: str, b: str, ps: str):
         self.length, self.width, self.b, self.ps = (
             Quantity(length).real, Quantity(width).real,
@@ -391,7 +391,7 @@ class rsil(baseCell):
         #                     'centerCenter', rot, Font.EURO_STYLE, labelheight)
         self.shapes = tempShapeList
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def _get_res_calc_params(self, cell: str):
         """Helper to fetch and cache resistance calculation parameters."""
         suffix = "G2"
@@ -479,7 +479,7 @@ class cmim(baseCell):
         self._shapes = []
         super().__init__(self._shapes)
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str):
         self.width = Quantity(width).real
         self.length = Quantity(length).real

@@ -99,7 +99,7 @@ class via_stack(baseCell):
         self.vt2_rows = vt2_rows
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, b_layer: str, t_layer: str,
                  vn_columns: str, vn_rows: str,
                  vt1_columns: str, vt1_rows: str,

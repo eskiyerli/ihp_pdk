@@ -1,6 +1,6 @@
-# 
+#
 # Revolution EDA
-# 
+#
 # Copyright (c) 2026 Revolution Semiconductor
 #
 # This Source Code Form is subject to the terms of the
@@ -44,18 +44,38 @@ gdsPrecision = Quantity("1 nm")
 #   Mim_d/c -> MIM / TopMetal1 enclosure of Vmim
 # Note: contacts physically land on Activ/GatPoly at the bottom and Metal1 at
 # the top, so GatPoly is used as the bottom layer and Metal1 as the top layer.
-_cntEnc = techParams["Cnt_c"]      # 0.07
-_viaEnc = techParams["Vn_c"]       # 0.05
+_cntEnc = techParams["Cnt_c"]  # 0.07
+_viaEnc = techParams["Vn_c"]  # 0.05
 processVias = [
     ddef.viaDefTuple(
-        "contBar", laylyr.Cont_drawing, "", 0.34, 0.34, 0.16, 0.16, 0.28, 10.0,
-        bottomLayer=laylyr.GatPoly_drawing, topLayer=laylyr.Metal1_drawing,
-        bottomEnclosure=_cntEnc, topEnclosure=_cntEnc,
+        "contBar",
+        laylyr.Cont_drawing,
+        "",
+        0.34,
+        0.34,
+        0.16,
+        0.16,
+        0.28,
+        10.0,
+        bottomLayer=laylyr.GatPoly_drawing,
+        topLayer=laylyr.Metal1_drawing,
+        bottomEnclosure=_cntEnc,
+        topEnclosure=_cntEnc,
     ),
     ddef.viaDefTuple(
-        "cont", laylyr.Cont_drawing, "", 0.16, 0.16, 0.16, 0.16, 0.28, 10.0,
-        bottomLayer=laylyr.GatPoly_drawing, topLayer=laylyr.Metal1_drawing,
-        bottomEnclosure=_cntEnc, topEnclosure=_cntEnc,
+        "cont",
+        laylyr.Cont_drawing,
+        "",
+        0.16,
+        0.16,
+        0.16,
+        0.16,
+        0.28,
+        10.0,
+        bottomLayer=laylyr.GatPoly_drawing,
+        topLayer=laylyr.Metal1_drawing,
+        bottomEnclosure=_cntEnc,
+        topEnclosure=_cntEnc,
     ),
     ddef.viaDefTuple(
         "viamim",
@@ -67,38 +87,100 @@ processVias = [
         10,
         0.84,
         10,
-        bottomLayer=laylyr.MIM_drawing, topLayer=laylyr.TopMetal1_drawing,
-        bottomEnclosure=techParams["Mim_d"], topEnclosure=techParams["Mim_c"],
+        bottomLayer=laylyr.MIM_drawing,
+        topLayer=laylyr.TopMetal1_drawing,
+        bottomEnclosure=techParams["Mim_d"],
+        topEnclosure=techParams["Mim_c"],
     ),
     ddef.viaDefTuple(
-        "via1", laylyr.Via1_drawing, "", 0.19, 0.19, 0.19, 0.19, 0.22, 10.0,
-        bottomLayer=laylyr.Metal1_drawing, topLayer=laylyr.Metal2_drawing,
-        bottomEnclosure=_viaEnc, topEnclosure=_viaEnc,
+        "via1",
+        laylyr.Via1_drawing,
+        "",
+        0.19,
+        0.19,
+        0.19,
+        0.19,
+        0.22,
+        10.0,
+        bottomLayer=laylyr.Metal1_drawing,
+        topLayer=laylyr.Metal2_drawing,
+        bottomEnclosure=_viaEnc,
+        topEnclosure=_viaEnc,
     ),
     ddef.viaDefTuple(
-        "via2", laylyr.Via2_drawing, "", 0.19, 0.19, 0.19, 0.19, 0.22, 10.0,
-        bottomLayer=laylyr.Metal2_drawing, topLayer=laylyr.Metal3_drawing,
-        bottomEnclosure=_viaEnc, topEnclosure=_viaEnc,
+        "via2",
+        laylyr.Via2_drawing,
+        "",
+        0.19,
+        0.19,
+        0.19,
+        0.19,
+        0.22,
+        10.0,
+        bottomLayer=laylyr.Metal2_drawing,
+        topLayer=laylyr.Metal3_drawing,
+        bottomEnclosure=_viaEnc,
+        topEnclosure=_viaEnc,
     ),
     ddef.viaDefTuple(
-        "via3", laylyr.Via3_drawing, "", 0.19, 0.19, 0.19, 0.19, 0.22, 10.0,
-        bottomLayer=laylyr.Metal3_drawing, topLayer=laylyr.Metal4_drawing,
-        bottomEnclosure=_viaEnc, topEnclosure=_viaEnc,
+        "via3",
+        laylyr.Via3_drawing,
+        "",
+        0.19,
+        0.19,
+        0.19,
+        0.19,
+        0.22,
+        10.0,
+        bottomLayer=laylyr.Metal3_drawing,
+        topLayer=laylyr.Metal4_drawing,
+        bottomEnclosure=_viaEnc,
+        topEnclosure=_viaEnc,
     ),
     ddef.viaDefTuple(
-        "via4", laylyr.Via4_drawing, "", 0.19, 0.19, 0.19, 0.19, 0.22, 10.0,
-        bottomLayer=laylyr.Metal4_drawing, topLayer=laylyr.Metal5_drawing,
-        bottomEnclosure=_viaEnc, topEnclosure=_viaEnc,
+        "via4",
+        laylyr.Via4_drawing,
+        "",
+        0.19,
+        0.19,
+        0.19,
+        0.19,
+        0.22,
+        10.0,
+        bottomLayer=laylyr.Metal4_drawing,
+        topLayer=laylyr.Metal5_drawing,
+        bottomEnclosure=_viaEnc,
+        topEnclosure=_viaEnc,
     ),
     ddef.viaDefTuple(
-        "topVia1", laylyr.TopVia1_drawing, "", 0.42, 0.42, 0.42, 0.42, 0.42, 10.0,
-        bottomLayer=laylyr.Metal5_drawing, topLayer=laylyr.TopMetal1_drawing,
-        bottomEnclosure=techParams["TV1_c"], topEnclosure=techParams["TV1_d"],
+        "topVia1",
+        laylyr.TopVia1_drawing,
+        "",
+        0.42,
+        0.42,
+        0.42,
+        0.42,
+        0.42,
+        10.0,
+        bottomLayer=laylyr.Metal5_drawing,
+        topLayer=laylyr.TopMetal1_drawing,
+        bottomEnclosure=techParams["TV1_c"],
+        topEnclosure=techParams["TV1_d"],
     ),
     ddef.viaDefTuple(
-        "topVia2", laylyr.TopVia2_drawing, "", 0.90, 0.90, 0.90, 0.90, 1.06, 10.0,
-        bottomLayer=laylyr.TopMetal1_drawing, topLayer=laylyr.TopMetal2_drawing,
-        bottomEnclosure=techParams["TV2_c"], topEnclosure=techParams["TV2_d"],
+        "topVia2",
+        laylyr.TopVia2_drawing,
+        "",
+        0.90,
+        0.90,
+        0.90,
+        0.90,
+        1.06,
+        10.0,
+        bottomLayer=laylyr.TopMetal1_drawing,
+        topLayer=laylyr.TopMetal2_drawing,
+        bottomEnclosure=techParams["TV2_c"],
+        topEnclosure=techParams["TV2_d"],
     ),
 ]
 
@@ -130,7 +212,7 @@ processPaths = [
         "topMetal1", laylyr.TopMetal1_drawing, "", 1.64, 100.0, 1, 1000.0, 1.64, 1000.0
     ),
     ddef.layoutPathDefTuple(
-        "topMetal2", laylyr.TopMetal1_drawing, "", 2.0, 100.0, 1, 1000.0, 2.0, 1000.0
+        "topMetal2", laylyr.TopMetal2_drawing, "", 2.0, 100.0, 1, 1000.0, 2.0, 1000.0
     ),
 ]
 processPathNames = [path.name for path in processPaths]

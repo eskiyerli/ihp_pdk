@@ -1,12 +1,14 @@
 [
     {
-        "viewType": "symbol"
+        "viewType": "symbol",
+        "schemaVersion": "1.0"
     },
     {
         "snapGrid": [
             10,
             10
-        ]
+        ],
+        "snapConnectDistance": 20
     },
     {
         "type": "rect",

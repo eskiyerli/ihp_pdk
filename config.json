@@ -52,6 +52,39 @@
       "apply": [
         "layoutEditor"
       ]
+    },
+    {
+      "location": "menuBar",
+      "menu": "Create/Guard Ring",
+      "action": "NWellTapRing",
+      "text": "N-Well Tap (n+)...",
+      "module": "guardRing",
+      "callback": "nwellGuardRingClick",
+      "apply": [
+        "layoutEditor"
+      ]
+    },
+    {
+      "location": "menuBar",
+      "menu": "Create/Substrate Tap",
+      "action": "PSubTapLine",
+      "text": "P+ Tap Line",
+      "module": "tapLine",
+      "callback": "psubTapClick",
+      "apply": [
+        "layoutEditor"
+      ]
+    },
+    {
+      "location": "menuBar",
+      "menu": "Create/Substrate Tap",
+      "action": "NWellTapLine",
+      "text": "N-Well Tap Line",
+      "module": "tapLine",
+      "callback": "nwellTapClick",
+      "apply": [
+        "layoutEditor"
+      ]
     }
   ]
 }

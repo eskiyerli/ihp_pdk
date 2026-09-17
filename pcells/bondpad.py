@@ -159,7 +159,7 @@ class bondpad(baseCell):
             idx = int(name) - 1
             return max(0, min(idx, 6))
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, padShape: str, diameter: str, topMetal: str,
                  bottomMetal: str, stack: str, fill: str, addFillerEx: str):
         """

@@ -19,9 +19,11 @@
 """Parametric guard ring PCell for the IHP SG13G2 PDK.
 
 The guard ring is generated as a multi-part path: parallel ``layoutPath``
-segments on ``Activ``, ``pSD`` and ``Metal1`` share the same rectangular
-centreline, and a ``Cont`` array fills the ring.  The resulting PCell can be
-re-parameterised after placement.
+segments on ``Activ`` and ``Metal1`` share the same rectangular centreline,
+and a ``Cont`` array fills the ring.  ``tapType`` selects the enclosing
+implant frame: ``pSD`` for a p+ substrate ring (``"p"``), ``NWell`` for an
+n+ n-well ring (``"n"``).  The resulting PCell can be re-parameterised after
+placement.
 """
 
 import math
@@ -39,7 +41,7 @@ fabproc = importPDKModule('process')
 
 
 class guardRing(baseCell):
-    """p+ substrate guard ring around a guide rectangle.
+    """p+ substrate or n+ n-well guard ring around a guide rectangle.
 
     Parameters:
         w: Guide rectangle width (e.g. "10u").
@@ -47,6 +49,8 @@ class guardRing(baseCell):
         ringWidth: Width of the Activ/Metal1 ring (e.g. "0.6u").
         gap: Distance from the guide rectangle to the ring inner edge
             (e.g. "0.5u").
+        tapType: "p" draws a p+ substrate ring (pSD frame around the Activ
+            ring); "n" draws an n+ n-well ring (NWell frame instead).
 
     The PCell origin is the lower-left corner of the guide rectangle.  The
     ring is built outside this rectangle at the requested gap.
@@ -54,23 +58,28 @@ class guardRing(baseCell):
 
     activLayer = laylyr.Activ_drawing
     psdLayer = laylyr.pSD_drawing
+    nwellLayer = laylyr.NWell_drawing
     metal1Layer = laylyr.Metal1_drawing
     contLayer = laylyr.Cont_drawing
 
     def __init__(self, w: str = "10u", h: str = "10u",
-                 ringWidth: str = "0.6u", gap: str = "0.5u"):
+                 ringWidth: str = "0.6u", gap: str = "0.5u",
+                 tapType: str = "p"):
         self.w = w
         self.h = h
         self.ringWidth = ringWidth
         self.gap = gap
+        self.tapType = tapType
         super().__init__([])
 
-    @lru_cache
-    def __call__(self, w: str, h: str, ringWidth: str, gap: str):
+    @lru_cache(maxsize=16)
+    def __call__(self, w: str, h: str, ringWidth: str, gap: str,
+                 tapType: str = "p"):
         self.w = w
         self.h = h
         self.ringWidth = ringWidth
         self.gap = gap
+        self.tapType = tapType
 
         grid_um = baseCell._sg13grid  # 0.005 um for SG13G2
         two_grid_um = 2 * grid_um
@@ -93,7 +102,11 @@ class guardRing(baseCell):
         cont_dist = tp["Cnt_b"]
         cont_diff_over = tp["Cnt_c"]
         cont_metal_endcap = tp["M1_c1"]
-        psd_over = baseCell.GridFix(tp["pSD_c1"])
+        nwell = str(tapType).strip().lower().startswith("n")
+        # Implant/well frame enclosing the Activ ring: pSD for a p+
+        # substrate ring, NWell for an n+ n-well ring.
+        implant_over = baseCell.GridFix(tp["NW_e"] if nwell else tp["pSD_c1"])
+        implantLayer = self.nwellLayer if nwell else self.psdLayer
 
         min_rw = cont_size + 2 * max(cont_diff_over, cont_metal_endcap)
         min_rw = round(baseCell.GridFix(min_rw) / two_grid_um) * two_grid_um
@@ -109,24 +122,24 @@ class guardRing(baseCell):
         h_dbu = self.toSceneDimension(h_um)
         rw_dbu = self.toSceneDimension(rw_um)
         gap_dbu = self.toSceneDimension(gap_um)
-        psd_over_dbu = self.toSceneDimension(psd_over)
+        implant_over_dbu = self.toSceneDimension(implant_over)
 
         # Inner/outer edges of the ring relative to the guide rectangle origin.
         inner_off = gap_dbu
         outer_off = gap_dbu + rw_dbu
 
         activ_strips = self._frameStrips(0, 0, w_dbu, h_dbu, inner_off, outer_off)
-        psd_strips = self._frameStrips(
-            0, 0, w_dbu, h_dbu, inner_off - psd_over_dbu,
-            outer_off + psd_over_dbu)
+        implant_strips = self._frameStrips(
+            0, 0, w_dbu, h_dbu, inner_off - implant_over_dbu,
+            outer_off + implant_over_dbu)
         csize_dbu = int(round(cont_size * fabproc.dbu / grid_dbu)) * grid_dbu
         cont_rects = self._contRects(activ_strips, cont_size, cont_dist,
                                      cont_diff_over)
 
         shapes = []
-        for strip in psd_strips:
-            shapes.append(self._stripToPath(strip, self.psdLayer,
-                                            rw_dbu + 2 * psd_over_dbu))
+        for strip in implant_strips:
+            shapes.append(self._stripToPath(strip, implantLayer,
+                                            rw_dbu + 2 * implant_over_dbu))
         for strip in activ_strips:
             shapes.append(self._stripToPath(strip, self.activLayer, rw_dbu))
         for strip in activ_strips:

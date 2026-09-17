@@ -7,7 +7,8 @@
         "snapGrid": [
             10,
             10
-        ]
+        ],
+        "snapConnectDistance": 20
     },
     {
         "type": "polygon",

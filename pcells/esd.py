@@ -122,7 +122,7 @@ class esd(baseCell):
                 y = y0 + i * (size + offset)
                 self._mkRect(shapes, x, y, x + size, y + size, layer)
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, model: str = "diodevdd_2kv"):
         """
         Generate ESD device layout for the specified model.

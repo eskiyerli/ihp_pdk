@@ -21,7 +21,7 @@ import json
 import os
 
 
-class SG13_Tech():
+class SG13_Tech:
 
     def __init__(self):
         techFilePath = os.path.join(os.path.dirname(__file__), "sg13g2_tech.json")
@@ -38,10 +38,6 @@ class SG13_Tech():
 
     def name(self):
         return "SG13_dev"
-
-    @property
-    def gridResolution(self):
-        return 0.0
 
     @property
     def techParams(self):

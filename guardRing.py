@@ -18,13 +18,16 @@
 
 """Guard ring generator for the IHP SG13G2 PDK.
 
-``Edit -> Guard Ring -> Substrate Tap (p+)`` lets the user drag a rectangle
-in the layout view and places a parametric ``guardRing`` PCell around it.
-The ring is generated as a multi-part path: parallel ``layoutPath`` segments
-on Activ, pSD and Metal1 share the same rectangular centreline, with a Cont
-array connecting Metal1 to the diffusion.  Like the ``subtap`` PCell, it
-carries no Substrate marker or 'sub!' TEXT, so LVS keeps it in the substrate
-net.  Place a Metal1.text label over the ring metal to name the net.
+``Create -> Guard Ring -> Substrate Tap (p+)`` / ``N-Well Tap (n+)`` lets the
+user drag a rectangle in the layout view and places a parametric
+``guardRing`` PCell around it.  The ring is generated as a multi-part path:
+parallel ``layoutPath`` segments on Activ, the implant frame (pSD or NWell,
+selected by the pcell's ``tapType`` parameter) and Metal1 share the same
+rectangular centreline, with a Cont array connecting Metal1 to the
+diffusion.  Like the ``subtap``/``nwtap`` PCells, the ring carries no
+Substrate/nBuLay marker or 'sub!'/'well' TEXT, so LVS keeps it in the
+substrate/well net.  Place a Metal1.text label over the ring metal to name
+the net.
 """
 
 from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
@@ -66,9 +69,9 @@ def _findPdkLibraryName(editorWindow, cellName: str = "guardRing") -> str:
 class _guardRingDialog(QDialog):
     """Ring width and gap parameters, in um."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, title="Substrate Guard Ring"):
         super().__init__(parent)
-        self.setWindowTitle("Substrate Guard Ring")
+        self.setWindowTitle(title)
         formLayout = QFormLayout(self)
 
         self.widthSpinBox = QDoubleSpinBox(self)
@@ -170,7 +173,7 @@ class _ringRectGrabber(QObject):
         return False
 
 
-def _commitRing(scene, rect, widthUm, gapUm):
+def _commitRing(scene, rect, widthUm, gapUm, tapType="p"):
     """Create a guardRing PCell instance around ``rect``."""
     libName = _findPdkLibraryName(scene.editorWindow)
     if not libName:
@@ -184,7 +187,7 @@ def _commitRing(scene, rect, widthUm, gapUm):
     h_um = rect.height() / _dbu
 
     pcell = guardRing()
-    pcell(f"{w_um}u", f"{h_um}u", f"{widthUm}u", f"{gapUm}u")
+    pcell(f"{w_um}u", f"{h_um}u", f"{widthUm}u", f"{gapUm}u", tapType)
 
     pcell.libraryName = libName
     pcell.cellName = "guardRing"
@@ -194,22 +197,24 @@ def _commitRing(scene, rect, widthUm, gapUm):
     pcell.instanceName = f"I{pcell.counter}"
     pcell.setPos(rect.topLeft())
 
+    net = "well" if tapType.startswith("n") else "substrate"
     scene.addUndoStack(pcell)
     scene.editorWindow.messageLine.setText(
         f"Guard ring pcell created ({len(pcell.shapes)} shapes). "
-        "Label the ring metal on Metal1.text to name the substrate net.")
+        f"Label the ring metal on Metal1.text to name the {net} net.")
 
 
-def guardRingClick(editorWindow):
-    """Edit -> Guard Ring -> Substrate Tap (p+) callback."""
+def _startGuardRing(editorWindow, tapType, title):
+    """Shared body of the guard ring menu callbacks."""
     scene = editorWindow.centralW.scene
 
     def _onRect(rect):
-        dialog = _guardRingDialog(editorWindow)
+        dialog = _guardRingDialog(editorWindow, title)
         if dialog.exec() == QDialog.DialogCode.Accepted:
             _commitRing(
                 scene, rect,
-                dialog.widthSpinBox.value(), dialog.gapSpinBox.value())
+                dialog.widthSpinBox.value(), dialog.gapSpinBox.value(),
+                tapType)
 
     # A selected rect doubles as the guide, e.g. an NWell or prBoundary
     # rectangle around the block to guard.
@@ -225,3 +230,13 @@ def guardRingClick(editorWindow):
     # while it is still installed as an event filter.
     editorWindow._guardRingGrabber = _ringRectGrabber(editorWindow, _onRect)
     editorWindow._guardRingGrabber.start()
+
+
+def guardRingClick(editorWindow):
+    """Create -> Guard Ring -> Substrate Tap (p+) callback."""
+    _startGuardRing(editorWindow, "p", "Substrate Guard Ring")
+
+
+def nwellGuardRingClick(editorWindow):
+    """Create -> Guard Ring -> N-Well Tap (n+) callback."""
+    _startGuardRing(editorWindow, "n", "N-Well Guard Ring")

@@ -176,7 +176,7 @@ class rfpmos(baseRfMosfet):
         self.guard_ring = guard_ring
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str, ng: str, cnt_rows: str,
                  Met2Cont: str, gat_ring: str, guard_ring: str):
         tempShapesList = []

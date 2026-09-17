@@ -70,6 +70,64 @@ logger = logging.getLogger("reveda")
 SYMBOL_PIN_DISTANCE = 80
 SYMBOL_STUB_LENGHT = 20
 
+# The IHP rule deck's PREFIX_MAP misses a few extracted device classes:
+# the two-port inductor extractor registers its devices as 'inductor'
+# (not 'inductor2'), and the npn13G2l/npn13G2v extractors use lower-case
+# names while PREFIX_MAP spells them npn13G2L/npn13G2V. KLayout's custom
+# writer then falls back to the numeric device id as the SPICE prefix
+# (e.g. "1$1 ..."), producing device lines the netlist parser cannot
+# read. The .lvs files are vendor code, so the proper prefix is restored
+# here when the extracted netlist is consumed.
+_EXTRACTED_DEVICE_PREFIXES = {
+    "inductor": "L",
+    "npn13g2l": "Q",
+    "npn13g2v": "Q",
+}
+
+
+def fixupExtractedDevicePrefixes(netlistPath: pathlib.Path) -> None:
+    """Rewrite digit-prefixed device lines in an extracted SPICE netlist.
+
+    Lines inside a subcircuit that start with a digit come from device
+    classes missing from the deck's PREFIX_MAP (see
+    _EXTRACTED_DEVICE_PREFIXES). The model token (last bare token before
+    the key=value parameters) identifies the class; the line's first
+    token is rewritten as ``<prefix><expanded_name>``. Edits the file in
+    place; unmapped or unparseable lines are left untouched.
+    """
+    try:
+        lines = netlistPath.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return
+    insideSubckt = False
+    changed = False
+    for index, line in enumerate(lines):
+        upperLine = line.strip().upper()
+        if upperLine.startswith(".SUBCKT"):
+            insideSubckt = True
+            continue
+        if upperLine.startswith(".ENDS"):
+            insideSubckt = False
+            continue
+        if not insideSubckt or not line[:1].isdigit():
+            continue
+        tokens = line.split()
+        modelIndex = next(
+            (i for i in range(len(tokens) - 1, 0, -1) if "=" not in tokens[i]),
+            None,
+        )
+        if modelIndex is None:
+            continue
+        prefix = _EXTRACTED_DEVICE_PREFIXES.get(tokens[modelIndex].casefold())
+        if prefix is None:
+            continue
+        tokens[0] = prefix + tokens[0].lstrip("0123456789")
+        lines[index] = " ".join(tokens)
+        changed = True
+    if changed:
+        netlistPath.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        logger.info(f"Restored device prefixes in {netlistPath}")
+
 
 def collectSceneConnectivityHints(scene, extractedNetlist, dbu):
     """Extract naming/connectivity hints from a layout scene.
@@ -209,20 +267,61 @@ def klayoutLVSClick(layoutEditor):
 
         root = libraryModel.invisibleRootItem()
 
+        def symbolViewTuple(libItem, cellItem):
+            # Look for symbol view among the cell's views (level 2)
+            for viewRow in range(cellItem.rowCount()):
+                viewItem = cellItem.child(viewRow)  # viewItem
+                if viewItem.viewName == "symbol":
+                    return ddef.viewNameTuple(
+                        libItem.libraryName, cellItem.cellName, "symbol"
+                    )
+            return None
+
+        def symbolLvsModel(cellItem) -> str | None:
+            """Return the symbol's ``lvs_model`` attribute, if defined."""
+            for viewRow in range(cellItem.rowCount()):
+                viewItem = cellItem.child(viewRow)
+                if viewItem.viewName != "symbol":
+                    continue
+                try:
+                    with viewItem.viewPath.open("r", encoding="utf-8") as symbolFile:
+                        symbolData = json.load(symbolFile)
+                except (OSError, json.JSONDecodeError):
+                    return None
+                for item in symbolData:
+                    if (
+                        isinstance(item, dict)
+                        and item.get("type") == "attr"
+                        and str(item.get("nam", "")).casefold() == "lvs_model"
+                    ):
+                        return item.get("def")
+                return None
+            return None
+
         # Iterate through libraries (level 0)
         for libRow in range(root.rowCount()):
             libItem = root.child(libRow)  # libraryItem
-            libName = libItem.libraryName
 
             # Iterate through cells in this library (level 1)
             for cellRow in range(libItem.rowCount()):
                 cellItem = libItem.child(cellRow)  # cellItem
                 if cellItem.cellName == extractedCellName or str(cellItem.cellName).casefold() == str(extractedCellName).casefold():
-                    # Found the cell, now look for symbol view (level 2)
-                    for viewRow in range(cellItem.rowCount()):
-                        viewItem = cellItem.child(viewRow)  # viewItem
-                        if viewItem.viewName == "symbol":
-                            return ddef.viewNameTuple(libName, cellItem.cellName, "symbol")
+                    viewTuple = symbolViewTuple(libItem, cellItem)
+                    if viewTuple is not None:
+                        return viewTuple
+
+        # The extracted device class may differ from the library cell name
+        # (e.g. LVS device "rfcmim" vs cell "cap_rfcmim"). Fall back to the
+        # symbol's "lvs_model" attribute, which is what the schematic-side
+        # LVS netlist emits as the device model.
+        targetName = str(extractedCellName).casefold()
+        for libRow in range(root.rowCount()):
+            libItem = root.child(libRow)
+            for cellRow in range(libItem.rowCount()):
+                cellItem = libItem.child(cellRow)
+                lvsModel = symbolLvsModel(cellItem)
+                if lvsModel is not None and str(lvsModel).casefold() == targetName:
+                    return symbolViewTuple(libItem, cellItem)
 
         return None
 
@@ -259,6 +358,7 @@ def klayoutLVSClick(layoutEditor):
         logger.info(f"Parsed LVSDB: {parser.filepath}")
 
         # Use extracted netlist as single source of truth for lvs_schematic
+        fixupExtractedDevicePrefixes(extractedNetlistPath)
         extracted = parse_extracted_netlist(extractedNetlistPath, layoutEditor.cellName)
 
 
@@ -653,9 +753,9 @@ class klayoutLVSDialogue(QMainWindow):
         self.schematicLibListCB = QComboBox()
         self.schematicLibListCB.setModel(self.model)
         self.schematicLibListCB.setModelColumn(0)
-        self.schematicLibListCB.currentTextChanged.connect(self.changeSchematicCells)
+        self.schematicLibListCB.setCurrentText(self.layoutEditor.libName)
         self.schematicLibItem = libm.getLibItem(
-            self.model, self.schematicLibListCB.currentText()
+            self.model, self.layoutEditor.libName
         )
         schematicLayout.addRow("Library:", self.schematicLibListCB)
 
@@ -668,9 +768,9 @@ class klayoutLVSDialogue(QMainWindow):
         )
         self.schematicCellListCB.addItems(schematicCellList)
         self.schematicCellListCB.setEditable(True)
-        self.schematicCellListCB.currentTextChanged.connect(self.changeSchematicCellViews)
+        self.schematicCellListCB.setCurrentText(self.layoutEditor.cellName)
         self.schematicCellItem = libm.getCellItem(
-            self.schematicLibItem, self.schematicCellListCB.currentText()
+            self.schematicLibItem, self.layoutEditor.cellName
         )
         schematicLayout.addRow("Cell:", self.schematicCellListCB)
 
@@ -686,6 +786,11 @@ class klayoutLVSDialogue(QMainWindow):
             )
         )
         schematicLayout.addRow("View:", self.schematicCellViewListCB)
+
+        self.schematicLibListCB.currentTextChanged.connect(self.changeSchematicCells)
+        self.schematicCellListCB.currentTextChanged.connect(
+            self.changeSchematicCellViews
+        )
 
         hLayout.addWidget(schematicGroupBox)
 

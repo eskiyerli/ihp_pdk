@@ -9,6 +9,7 @@ All 37 symbol.json files under `sg13g2_pr` now have `lvsNetlistLine` and `lvsDev
 | **dio** | diodevdd_2kv, diodevdd_4kv, diodevss_2kv, diodevss_4kv, idiodevdd_2kv, idiodevdd_4kv, idiodevss_2kv, idiodevss_4kv, dantenna, dpantenna, sg13_svaricap |
 | **bjt** | npn13G2, npn13G2_5t, npn13G2l, npn13G2l_5t, npn13G2v, npn13G2v_5t, pnpMPA |
 | **subckt** | bondpad, sub |
+| **ind** | inductor2, inductor3 |
 
 The LVS netlist lines follow the pattern:
 - MOSFETs: `M@instName %pinOrder @cellName w=@w l=@l ...`

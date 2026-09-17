@@ -34,7 +34,11 @@ All pcells registered in the module's `__init__.py` are fully implemented with l
 | | schottky | schottky.py | N+/Metal Schottky diode with guard rings and thermal vias | w, l, Nx, Ny (array), m (multiplier) | ✅ Implemented |
 | **Tap Contacts** | ntap1 | tap_contacts.py | N-type substrate tap contact (N-well with nBuLay) | width, length | ✅ Implemented |
 | | ptap1 | tap_contacts.py | P-type substrate tap contact (P+ diffusion) | width, length | ✅ Implemented |
-| **Guard Rings** | guardRing | guardRing.py | Multi-part p+ substrate guard ring around a rectangle | w, h, ringWidth, gap | ✅ Implemented |
+| | subtap | tap_contacts.py | Plain p+ substrate tap (no markers, connectivity only) | width, length | ✅ Implemented |
+| | nwtap | tap_contacts.py | Plain n+ n-well tap (no markers, connectivity only) | width, length | ✅ Implemented |
+| | psubtap | tap_contacts.py | p+ substrate tap line (minimum-width strip) | length | ✅ Implemented |
+| | nwelltap | tap_contacts.py | n+ n-well tap line (minimum-width strip) | length | ✅ Implemented |
+| **Guard Rings** | guardRing | guardRing.py | Multi-part guard ring around a rectangle (p+ substrate or n+ n-well) | w, h, ringWidth, gap, tapType | ✅ Implemented |
 | **Utility** | NoFillerStack | nofiller_stack.py | DRC filler exclusion marker (per-layer nofill rectangles) | w, l, noAct, noGP, noM1-5, noTM1-2 | ✅ Implemented |
 
 ## Implementation Notes

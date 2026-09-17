@@ -74,7 +74,7 @@ class npn13G2(baseCell):
         self.we = we
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, Nx: str, le: str, we: str):
         """Generate npn13G2 layout matching original KLayout geometry."""
         Nx_int = int(float(Nx))
@@ -385,7 +385,7 @@ class npn13G2V(baseCell):
         self.we = we
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, Nx: str, le: str, we: str):
         """
         Generate npn13G2V layout.
@@ -562,7 +562,7 @@ class npn13G2L(baseCell):
         self.we = we
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, Nx: str, le: str, we: str):
         """
         Generate npn13G2L layout.
@@ -723,7 +723,7 @@ class pnpMPA(baseCell):
         self.length = length
         super().__init__([])
 
-    @lru_cache
+    @lru_cache(maxsize=16)
     def __call__(self, width: str, length: str):
         """
         Generate pnpMPA layout matching original KLayout geometry.

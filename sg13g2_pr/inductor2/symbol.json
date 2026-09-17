@@ -534,5 +534,20 @@
         "type": "attr",
         "nam": "modelName",
         "def": "inductor2"
+    },
+    {
+        "type": "attr",
+        "nam": "lvsNetlistLine",
+        "def": "L@instName %pinOrder sub! %lvs_model w=@w s=@s d=@d nr_r=@nr"
+    },
+    {
+        "type": "attr",
+        "nam": "lvs_model",
+        "def": "inductor"
+    },
+    {
+        "type": "attr",
+        "nam": "lvsDeviceType",
+        "def": "ind"
     }
 ]
