@@ -142,8 +142,9 @@ class idiodevss_4kv(baseInst):
 class inductorBase(baseInst):
     """
     Base callback class for SG13G2 inductors.
-    Evaluates inductance (L_parm), resistance (R_parm), and quality factor (Q_parm)
-    from instance labels (@w, @s, @d, @nr_r).
+    Evaluates inductance (L_parm), resistance (R_parm), quality factor (Q_parm),
+    and self-resonance frequency (SRF_parm) from instance labels
+    (@w, @s, @d, @nr_r; optional @subE for substrate-etched variants).
     """
     default_d = "15.48u"
     default_nr = "1"
@@ -154,6 +155,7 @@ class inductorBase(baseInst):
         self.s = Quantity(self._getLabelVal(["@s", "@S"], "2.1u"))
         self.d = Quantity(self._getLabelVal(["@d", "@D"], getattr(self, "default_d", "15.48u")))
         self.nr_r = Quantity(self._getLabelVal(["@nr_r", "@nr", "@N"], getattr(self, "default_nr", "1")))
+        self.subE = self._getLabelVal(["@subE", "@sube"], "False")
 
     def _getLabelVal(self, keys: list, default: str):
         for k in keys:
@@ -202,6 +204,42 @@ class inductorBase(baseInst):
         w_rad = 2 * math.pi * 5.0e9
         r_val = self.R_parm()
         return (w_rad * self.L_parm()) / r_val if r_val > 0 else 0.0
+
+    def _parasiticCap(self):
+        """Estimate total winding parasitic capacitance (F).
+
+        Sum of the winding-to-substrate oxide capacitance through the IMD
+        stack and the lateral capacitance between adjacent turns. When the
+        substrate is etched below the inductor (subE), the oxide term is
+        dropped.
+        """
+        eps_ox = 8.854e-12 * 4.1   # SiO2 IMD permittivity
+        t_ox = 10.0e-6             # effective IMD height, TopMetal2 to substrate
+        t_m = 3.0e-6               # TopMetal2 thickness
+
+        w = self.w.real
+        s = self.s.real
+        n = float(self.nr_r.real)
+        d_in = self.d.real
+
+        d_out = d_in + 2 * n * w + 2 * (n - 1) * s
+        d_avg = 0.5 * (d_in + d_out)
+        l_total = 4 * n * d_avg
+
+        subEtched = str(self.subE).strip().lower() in ("true", "1", "yes")
+        # 1/2 factor: winding voltage distributes evenly along the spiral
+        c_ox = 0.0 if subEtched else eps_ox * w * l_total / (2 * t_ox)
+        l_side = l_total / n if n > 0 else 0.0
+        c_lat = eps_ox * t_m * l_side * (n - 1) / s if s > 0 else 0.0
+        return c_ox + c_lat
+
+    def SRF_parm(self):
+        """Estimate self-resonance frequency (Hz) = 1 / (2*pi*sqrt(L*C))."""
+        c_total = self._parasiticCap()
+        l_val = self.L_parm()
+        if c_total <= 0 or l_val <= 0:
+            return 0.0
+        return 1.0 / (2 * math.pi * math.sqrt(l_val * c_total))
 
 
 class inductor2(inductorBase):
@@ -263,6 +301,7 @@ class npn13G2v(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
         self.Nx = Quantity(self._labelsDict["@Nx"].labelValue)
+        self.El = Quantity(self._labelsDict["@El"].labelValue)
 
 
 class npn13G2v_5t(baseInst):
@@ -364,8 +403,8 @@ class rsil(baseInst):
 class sg13_hv_nmos(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
-        self.L = Quantity(self._labelsDict["@L"].labelValue)
-        self.W = Quantity(self._labelsDict["@W"].labelValue)
+        self.L = Quantity(self._labelsDict["@l"].labelValue)
+        self.W = Quantity(self._labelsDict["@w"].labelValue)
         self.ng = Quantity(self._labelsDict["@ng"].labelValue)
         self.m = Quantity(self._labelsDict["@m"].labelValue)
 
@@ -373,8 +412,8 @@ class sg13_hv_nmos(baseInst):
 class sg13_hv_pmos(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
-        self.L = Quantity(self._labelsDict["@L"].labelValue)
-        self.W = Quantity(self._labelsDict["@W"].labelValue)
+        self.L = Quantity(self._labelsDict["@l"].labelValue)
+        self.W = Quantity(self._labelsDict["@w"].labelValue)
         self.ng = Quantity(self._labelsDict["@ng"].labelValue)
         self.m = Quantity(self._labelsDict["@m"].labelValue)
 
@@ -382,18 +421,28 @@ class sg13_hv_pmos(baseInst):
 class sg13_hv_rf_nmos(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
+        self.L = Quantity(self._labelsDict["@l"].labelValue)
+        self.W = Quantity(self._labelsDict["@w"].labelValue)
+        self.ng = Quantity(self._labelsDict["@ng"].labelValue)
+        self.m = Quantity(self._labelsDict["@m"].labelValue)
+        self.rfmode = Quantity(self._labelsDict["@rfmode"].labelValue)
 
 
 class sg13_hv_rf_pmos(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
+        self.L = Quantity(self._labelsDict["@l"].labelValue)
+        self.W = Quantity(self._labelsDict["@w"].labelValue)
+        self.ng = Quantity(self._labelsDict["@ng"].labelValue)
+        self.m = Quantity(self._labelsDict["@m"].labelValue)
+        self.rfmode = Quantity(self._labelsDict["@rfmode"].labelValue)
 
 
 class sg13_lv_nmos(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
-        self.L = Quantity(self._labelsDict["@L"].labelValue)
-        self.W = Quantity(self._labelsDict["@W"].labelValue)
+        self.L = Quantity(self._labelsDict["@l"].labelValue)
+        self.W = Quantity(self._labelsDict["@w"].labelValue)
         self.ng = Quantity(self._labelsDict["@ng"].labelValue)
         self.m = Quantity(self._labelsDict["@m"].labelValue)
 
@@ -401,8 +450,8 @@ class sg13_lv_nmos(baseInst):
 class sg13_lv_pmos(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
-        self.L = Quantity(self._labelsDict["@L"].labelValue)
-        self.W = Quantity(self._labelsDict["@W"].labelValue)
+        self.L = Quantity(self._labelsDict["@l"].labelValue)
+        self.W = Quantity(self._labelsDict["@w"].labelValue)
         self.ng = Quantity(self._labelsDict["@ng"].labelValue)
         self.m = Quantity(self._labelsDict["@m"].labelValue)
 
@@ -410,8 +459,8 @@ class sg13_lv_pmos(baseInst):
 class sg13_lv_rf_nmos(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
-        self.L = Quantity(self._labelsDict["@L"].labelValue)
-        self.W = Quantity(self._labelsDict["@W"].labelValue)
+        self.L = Quantity(self._labelsDict["@l"].labelValue)
+        self.W = Quantity(self._labelsDict["@w"].labelValue)
         self.ng = Quantity(self._labelsDict["@ng"].labelValue)
         self.m = Quantity(self._labelsDict["@m"].labelValue)
         self.rfmode = Quantity(self._labelsDict["@rfmode"].labelValue)
@@ -420,8 +469,8 @@ class sg13_lv_rf_nmos(baseInst):
 class sg13_lv_rf_pmos(baseInst):
     def __init__(self, labels_dict: dict):
         super().__init__(labels_dict)
-        self.L = Quantity(self._labelsDict["@L"].labelValue)
-        self.W = Quantity(self._labelsDict["@W"].labelValue)
+        self.L = Quantity(self._labelsDict["@l"].labelValue)
+        self.W = Quantity(self._labelsDict["@w"].labelValue)
         self.ng = Quantity(self._labelsDict["@ng"].labelValue)
         self.m = Quantity(self._labelsDict["@m"].labelValue)
         self.rfmode = Quantity(self._labelsDict["@rfmode"].labelValue)

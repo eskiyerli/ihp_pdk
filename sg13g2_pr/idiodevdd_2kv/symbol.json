@@ -272,5 +272,30 @@
         "type": "attr",
         "nam": "VacaskNetlistLine",
         "def": "@instName (%pinOrder) %modelName m=@m"
+    },
+    {
+        "type": "label",
+        "st": [
+            40,
+            -100
+        ],
+        "nam": "@m",
+        "def": "[@m:m=%:m=1]",
+        "txt": "[@m:m=%:m=1]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            20.0,
+            -100.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
     }
 ]

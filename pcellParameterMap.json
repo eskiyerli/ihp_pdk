@@ -10,6 +10,118 @@
       "width": "@w",
       "length": "@l",
       "ng": "@ng"
+    },
+    "sg13_hv_nmos": {
+      "width": "@w",
+      "length": "@l",
+      "ng": "@ng"
+    },
+    "sg13_hv_pmos": {
+      "width": "@w",
+      "length": "@l",
+      "ng": "@ng"
+    },
+    "sg13_lv_rf_nmos": {
+      "width": "@w",
+      "length": "@l",
+      "ng": "@ng"
+    },
+    "sg13_lv_rf_pmos": {
+      "width": "@w",
+      "length": "@l",
+      "ng": "@ng"
+    },
+    "sg13_hv_rf_nmos": {
+      "width": "@w",
+      "length": "@l",
+      "ng": "@ng"
+    },
+    "sg13_hv_rf_pmos": {
+      "width": "@w",
+      "length": "@l",
+      "ng": "@ng"
+    },
+    "rsil": {
+      "length": "@l",
+      "width": "@w",
+      "b": "@b",
+      "ps": "@ps"
+    },
+    "rhigh": {
+      "length": "@l",
+      "width": "@w",
+      "b": "@b",
+      "ps": "@ps"
+    },
+    "rppd": {
+      "length": "@l",
+      "width": "@w",
+      "b": "@b",
+      "ps": "@ps"
+    },
+    "cap_cmim": {
+      "width": "@w",
+      "length": "@l"
+    },
+    "cap_rfcmim": {
+      "w": "@w",
+      "l": "@l",
+      "wfeed": "@wfeed"
+    },
+    "dantenna": {
+      "width": "@w",
+      "length": "@l"
+    },
+    "dpantenna": {
+      "width": "@w",
+      "length": "@l"
+    },
+    "ntap1": {
+      "width": "@w",
+      "length": "@l"
+    },
+    "ptap1": {
+      "width": "@w",
+      "length": "@l"
+    },
+    "inductor2": {
+      "w": "@w",
+      "s": "@s",
+      "d": "@d",
+      "nr_r": "@nr"
+    },
+    "inductor3": {
+      "w": "@w",
+      "s": "@s",
+      "d": "@d",
+      "nr_r": "@nr"
+    },
+    "npn13G2": {
+      "Nx": "@Nx"
+    },
+    "npn13G2_5t": {
+      "Nx": "@Nx"
+    },
+    "npn13G2l": {
+      "Nx": "@Nx"
+    },
+    "npn13G2l_5t": {
+      "Nx": "@Nx"
+    },
+    "npn13G2v": {
+      "Nx": "@Nx"
+    },
+    "npn13G2v_5t": {
+      "Nx": "@Nx"
+    },
+    "pnpMPA": {
+      "width": "@w",
+      "length": "@l"
+    },
+    "sg13_svaricap": {
+      "w": "@w",
+      "l": "@l",
+      "Nx": "@Nx"
     }
   }
 }

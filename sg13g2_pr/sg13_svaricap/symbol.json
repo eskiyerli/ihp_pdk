@@ -297,12 +297,12 @@
       40,
       8
     ],
-    "nam": "@[@instName]",
+    "nam": "@instName",
     "def": "[@instName]",
     "txt": "[@instName]",
-    "val": "[@instName]",
+    "val": "",
     "vis": true,
-    "lt": "Normal",
+    "lt": "NLPLabel",
     "ht": 16,
     "al": "Left",
     "or": "R0",
@@ -446,9 +446,9 @@
     "nam": "pinOrder",
     "def": "G2, bn, G1, NW"
   },
-    {
-        "type": "attr",
-        "nam": "VacaskNetlistLine",
-        "def": "@instName (%pinOrder) %modelName w=@w l=@l Nx=@Nx"
-    }
+  {
+    "type": "attr",
+    "nam": "VacaskNetlistLine",
+    "def": "@instName (%pinOrder) %modelName w=@w l=@l Nx=@Nx"
+  }
 ]

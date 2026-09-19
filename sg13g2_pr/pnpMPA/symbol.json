@@ -354,5 +354,55 @@
         "type": "attr",
         "nam": "VacaskNetlistLine",
         "def": "@instName (%pinOrder) %modelName a=@a p=@p m=@m"
+    },
+    {
+        "type": "label",
+        "st": [
+            90,
+            -40
+        ],
+        "nam": "@w",
+        "def": "[@w:w=%:w=0.7u]",
+        "txt": "[@w:w=%:w=0.7u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            90.0,
+            -40.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            90,
+            -20
+        ],
+        "nam": "@l",
+        "def": "[@l:l=%:l=2u]",
+        "txt": "[@l:l=%:l=2u]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            90.0,
+            -20.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
     }
 ]

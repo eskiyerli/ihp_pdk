@@ -42,8 +42,8 @@
             -130
         ],
         "nam": "@s",
-        "def": "[@s:s=%:s=5u]",
-        "txt": "[@s:s=%:s=5u]",
+        "def": "[@s:s=%:s=2.1u]",
+        "txt": "[@s:s=%:s=2.1u]",
         "val": "",
         "vis": true,
         "lt": "NLPLabel",
@@ -513,7 +513,7 @@
     {
         "type": "attr",
         "nam": "SpectreNetlistLine",
-        "def": "@instName ( %pinOrder ) inductor l=@L m=@M ic=@IC"
+        "def": "@instName ( %pinOrder ) inductor l=@L m=@m"
     },
     {
         "type": "attr",
@@ -528,7 +528,7 @@
     {
         "type": "attr",
         "nam": "SpiceNetlistLine",
-        "def": "L@instName %pinOrder l=@L M=@M IC=@IC"
+        "def": "L@instName %pinOrder l=@L m=@m"
     },
     {
         "type": "attr",
@@ -549,5 +549,30 @@
         "type": "attr",
         "nam": "lvsDeviceType",
         "def": "ind"
+    },
+    {
+        "type": "label",
+        "st": [
+            20,
+            -40
+        ],
+        "nam": "@SRF",
+        "def": "SRF=SRF_parm",
+        "txt": "SRF=?",
+        "val": "?",
+        "vis": true,
+        "lt": "PyLabel",
+        "ht": 8,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            20.0,
+            -40.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
     }
 ]

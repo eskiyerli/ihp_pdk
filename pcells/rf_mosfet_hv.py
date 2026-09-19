@@ -69,8 +69,9 @@ class rfnmosHV(rfnmos):
         baseRfMosfet.__init__(self, [])
 
     @lru_cache(maxsize=16)
-    def __call__(self, width: str, length: str, ng: str, cnt_rows: str,
-                 Met2Cont: str, gat_ring: str, guard_ring: str):
+    def __call__(self, width: str = "1u", length: str = "0.72u", ng: str = "1",
+                 cnt_rows: str = "1", Met2Cont: str = "1", gat_ring: str = "1",
+                 guard_ring: str = "1"):
         tempShapesList = []
         device_params = self._get_rfnmosHV_params()
 
@@ -198,8 +199,9 @@ class rfpmosHV(rfpmos):
         baseRfMosfet.__init__(self, [])
 
     @lru_cache(maxsize=16)
-    def __call__(self, width: str, length: str, ng: str, cnt_rows: str,
-                 Met2Cont: str, gat_ring: str, guard_ring: str):
+    def __call__(self, width: str = "1u", length: str = "0.72u", ng: str = "1",
+                 cnt_rows: str = "1", Met2Cont: str = "1", gat_ring: str = "1",
+                 guard_ring: str = "1"):
         tempShapesList = []
         device_params = self._get_rfpmosHV_params()
 

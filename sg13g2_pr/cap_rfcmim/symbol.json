@@ -281,5 +281,30 @@
         "type": "attr",
         "nam": "VacaskNetlistLine",
         "def": "@instName (%pinOrder) %modelName w=@w l=@l wfeed=@wfeed"
+    },
+    {
+        "type": "label",
+        "st": [
+            30,
+            -70
+        ],
+        "nam": "@C",
+        "def": "C=C_parm",
+        "txt": "C=?",
+        "val": "?",
+        "vis": true,
+        "lt": "PyLabel",
+        "ht": 8,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -70.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
     }
 ]
