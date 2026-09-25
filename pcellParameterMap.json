@@ -1,5 +1,48 @@
 {
   "schemaVersion": "1.0",
+  "pinMappings": {
+    "rsil": {
+      "P": "PLUS",
+      "M": "MINUS"
+    },
+    "rhigh": {
+      "P": "PLUS",
+      "M": "MINUS"
+    },
+    "rppd": {
+      "P": "PLUS",
+      "M": "MINUS"
+    },
+    "cap_cmim": {
+      "c0": "PLUS",
+      "c1": "MINUS"
+    },
+    "cap_rfcmim": {
+      "c0": "PLUS",
+      "c1": "MINUS",
+      "bn": "TIE"
+    },
+    "ntap1": {
+      "P": "TIE",
+      "M": "WELL"
+    },
+    "ptap1": {
+      "P": "TIE",
+      "M": "SUB"
+    },
+    "inductor2": {
+      "PLUS": "LA",
+      "MINUS": "LB"
+    },
+    "inductor3": {
+      "PLUS": "LA",
+      "MINUS": "LB",
+      "CTAP": "LC"
+    },
+    "sg13_svaricap": {
+      "NW": "W"
+    }
+  },
   "mappings": {
     "sg13_lv_nmos": {
       "width": "@w",
