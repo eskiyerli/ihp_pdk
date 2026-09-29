@@ -28,7 +28,7 @@ import logging
 import pathlib
 import time
 
-from PySide6.QtCore import QSettings, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QIcon, QStandardItemModel
 from PySide6.QtWidgets import (
     QApplication,
@@ -720,7 +720,7 @@ class klayoutLVSDialogue(QMainWindow):
         self.setWindowTitle("KLayout LVS")
         self.setWindowModality(Qt.WindowModality.NonModal)
         self.setMinimumSize(1200, 900)
-        self._settings = QSettings("Revolution Semiconductor", "Revolution EDA")
+        self._settings = edf.appSettings()
         self._recentSettingsKey = "ihpKlayoutLVS/recentSettings"
         self._createMenuBar()
         self.mainLayout = QVBoxLayout()

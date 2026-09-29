@@ -25,7 +25,7 @@ import json
 import logging
 import pathlib
 
-from PySide6.QtCore import QSettings, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (QVBoxLayout, QGroupBox, QHBoxLayout,
                                QFileDialog, QComboBox, QLabel, QPlainTextEdit,
@@ -251,7 +251,7 @@ class drcKLayoutDialogue(QMainWindow):
         self.setMinimumSize(1000, 500)
         self.setWindowTitle("KLayout DRC")
         self.setWindowModality(Qt.WindowModality.NonModal)
-        self._settings = QSettings("Revolution Semiconductor", "Revolution EDA")
+        self._settings = edf.appSettings()
         self._recentSettingsKey = "ihpKlayoutDRC/recentSettings"
         mainLayout = QVBoxLayout()
         mainLayout.setSpacing(20)
