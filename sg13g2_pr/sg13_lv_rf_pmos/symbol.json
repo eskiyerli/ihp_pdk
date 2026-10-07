@@ -580,5 +580,10 @@
         "type": "attr",
         "nam": "VacaskNetlistLine",
         "def": "@instName ( %pinOrder ) %modelName w=@w l=@l ng=@ng m=@m"
+    },
+    {
+        "type": "attr",
+        "nam": "paramDefs",
+        "def": "[{\"name\":\"w\",\"type\":\"float\",\"default\":\"1.0u\"},{\"name\":\"l\",\"type\":\"float\",\"default\":\"0.45u\"},{\"name\":\"ng\",\"type\":\"int\",\"default\":\"1\",\"min\":\"1\"},{\"name\":\"m\",\"type\":\"int\",\"default\":\"1\",\"min\":\"1\"},{\"name\":\"rfmode\",\"type\":\"choice\",\"default\":\"1\",\"choices\":[\"0\",\"1\"]}]"
     }
 ]

@@ -300,5 +300,10 @@
         "type": "attr",
         "nam": "VacaskNetlistLine",
         "def": "@instName (%pinOrder) %modelName m=@m"
+    },
+    {
+        "type": "attr",
+        "nam": "paramDefs",
+        "def": "[{\"name\":\"m\",\"type\":\"int\",\"default\":\"1\",\"min\":\"1\"}]"
     }
 ]

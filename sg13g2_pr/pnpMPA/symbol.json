@@ -404,5 +404,10 @@
             1,
             1
         ]
+    },
+    {
+        "type": "attr",
+        "nam": "paramDefs",
+        "def": "[{\"name\":\"w\",\"type\":\"float\",\"default\":\"0.7u\"},{\"name\":\"l\",\"type\":\"float\",\"default\":\"2u\"},{\"name\":\"m\",\"type\":\"int\",\"default\":\"1\",\"min\":\"1\"}]"
     }
 ]

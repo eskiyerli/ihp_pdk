@@ -546,5 +546,10 @@
         "type": "attr",
         "nam": "VacaskNetlistLine",
         "def": "@instName ( %pinOrder ) %modelName w=@w l=@l m=@m b=@b ps=@ps"
+    },
+    {
+        "type": "attr",
+        "nam": "paramDefs",
+        "def": "[{\"name\":\"w\",\"type\":\"float\",\"default\":\"0.5u\"},{\"name\":\"l\",\"type\":\"float\",\"default\":\"0.5u\"},{\"name\":\"ps\",\"type\":\"float\",\"default\":\"0.18u\"},{\"name\":\"b\",\"type\":\"int\",\"default\":\"0\",\"min\":\"0\"},{\"name\":\"m\",\"type\":\"int\",\"default\":\"1\",\"min\":\"1\"}]"
     }
 ]

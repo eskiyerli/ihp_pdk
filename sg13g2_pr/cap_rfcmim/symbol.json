@@ -306,5 +306,10 @@
             1,
             1
         ]
+    },
+    {
+        "type": "attr",
+        "nam": "paramDefs",
+        "def": "[{\"name\":\"w\",\"type\":\"float\",\"default\":\"10u\"},{\"name\":\"l\",\"type\":\"float\",\"default\":\"10u\"},{\"name\":\"wfeed\",\"type\":\"float\",\"default\":\"5u\"}]"
     }
 ]

@@ -505,6 +505,31 @@
         ]
     },
     {
+        "type": "label",
+        "st": [
+            20,
+            -40
+        ],
+        "nam": "@SRF",
+        "def": "SRF=SRF_parm",
+        "txt": "SRF=?",
+        "val": "?",
+        "vis": true,
+        "lt": "PyLabel",
+        "ht": 8,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            20.0,
+            -40.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
         "type": "attr",
         "nam": "SpectreNetlistLine",
         "def": "@instName ( %pinOrder ) inductor l=@L m=@m"
@@ -545,28 +570,8 @@
         "def": "L@instName %pinOrder l=@L m=@m"
     },
     {
-        "type": "label",
-        "st": [
-            20,
-            -40
-        ],
-        "nam": "@SRF",
-        "def": "SRF=SRF_parm",
-        "txt": "SRF=?",
-        "val": "?",
-        "vis": true,
-        "lt": "PyLabel",
-        "ht": 8,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            20.0,
-            -40.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
+        "type": "attr",
+        "nam": "paramDefs",
+        "def": "[{\"name\":\"w\",\"type\":\"float\",\"default\":\"2u\"},{\"name\":\"s\",\"type\":\"float\",\"default\":\"2.1u\"},{\"name\":\"d\",\"type\":\"float\",\"default\":\"25.84u\"},{\"name\":\"nr\",\"type\":\"int\",\"default\":\"2\",\"min\":\"1\"},{\"name\":\"m\",\"type\":\"int\",\"default\":\"1\",\"min\":\"1\"}]"
     }
 ]
