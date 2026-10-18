@@ -317,6 +317,7 @@ ihp_pdk/
 ├── pcellParameterMap.json             # Schematic↔pcell parameter mapping
 ├── build_linux.sh                     # Binary build script (Linux)
 ├── build_windows.ps1                  # Binary build script (Windows)
+├── release.sh                         # Publishes release + registry update
 │
 ├── pcells/                            # Parametric layout cells (42 registered)
 │   ├── __init__.py                    # Exports all pcells

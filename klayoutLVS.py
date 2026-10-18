@@ -28,7 +28,7 @@ import logging
 import pathlib
 import time
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction, QIcon, QStandardItemModel
 from PySide6.QtWidgets import (
     QApplication,
@@ -630,36 +630,50 @@ def klayoutLVSClick(layoutEditor):
         dlg.console.appendPlainText("--- LVS Started ---")
         lvsProcess = layoutEditor.processManager.add_process(klayoutPath, argumentsList)
 
-        if lvsProcess.process is None:
-            dlg.console.appendPlainText("ERROR: Failed to start KLayout process")
-            logger.error("Failed to start KLayout process")
-            return
-
-        # Redirect process output to dialog console instead of main logger
-        try:
-            lvsProcess.process.readyReadStandardOutput.disconnect()
-        except RuntimeError:
-            pass
-        lvsProcess.process.readyReadStandardOutput.connect(
-            lambda: dlg.appendLVSOutput(lvsProcess.process)
-        )
-        lvsProcess.process.readyReadStandardError.connect(
-            lambda: dlg.appendLVSError(lvsProcess.process)
-        )
-        # Connect LVS-specific callback alongside the ProcessManager's own
-        # finished slot (process_finished), which removes the process from
-        # running_processes and frees the slot.  Do NOT disconnect the
-        # ProcessManager slot — otherwise the process is never cleaned up and
-        # consecutive runs exhaust the max-processes limit.
-        lvsProcess.process.finished.connect(
-            lambda: LVSProcessFinished(
-                lvsReportFilePath,
-                lvsExtractedNetlistPath,
-                dlg,
-                schematic_editor,
-                referenceNetlistPath=schematicNetlistPathObj,
+        def attachProcessSignals() -> bool:
+            # add_process() queues the Process; the underlying QProcess is
+            # only created in start_next_process() when a slot is free, so
+            # lvsProcess.process is still None while the run is queued.
+            qprocess = lvsProcess.process
+            if qprocess is None:
+                return False
+            # Redirect process output to dialog console instead of main logger
+            try:
+                qprocess.readyReadStandardOutput.disconnect()
+            except RuntimeError:
+                pass
+            qprocess.readyReadStandardOutput.connect(
+                lambda: dlg.appendLVSOutput(qprocess)
             )
-        )
+            qprocess.readyReadStandardError.connect(
+                lambda: dlg.appendLVSError(qprocess)
+            )
+            # Connect LVS-specific callback alongside the ProcessManager's own
+            # finished slot (process_finished), which removes the process from
+            # running_processes and frees the slot.  Do NOT disconnect the
+            # ProcessManager slot — otherwise the process is never cleaned up and
+            # consecutive runs exhaust the max-processes limit.
+            qprocess.finished.connect(
+                lambda: LVSProcessFinished(
+                    lvsReportFilePath,
+                    lvsExtractedNetlistPath,
+                    dlg,
+                    schematic_editor,
+                    referenceNetlistPath=schematicNetlistPathObj,
+                )
+            )
+            return True
+
+        if not attachProcessSignals():
+            dlg.console.appendPlainText(
+                "LVS process queued - waiting for a free slot..."
+            )
+            attachTimer = QTimer(dlg)
+            attachTimer.setInterval(200)
+            attachTimer.timeout.connect(
+                lambda: attachProcessSignals() and attachTimer.stop()
+            )
+            attachTimer.start()
 
     def createSchematicNetlist(dlg, lvsRunPathObj, schematic_editor=None):
         settings = dlg.collectSettings()

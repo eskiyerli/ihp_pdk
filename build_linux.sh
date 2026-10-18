@@ -81,14 +81,16 @@ for PyVer in $PYTHON_VERSIONS; do
         continue
     fi
     PythonPath=""
+    NuitkaErr=""
     for candidate in "${Candidates[@]}"; do
-        if "$candidate" -m nuitka --version >/dev/null 2>&1; then
+        if NuitkaErr=$("$candidate" -m nuitka --version 2>&1 >/dev/null); then
             PythonPath="$candidate"
             break
         fi
     done
     if [ -z "$PythonPath" ]; then
-        echo "FAIL [$LABEL] nuitka not available (checked: ${Candidates[*]})" >&2
+        echo "FAIL [$LABEL] nuitka unusable (checked: ${Candidates[*]})" >&2
+        [ -n "$NuitkaErr" ] && echo "       $(head -1 <<<"$NuitkaErr")" >&2
         FAIL+=("$LABEL (no nuitka)")
         continue
     fi

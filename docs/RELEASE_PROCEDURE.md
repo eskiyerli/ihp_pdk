@@ -1,201 +1,145 @@
 # IHP PDK Release Procedure
 
-This document describes how to release the IHP SG13G2 PDK as both source code and precompiled binary packages.
+How to publish a source + binary release of the IHP SG13G2 PDK. Releases are
+built and published locally — no CI involved.
 
 ## Prerequisites
 
-- Git repository with push access and tag permissions
-- GitHub Personal Access Token (`REVEDA_PAT`) configured as a repository secret (needed to clone `revolution-eda` during CI builds)
-- For local builds: Poetry virtual environment with Python 3.12 or 3.13, Nuitka installed
+- `gh` CLI authenticated (`gh auth login`) with write access to
+  `eskiyerli/revolutionEDA_pdks`
+- Python 3.12–3.14 with Nuitka (`pip install nuitka`) in each build env
+- Linux x86_64 machine for Linux binaries and the source zip
+- Windows machine with the MSVC toolchain for Windows binaries
+- `zip` and `unzip` (Linux)
 
-## Release Overview
-
-Each release produces:
+## What a release produces
 
 | Artifact | Description |
 |----------|-------------|
 | `ihp_pdk-source.zip` | Full Python source, works on all platforms |
-| `ihp_pdk-windows-amd64-py3.13.zip` | Compiled `.pyd` modules for Windows x64, Python 3.13 |
-| `ihp_pdk-windows-amd64-py3.12.zip` | Compiled `.pyd` modules for Windows x64, Python 3.12 |
-| `ihp_pdk-linux-x86_64-py3.13.zip` | Compiled `.so` modules for Linux x86_64, Python 3.13 |
-| `ihp_pdk-linux-x86_64-py3.12.zip` | Compiled `.so` modules for Linux x86_64, Python 3.12 |
+| `ihp_pdk-windows-amd64-py3.X.zip` | Compiled `.pyd` modules, per Python version |
+| `ihp_pdk-linux-x86_64-py3.X.zip` | Compiled `.so` modules, per Python version |
 
 Users install these via **Tools -> PDK -> Setup PDK** in Revolution EDA.
 
----
+## Steps
 
-## Step 1: Prepare the Release
+### 1. Bump and tag
 
-1. Update `config.json` with the new version:
-
-```json
-{
-  "pdk_name": "IHP SG13G2",
-  "pdk_version": "0.3.0",
-  ...
-}
-```
-
-2. Commit all changes:
+Update `pdk_version` in `config.json`, then commit and tag:
 
 ```bash
-git add -A
-git commit -m "Release v0.3.0"
-```
-
-3. Verify nothing is broken by running Revolution EDA with the source PDK locally.
-
-## Step 2: Tag and Push
-
-Create an annotated tag matching the version:
-
-```bash
+git commit -am "Release v0.3.0"
 git tag -a v0.3.0 -m "IHP SG13G2 PDK v0.3.0"
 git push origin main --tags
 ```
 
-This triggers the GitHub Actions workflow (`.github/workflows/build-pdk.yml`).
-
-## Step 3: CI Build (Automatic)
-
-The workflow runs automatically on tag push:
-
-1. Checks out `ihp_pdk` and `revolution-eda` (build dependency)
-2. Installs Python, Nuitka, PySide6, quantiphy, numpy
-3. Compiles the PDK package with Nuitka for each platform/Python combination
-4. Copies data directories (stipples, drc, lvs, models, va_modules, sg13g2_pr, docs)
-5. Copies data files (config.json, sg13g2_tech.json, modelLibSettings.json)
-6. Sets `"binary": 1` in the compiled artifact's config.json
-7. Creates a source archive (excludes .git, __pycache__, build artifacts)
-8. Attaches all zip artifacts to a GitHub Release
-
-Monitor progress at: `https://github.com/eskiyerli/ihp_pdk/actions`
-
-## Step 4: Update the PDK Registry
-
-After the release is published, update `pdks.json` in the `revolutionEDA_pdks` registry repository:
-
-```json
-{
-  "pdks": [
-    {
-      "name": "ihp_pdk",
-      "pdk_name": "IHP SG13G2",
-      "type": "source",
-      "process": "SG13G2 130nm BiCMOS",
-      "version": "0.3.0",
-      "pdk_version": "0.3.0",
-      "license": "Apache 2.0",
-      "description": "IHP SG13G2 130nm SiGe BiCMOS PDK (source)...",
-      "url": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.3.0/ihp_pdk-source.zip"
-    },
-    {
-      "name": "ihp_pdk",
-      "pdk_name": "IHP SG13G2 (Binary)",
-      "type": "binary",
-      "process": "SG13G2 130nm BiCMOS",
-      "version": "0.3.0",
-      "pdk_version": "0.3.0",
-      "license": "Apache 2.0",
-      "description": "IHP SG13G2 130nm SiGe BiCMOS PDK (precompiled binary)...",
-      "binary_urls": {
-        "windows-amd64-py313": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.3.0/ihp_pdk-windows-amd64-py3.13.zip",
-        "windows-amd64-py312": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.3.0/ihp_pdk-windows-amd64-py3.12.zip",
-        "linux-x86_64-py313": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.3.0/ihp_pdk-linux-x86_64-py3.13.zip",
-        "linux-x86_64-py312": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.3.0/ihp_pdk-linux-x86_64-py3.12.zip",
-        "windows-amd64": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.3.0/ihp_pdk-windows-amd64-py3.13.zip",
-        "linux-x86_64": "https://github.com/eskiyerli/revolutionEDA_pdks/releases/download/v0.3.0/ihp_pdk-linux-x86_64-py3.13.zip"
-      }
-    }
-  ]
-}
-```
-
-Commit and push to `main` in the registry repo:
+### 2. Build the zips
 
 ```bash
-cd revolutionEDA_pdks
-# edit pdks.json with new version URLs
-git add pdks.json
-git commit -m "Update IHP PDK to v0.3.0"
-git push origin main
+./build_linux.sh        # linux-x86_64 zips + ihp_pdk-source.zip → ~/dist/ihp_pdk
 ```
 
-## Step 5: Verify
-
-1. Open Revolution EDA
-2. Go to **Tools -> PDK -> Setup PDK**
-3. Click **Refresh** — the new version should appear with an upgrade indicator
-4. Install both source and binary variants on test machines
-5. Verify that DRC/LVS menu items appear in the layout editor
-6. Verify that pcells instantiate correctly
-
----
-
-## Local Build (Manual)
-
-For local testing or when CI is unavailable, use `build_windows.ps1`:
+On a Windows machine:
 
 ```powershell
-cd ihp_pdk
-.\build_windows.ps1
+.\build_windows.ps1     # windows-amd64 zips → %USERPROFILE%\dist\ihp_pdk
 ```
 
-Environment variables:
-- `POETRY_VENV_BASE` — directory containing Poetry virtualenvs (default: `C:\Users\eskiye50\poetryenvs`)
-- `IHP_PDK_OUTPUT` — output directory for artifacts (default: `C:\Users\eskiye50\dist\ihp_pdk`)
+To get the Windows zips onto the release, either:
 
-The script requires:
-- Poetry virtualenv with PySide6, quantiphy, numpy, revedaEditor installed
-- Nuitka (`pip install nuitka`)
-- MSVC toolchain (Visual Studio Build Tools)
+- **Copy them into the Linux dist dir** (`~/dist/ihp_pdk`) and re-run
+  `./release.sh` there, or
+- **Upload straight from Windows** (Git Bash or PowerShell, with `gh`
+  authenticated):
+
+  ```powershell
+  gh release upload ihp_pdk-v0.3.0 "$env:USERPROFILE\dist\ihp_pdk\*.zip" `
+      --repo eskiyerli/revolutionEDA_pdks --clobber
+  ```
+
+  then re-run `./release.sh` anywhere (it also runs under Git Bash). With no
+  local zips it just rewrites `pdks.json` from the release's asset list.
+
+### 3. Publish
+
+```bash
+./release.sh
+```
+
+This reads `pdk_version` from `config.json`, creates release
+`ihp_pdk-v<version>` in `revolutionEDA_pdks` (on `main`), uploads every
+`*.zip` in the dist dir, then rewrites `pdks.json` from the release's actual
+asset list and pushes the registry update.
+
+If the release already exists it uploads/replaces the assets instead.
+`pdks.json` is regenerated from the assets on GitHub, not the local dir, so
+re-running is always safe — even from a machine that only has a subset of
+the zips (or none, when just fixing the registry).
+
+Environment variables:
+- `IHP_PDK_OUTPUT` — zip directory (default `~/dist/ihp_pdk`, same as
+  `build_linux.sh`)
+- `REGISTRY_REPO` — registry repo (default `eskiyerli/revolutionEDA_pdks`)
+
+### 4. Verify
+
+1. Open Revolution EDA → **Tools -> PDK -> Setup PDK** → **Refresh**
+2. The new version should appear with an upgrade indicator
+3. Install both source and binary variants on test machines
+4. Verify DRC/LVS menu items appear in the layout editor
+5. Verify pcells instantiate correctly
 
 ---
 
-## Architecture Notes
+## Reference
 
-### How Binary PDKs Work
+### How binary PDKs work
 
-- The Nuitka compiler produces `.pyd` (Windows) or `.so` (Linux) files from each `.py` module
-- Python's `importlib.import_module()` transparently handles both source and compiled modules
-- `pdkLoader.py` adds the PDK parent directory to `sys.path` and imports by package name — no special handling needed for binary vs source
-- The `"binary": 1` flag in `config.json` is informational (shown in the Setup PDK dialog)
+- Nuitka compiles the `ihp_pdk` package into a single `.so`/`.pyd` extension
+  placed *beside* an `ihp_pdk/` data directory containing a bootstrap
+  `__init__.py` that loads the compiled sibling.
+- `"binary": 1` is set in the staged `config.json`; the source tree keeps `0`.
+- `pdkLoader.py` adds the PDK parent directory to `sys.path` and imports by
+  package name — no special handling needed for binary vs source.
 
-### Data Files
+### Data files
 
-These are NOT compiled and must be copied verbatim into the binary distribution:
+These are NOT compiled and are copied verbatim into the binary distribution:
 
 | Path | Purpose |
 |------|---------|
 | `stipples/` | Layer fill patterns (PNG + TXT) |
-| `drc/` | KLayout DRC rule decks (`.lydrc`) |
-| `lvs/` | KLayout LVS rule decks (`.lvs`) |
-| `models/` | SPICE/Xyce device models |
-| `va_modules/` | Verilog-A compiled plugins |
+| `drc/` | KLayout DRC rule decks |
+| `lvs/` | KLayout LVS rule decks |
+| `models/` | Xyce/VACASK device models |
 | `sg13g2_pr/` | Primitive cell library (JSON cell views) |
+| `pex/` | RC extraction technology file |
 | `docs/` | Documentation |
 | `config.json` | PDK metadata and menu configuration |
 | `sg13g2_tech.json` | Technology parameters |
 | `modelLibSettings.json` | Model library paths |
+| `pcellParameterMap.json` | Schematic↔pcell parameter mapping |
 
-### Registry Key Format
+### Registry key format
 
 The `binary_urls` dictionary uses keys in the format `{system}-{arch}-{pyver}`:
 - `system` = `platform.system().lower()` (windows, linux)
 - `arch` = `platform.machine().lower()` (amd64, x86_64)
 - `pyver` = `py{major}{minor}` (py313, py312)
 
-The Setup PDK dialog tries the most specific key first, then falls back to less specific ones.
+The Setup PDK dialog tries the most specific key first, then falls back to
+less specific ones.
 
----
-
-## Troubleshooting
+### Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| CI fails at Nuitka compilation | Check that `revolution-eda` is importable (REVEDA_PAT secret must be set) |
+| Nuitka build fails | Check Python version compatibility and disk space; the log in the build dir has details |
 | Binary PDK won't import | Ensure Python version matches the build (e.g. py3.13 binary needs Python 3.13) |
 | Missing menu items after install | Verify `config.json` is present in the installed PDK directory |
 | DRC/LVS rules not found | Verify `drc/` and `lvs/` directories were included in the zip |
+| `release.sh` can't find zips | Set `IHP_PDK_OUTPUT` to the directory containing them |
 | "No URL for your platform" | Add the missing platform key to `binary_urls` in `pdks.json` |
-| Version not showing as update | Ensure `pdk_version` in both registry `pdks.json` and local `config.json` follow semver |
+| Version not showing as update | Ensure `pdk_version` in registry `pdks.json` and local `config.json` follow semver |
+| gh auth/push fails | Run `gh auth login` with an account that can write to the registry repo |

@@ -25,7 +25,7 @@ import json
 import logging
 import pathlib
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (QVBoxLayout, QGroupBox, QHBoxLayout,
                                QFileDialog, QComboBox, QLabel, QPlainTextEdit,
@@ -183,17 +183,37 @@ def klayoutDRCClick(editorwindow):
             dlg.console.appendPlainText("--- DRC Started ---")
             drcProcess = editorwindow.processManager.add_process(klayoutPath,
                                                             argumentsList)
-            # Redirect process output to dialog console instead of main logger
-            try:
-                drcProcess.process.readyReadStandardOutput.disconnect()
-            except RuntimeError:
-                pass
-            drcProcess.process.readyReadStandardOutput.connect(
-                lambda: dlg.appendDRCOutput(drcProcess.process))
-            drcProcess.process.readyReadStandardError.connect(
-                lambda: dlg.appendDRCError(drcProcess.process))
-            drcProcess.process.finished.connect(
-                lambda: DRCProcessFinished(drcReportFilePath, dlg))
+
+            def attachProcessSignals() -> bool:
+                # add_process() queues the Process; the underlying QProcess is
+                # only created in start_next_process() when a slot is free, so
+                # drcProcess.process is still None while the run is queued.
+                qprocess = drcProcess.process
+                if qprocess is None:
+                    return False
+                # Redirect process output to dialog console instead of the
+                # main logger. Keep the ProcessManager's finished slot
+                # connected so the process is cleaned up when it exits.
+                try:
+                    qprocess.readyReadStandardOutput.disconnect()
+                except RuntimeError:
+                    pass
+                qprocess.readyReadStandardOutput.connect(
+                    lambda: dlg.appendDRCOutput(qprocess))
+                qprocess.readyReadStandardError.connect(
+                    lambda: dlg.appendDRCError(qprocess))
+                qprocess.finished.connect(
+                    lambda: DRCProcessFinished(drcReportFilePath, dlg))
+                return True
+
+            if not attachProcessSignals():
+                dlg.console.appendPlainText(
+                    "DRC process queued - waiting for a free slot...")
+                attachTimer = QTimer(dlg)
+                attachTimer.setInterval(200)
+                attachTimer.timeout.connect(
+                    lambda: attachProcessSignals() and attachTimer.stop())
+                attachTimer.start()
         else:
             editorwindow.logger.error('GDS file can not be found')
 

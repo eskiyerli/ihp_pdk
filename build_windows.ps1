@@ -1,6 +1,13 @@
 # Windows build script for IHP PDK (ihp_pdk)
 # Compiles the PDK as a Nuitka binary package (.pyd) for distribution.
 # Produces platform-versioned zip artifacts ready for the PDK registry.
+#
+# Usage: .\build_windows.ps1
+#   $env:PYTHON_VERSIONS="3.13"; .\build_windows.ps1   (override versions)
+#   $env:IHP_PDK_PYTHON="C:\path\python.exe"           (use this interpreter; version derived)
+#   $env:IHP_PDK_OUTPUT="D:\dist"                      (override artifact output)
+#   $env:IHP_PDK_BUILD_DIR="D:\build"                  (override build scratch dir)
+#   $env:POETRY_VENV_BASE="C:\path"                    (override venv search dir)
 
 $ErrorActionPreference = "Stop"
 
@@ -10,62 +17,96 @@ $PdkSrc = $ScriptDir  # This script lives inside the ihp_pdk folder
 
 $VenvBase = if ($env:POETRY_VENV_BASE) { $env:POETRY_VENV_BASE } else { "C:\Users\eskiye50\poetryenvs" }
 $OutputBase = if ($env:IHP_PDK_OUTPUT) { $env:IHP_PDK_OUTPUT } else { "C:\Users\eskiye50\dist\ihp_pdk" }
+$BuildBase = if ($env:IHP_PDK_BUILD_DIR) { $env:IHP_PDK_BUILD_DIR } else { "$env:USERPROFILE\.reveda_builds" }
 
-# Data directories that must be copied verbatim (not compiled)
-$DataDirs = @("stipples", "drc", "lvs", "models", "sg13g2_pr", "docs", "pex")
-# Data files at the package root that must be included
-$DataFiles = @("config.json", "sg13g2_tech.json", "modelLibSettings.json", "pcellParameterMap.json", "README.md")
-
-# A pinned interpreter via IHP_PDK_PYTHON (CI) overrides Poetry venv discovery;
-# the version is derived from it so artifacts are never mislabeled.
+# A pinned interpreter (IHP_PDK_PYTHON) overrides venv discovery; the version
+# is derived from it so artifacts are never mislabeled.
 if ($env:IHP_PDK_PYTHON) {
     $PyVersions = @(& $env:IHP_PDK_PYTHON -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+} elseif ($env:PYTHON_VERSIONS) {
+    $PyVersions = @($env:PYTHON_VERSIONS -split '\s+' | Where-Object { $_ })
 } else {
     $PyVersions = @("3.12", "3.13", "3.14")
 }
 
+# Data directories copied verbatim next to the compiled extension
+$DataDirs = @("stipples", "drc", "lvs", "models", "sg13g2_pr", "docs", "pex")
+$RequiredDataFiles = @("config.json", "sg13g2_tech.json", "modelLibSettings.json", "pcellParameterMap.json")
+
+$Pass = @()
+$Fail = @()
+
+if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -ne 'X64') {
+    Write-Error "This script only supports x64 builds."
+    exit 1
+}
+
+New-Item -ItemType Directory -Force -Path $OutputBase, $BuildBase | Out-Null
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host " IHP PDK Binary Builder (Windows)" -ForegroundColor Cyan
+Write-Host " Versions : $($PyVersions -join ' ')" -ForegroundColor Cyan
+Write-Host " Venvs    : $VenvBase" -ForegroundColor Cyan
+Write-Host " Output   : $OutputBase" -ForegroundColor Cyan
+Write-Host " BuildDir : $BuildBase" -ForegroundColor Cyan
+Write-Host "============================================" -ForegroundColor Cyan
+
 foreach ($PyVer in $PyVersions) {
+    $Label = "ihp_pdk/py$PyVer"
     $ArtifactName = "windows-amd64-py${PyVer}"
-    Write-Host "========================================" -ForegroundColor Cyan
-    Write-Host "Building IHP PDK binary for Windows - Python $PyVer" -ForegroundColor Cyan
-    Write-Host "========================================" -ForegroundColor Cyan
 
     if ($env:IHP_PDK_PYTHON) {
-        $PythonPath = $env:IHP_PDK_PYTHON
+        $Candidates = @($env:IHP_PDK_PYTHON)
     } else {
-        # Find Poetry virtual environment
-        $Pattern = Join-Path $VenvBase "*py$PyVer"
-        $MatchedDirs = Get-ChildItem -Directory -Path $Pattern -ErrorAction SilentlyContinue
-
-        if (-not $MatchedDirs) {
-            Write-Warning "Poetry env for Python $PyVer not found in $VenvBase -- skipping"
-            continue
-        }
-
-        $PythonPath = Join-Path $MatchedDirs[0].FullName "Scripts\python.exe"
-        if (-not (Test-Path $PythonPath)) {
-            Write-Warning "python.exe not found in $($MatchedDirs[0].FullName) -- skipping"
-            continue
-        }
+        $Candidates = @(
+            Get-ChildItem -Directory -Path (Join-Path $VenvBase "*-py$PyVer") -ErrorAction SilentlyContinue |
+            ForEach-Object { Join-Path $_.FullName "Scripts\python.exe" } |
+            Where-Object { Test-Path $_ }
+        )
+    }
+    if (-not $Candidates) {
+        Write-Host "FAIL [$Label] No python$PyVer under $VenvBase" -ForegroundColor Red
+        $Fail += "$Label (no env)"
+        continue
     }
 
-    Write-Host "Using Python: $PythonPath"
-
-    # Ensure nuitka is installed
-    Write-Host "Installing/upgrading build dependencies..."
-    & $PythonPath -m pip install --upgrade pip | Out-Null
-    & $PythonPath -m pip install --upgrade nuitka | Out-Null
-
-    # Output directory per Python version
-    $OutputDir = Join-Path $OutputBase $ArtifactName
-    if (Test-Path $OutputDir) {
-        Write-Host "Cleaning previous build..."
-        Remove-Item -Recurse -Force $OutputDir
+    $PythonPath = $null
+    $NuitkaErr = ""
+    foreach ($candidate in $Candidates) {
+        if (-not (Test-Path $candidate)) {
+            $NuitkaErr = "not found: $candidate"
+            continue
+        }
+        try {
+            $check = & $candidate -m nuitka --version 2>&1 | Out-String
+        } catch {
+            $check = "$_"
+            $LASTEXITCODE = 1
+        }
+        if ($LASTEXITCODE -eq 0) {
+            $PythonPath = $candidate
+            break
+        }
+        $NuitkaErr = (($check -split "`r?`n") | Where-Object { $_ } | Select-Object -First 1)
     }
-    New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
+    if (-not $PythonPath) {
+        Write-Host "FAIL [$Label] nuitka unusable (checked: $($Candidates -join ', '))" -ForegroundColor Red
+        if ($NuitkaErr) { Write-Host "       $NuitkaErr" -ForegroundColor Red }
+        $Fail += "$Label (no nuitka)"
+        continue
+    }
 
-    # Build PDK as a compiled package
-    Write-Host "Compiling IHP PDK with Nuitka (this may take several minutes)..."
+    $BuildDir = Join-Path $BuildBase "ihp_pdk_py$PyVer"
+    if (Test-Path $BuildDir) { Remove-Item -Recurse -Force $BuildDir }
+    New-Item -ItemType Directory -Force -Path $BuildDir | Out-Null
+
+    Write-Host "--------------------------------------------" -ForegroundColor Cyan
+    Write-Host "Building : $Label" -ForegroundColor Cyan
+    Write-Host "Python   : $PythonPath  ($(& $PythonPath --version))" -ForegroundColor Cyan
+    Write-Host "--------------------------------------------" -ForegroundColor Cyan
+
+    # Compile only the ihp_pdk package; host/runtime deps stay external.
     & $PythonPath -m nuitka `
         --mode=package `
         --msvc=latest `
@@ -74,7 +115,7 @@ foreach ($PyVer in $PyVersions) {
         --nofollow-import-to=revedaEditor `
         --nofollow-import-to=quantiphy `
         --nofollow-import-to=klayout `
-        --output-dir=$OutputDir `
+        --output-dir=$BuildDir `
         --assume-yes-for-downloads `
         --no-pyi-file `
         --jobs=2 `
@@ -82,16 +123,19 @@ foreach ($PyVer in $PyVersions) {
         $PdkSrc
 
     if ($LASTEXITCODE -ne 0) {
-        throw "Nuitka build failed for IHP PDK (Python $PyVer)"
+        Write-Host "FAIL [$Label] Nuitka build failed" -ForegroundColor Red
+        $Fail += "$Label (nuitka)"
+        Remove-Item -Recurse -Force $BuildDir
+        continue
     }
 
     # Locate compiled output. Package mode emits either a <name>.dist folder
     # (compiled __init__ inside the package dir) or a bare <name>.cp*.pyd
     # sibling extension; both are staged into a loadable package layout.
-    $PdkDistFolder = Join-Path $OutputDir "${PdkName}.dist"
-    $PdkBuildFolder = Join-Path $OutputDir "${PdkName}.build"
-    $FinalFolder = Join-Path $OutputDir $PdkName
-    $PydFile = Get-ChildItem -Path $OutputDir -Filter "${PdkName}.cp*.pyd" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    $PdkDistFolder = Join-Path $BuildDir "${PdkName}.dist"
+    $PdkBuildFolder = Join-Path $BuildDir "${PdkName}.build"
+    $FinalFolder = Join-Path $BuildDir $PdkName
+    $PydFile = Get-ChildItem -Path $BuildDir -Filter "${PdkName}.cp*.pyd" -File -ErrorAction SilentlyContinue | Select-Object -First 1
     $SiblingLayout = $false
 
     if (Test-Path $PdkDistFolder) {
@@ -100,40 +144,42 @@ foreach ($PyVer in $PyVersions) {
         $SiblingLayout = $true
         New-Item -ItemType Directory -Force -Path $FinalFolder | Out-Null
     } elseif (-not (Test-Path $FinalFolder)) {
-        throw "Cannot locate Nuitka output for IHP PDK"
+        Write-Host "FAIL [$Label] cannot locate Nuitka output in $BuildDir" -ForegroundColor Red
+        $Fail += "$Label (no extension)"
+        Remove-Item -Recurse -Force $BuildDir
+        continue
     }
 
-    # Copy data directories that Nuitka does not compile
-    Write-Host "Copying data directories..."
     foreach ($dir in $DataDirs) {
         $SrcDir = Join-Path $PdkSrc $dir
-        $DstDir = Join-Path $FinalFolder $dir
         if (Test-Path $SrcDir) {
-            if (Test-Path $DstDir) { Remove-Item -Recurse -Force $DstDir }
-            Copy-Item -Path $SrcDir -Destination $DstDir -Recurse -Force
-            Write-Host "  Copied: $dir" -ForegroundColor DarkGreen
+            Copy-Item -Path $SrcDir -Destination (Join-Path $FinalFolder $dir) -Recurse -Force
         }
     }
 
-    # Copy data files at package root
-    Write-Host "Copying data files..."
-    foreach ($file in $DataFiles) {
+    $MissingFile = $null
+    foreach ($file in $RequiredDataFiles) {
         $SrcFile = Join-Path $PdkSrc $file
-        $DstFile = Join-Path $FinalFolder $file
-        if (Test-Path $SrcFile) {
-            Copy-Item -Path $SrcFile -Destination $DstFile -Force
-            Write-Host "  Copied: $file" -ForegroundColor DarkGreen
+        if (-not (Test-Path $SrcFile)) {
+            $MissingFile = $file
+            break
         }
+        Copy-Item -Path $SrcFile -Destination (Join-Path $FinalFolder $file) -Force
     }
+    if ($MissingFile) {
+        Write-Host "FAIL [$Label] required data file missing: $SrcFile" -ForegroundColor Red
+        $Fail += "$Label (missing $MissingFile)"
+        Remove-Item -Recurse -Force $BuildDir
+        continue
+    }
+    $Readme = Join-Path $PdkSrc "README.md"
+    if (Test-Path $Readme) { Copy-Item -Path $Readme -Destination (Join-Path $FinalFolder "README.md") -Force }
 
-    # Update config.json to mark as binary build
+    # Mark the staged config as a binary distribution (source stays binary=0)
     $ConfigPath = Join-Path $FinalFolder "config.json"
-    if (Test-Path $ConfigPath) {
-        $config = Get-Content $ConfigPath -Raw | ConvertFrom-Json
-        $config.binary = 1
-        $config | ConvertTo-Json -Depth 10 | Set-Content $ConfigPath -Encoding UTF8
-        Write-Host "  Updated config.json: binary=1" -ForegroundColor DarkGreen
-    }
+    $config = Get-Content $ConfigPath -Raw | ConvertFrom-Json
+    $config.binary = 1
+    $config | ConvertTo-Json -Depth 10 | Set-Content $ConfigPath -Encoding UTF8
 
     # Sibling-extension layout needs a bootstrap __init__.py in the staged
     # package dir that loads the .pyd sitting next to it (same logic as the
@@ -190,26 +236,53 @@ else:
         [System.IO.File]::WriteAllText((Join-Path $FinalFolder "__init__.py"), $Bootstrap)
     }
 
-    # Clean up build artifacts
-    Write-Host "Cleaning up build artifacts..."
+    # Remove bytecode caches and Nuitka scratch before zipping
+    Get-ChildItem -Path $FinalFolder -Recurse -Directory -Filter "__pycache__" |
+        Remove-Item -Recurse -Force
+    Get-ChildItem -Path $FinalFolder -Recurse -Include "*.pyc", "*.pyo" -File |
+        Remove-Item -Force
     if (Test-Path $PdkBuildFolder) { Remove-Item -Recurse -Force $PdkBuildFolder }
+    $PdkPyi = Join-Path $BuildDir "${PdkName}.pyi"
+    if (Test-Path $PdkPyi) { Remove-Item -Force $PdkPyi }
 
     # Create zip artifact. Sibling layout ships the extension beside ihp_pdk/,
     # matching what the registry installer and bootstrap expect.
-    Write-Host "Creating zip artifact..."
-    $ZipName = Join-Path $OutputBase "${PdkName}-${ArtifactName}.zip"
-    if (Test-Path $ZipName) { Remove-Item -Force $ZipName }
+    $ZipTmp = Join-Path $BuildDir "${PdkName}-${ArtifactName}.zip"
+    if (Test-Path $ZipTmp) { Remove-Item -Force $ZipTmp }
     $ZipInputs = @($FinalFolder)
     if ($SiblingLayout -and $PydFile) { $ZipInputs += $PydFile.FullName }
-    Compress-Archive -Path $ZipInputs -DestinationPath $ZipName -Force
+    Compress-Archive -Path $ZipInputs -DestinationPath $ZipTmp -Force
 
-    Write-Host "Build completed! Artifact: $ZipName" -ForegroundColor Green
+    # Integrity check: fully decompress every entry (like `unzip -t`)
+    $zip = [System.IO.Compression.ZipFile]::OpenRead($ZipTmp)
+    try {
+        foreach ($entry in $zip.Entries) {
+            $stream = $entry.Open()
+            $stream.CopyTo([System.IO.Stream]::Null)
+            $stream.Close()
+        }
+    } catch {
+        Write-Host "FAIL [$Label] zip integrity check failed: $_" -ForegroundColor Red
+        $Fail += "$Label (bad zip)"
+        $zip.Dispose()
+        Remove-Item -Recurse -Force $BuildDir
+        continue
+    }
+    $zip.Dispose()
+
+    $ZipFinal = Join-Path $OutputBase "${PdkName}-${ArtifactName}.zip"
+    Move-Item -Path $ZipTmp -Destination $ZipFinal -Force
+    Remove-Item -Recurse -Force $BuildDir
+    Write-Host "OK  [$Label] -> $ZipFinal" -ForegroundColor Green
+    $Pass += $Label
     Write-Host ""
 }
 
-Write-Host "All IHP PDK builds completed." -ForegroundColor Green
 Write-Host ""
-Write-Host "Release artifacts:" -ForegroundColor Yellow
-Get-ChildItem -Path $OutputBase -Filter "*.zip" | ForEach-Object {
-    Write-Host "  $($_.FullName)" -ForegroundColor Yellow
-}
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host " Build Summary" -ForegroundColor Cyan
+Write-Host "============================================" -ForegroundColor Cyan
+foreach ($entry in $Pass) { Write-Host "  PASS : $entry" -ForegroundColor Green }
+foreach ($entry in $Fail) { Write-Host "  FAIL : $entry" -ForegroundColor Red }
+Write-Host "============================================" -ForegroundColor Cyan
+if ($Fail.Count -gt 0) { exit 1 }
