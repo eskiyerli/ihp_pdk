@@ -1,13 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
 #
-# Revolution EDA
-#
-# Copyright (c) 2026 Revolution Semiconductor
-#
-# This Source Code Form is subject to the terms of the
-# Mozilla Public License, v. 2.0.
-# If a copy of the MPL was not distributed with this
-# file, You can obtain one at https://mozilla.org/MPL/2.0/.
-##
+# IHP PDK for Revolution EDA
+# Copyright (c) 2024-2026 Revolution Semiconductor
+
 import revedaEditor.backend.dataDefinitions as ddef
 from quantiphy import Quantity
 from revedaEditor.backend.pdkLoader import importPDKModule

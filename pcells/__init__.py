@@ -32,8 +32,8 @@ from .tap_contacts import (ntap1, nwelltap, nwtap, psubtap, ptap1, subtap)
 from .inductors import inductor2, inductor3
 from .bjt import npn13G2, npn13G2V, npn13G2L, pnpMPA
 from .diodes import dantenna, dpantenna
-from .nofiller_stack import NoFillerStack
-from .schottky import schottky
+# nofiller_stack.py and schottky.py are unimplemented stubs; their cells are
+# intentionally not registered.
 from .via_stack import via_stack
 from .esd import (
     esd,
@@ -78,8 +78,6 @@ pcells = {
     'pnpMPA': pnpMPA,
     'dantenna': dantenna,
     'dpantenna': dpantenna,
-    'NoFillerStack': NoFillerStack,
-    'schottky': schottky,
     'via_stack': via_stack,
     'esd': esd,
     'diodevdd_2kv': diodevdd_2kv,

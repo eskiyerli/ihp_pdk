@@ -1,4 +1,9 @@
 #!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
+#
+# IHP PDK for Revolution EDA
+# Copyright (c) 2024-2026 Revolution Semiconductor
+
 # Linux build script for IHP PDK (ihp_pdk)
 # Compiles the PDK as a Nuitka binary package (.so) for distribution.
 # Produces platform-versioned zip artifacts ready for the PDK registry.

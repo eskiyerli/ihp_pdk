@@ -5,6 +5,11 @@
             "modelLibraries": [
                 {
                     "select": true,
+                    "modelPath": "${PDK_ROOT}/models/vacask/models/sg13g2_vacask_common.lib",
+                    "modelSection": ""
+                },
+                {
+                    "select": true,
                     "modelPath": "${PDK_ROOT}/models/vacask/models/cornerCAP.lib",
                     "modelSection": "cap_typ"
                 },
@@ -86,11 +91,6 @@
                     ""
                 ],
                 [
-                    true,
-                    "${PDK_ROOT}/models/vacask/models/sg13g2_vacask_common.lib",
-                    ""
-                ],
-                [
                     false,
                     "${PDK_ROOT}/models/vacask/osdi/mosvar.lib",
                     ""
@@ -152,11 +152,11 @@
             ],
             "includePaths": [
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/capacitors_mod.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/capacitors_stat.lib"
                 ],
                 [
@@ -164,19 +164,19 @@
                     "${PDK_ROOT}/models/xyce/diodes.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/resistors.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/resistors_mod.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/resistors_parm.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/resistors_stat.lib"
                 ],
                 [
@@ -188,35 +188,35 @@
                     "${PDK_ROOT}/models/xyce/sg13g2_esd.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/sg13g2_hbt_mod.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/sg13g2_hbt_stat.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/sg13g2_moshv_mod.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/sg13g2_moshv_parm.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/sg13g2_moshv_stat.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/sg13g2_moslv_mod.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/sg13g2_moslv_parm.lib"
                 ],
                 [
-                    true,
+                    false,
                     "${PDK_ROOT}/models/xyce/sg13g2_moslv_stat.lib"
                 ]
             ],

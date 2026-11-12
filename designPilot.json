@@ -1,0 +1,13 @@
+{
+  "format": "designPilot.paramSteps",
+  "description": "Value grids and legal ranges for designPilot tunables in SG13G2. Keys: 'lib/cell', 'cell', or '*'. Values accept SI suffixes; null leaves a bound open. Limits follow the PDK techParams (sg13g2_tech.json min/max L, min W, max NG); total W is left open. A project-level designPilot.json in the project folder overrides these.",
+  "steps": {
+    "*": {"w": "5n", "l": "5n"}
+  },
+  "limits": {
+    "sg13_lv_nmos": {"w": ["0.15u", null], "l": ["0.13u", "10u"], "ng": [1, 100], "m": [1, null]},
+    "sg13_lv_pmos": {"w": ["0.15u", null], "l": ["0.13u", "10u"], "ng": [1, 100], "m": [1, null]},
+    "sg13_hv_nmos": {"w": ["0.30u", null], "l": ["0.45u", "10u"], "ng": [1, 100], "m": [1, null]},
+    "sg13_hv_pmos": {"w": ["0.30u", null], "l": ["0.40u", "10u"], "ng": [1, 100], "m": [1, null]}
+  }
+}

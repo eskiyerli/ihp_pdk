@@ -31,7 +31,7 @@ All pcells registered in the module's `__init__.py` are fully implemented with l
 | | pnpMPA | bjt.py | Lateral PNP transistor (concentric ring structure) | width, length | ✅ Implemented |
 | **Diodes** | dantenna | diodes.py | N-type ESD protection diode (N+/P-substrate) | width, length | ✅ Implemented |
 | | dpantenna | diodes.py | P-type ESD protection diode (P+/N-well in isolated well) | width, length | ✅ Implemented |
-| | schottky | schottky.py | N+/Metal Schottky diode with guard rings and thermal vias | w, l, Nx, Ny (array), m (multiplier) | ✅ Implemented |
+| | schottky | schottky.py | N+/Metal Schottky diode with guard rings and thermal vias | w, l, Nx, Ny (array), m (multiplier) | ❌ Not implemented (stub file, not registered) |
 | **Tap Contacts** | ntap1 | tap_contacts.py | N-type substrate tap contact (N-well with nBuLay) | width, length | ✅ Implemented |
 | | ptap1 | tap_contacts.py | P-type substrate tap contact (P+ diffusion) | width, length | ✅ Implemented |
 | | subtap | tap_contacts.py | Plain p+ substrate tap (no markers, connectivity only) | width, length | ✅ Implemented |
@@ -39,7 +39,7 @@ All pcells registered in the module's `__init__.py` are fully implemented with l
 | | psubtap | tap_contacts.py | p+ substrate tap line (minimum-width strip) | length | ✅ Implemented |
 | | nwelltap | tap_contacts.py | n+ n-well tap line (minimum-width strip) | length | ✅ Implemented |
 | **Guard Rings** | guardRing | guardRing.py | Multi-part guard ring around a rectangle (p+ substrate or n+ n-well) | w, h, ringWidth, gap, tapType | ✅ Implemented |
-| **Utility** | NoFillerStack | nofiller_stack.py | DRC filler exclusion marker (per-layer nofill rectangles) | w, l, noAct, noGP, noM1-5, noTM1-2 | ✅ Implemented |
+| **Utility** | NoFillerStack | nofiller_stack.py | DRC filler exclusion marker (per-layer nofill rectangles) | w, l, noAct, noGP, noM1-5, noTM1-2 | ❌ Not implemented (stub file, not registered) |
 
 ## Implementation Notes
 
@@ -71,7 +71,7 @@ All pcells registered in the module's `__init__.py` are fully implemented with l
 ### Diode Implementations
 - `dantenna` and `dpantenna` replicate the original `DrawContArray` logic
 - Include large-array spacing rules for contact grids
-- `schottky` features dual Via1 for current distribution and four-sided pSD guard rings
+- `schottky` is an unimplemented stub (license header only) and is not registered
 
 ### Parameter Handling
 - All pcells use `quantiphy.Quantity` for parameter parsing (e.g., "4u" → 4e-6 meters)
@@ -91,10 +91,10 @@ ihp_pdk/pcells/
 ├── passive_res_variants.py  # Resistor variants (rhigh, rppd)
 ├── bjt.py                   # Bipolar transistors (npn13G2, npn13G2V, npn13G2L, pnpMPA)
 ├── diodes.py                # ESD diodes (dantenna, dpantenna)
-├── schottky.py              # Schottky diode
+├── schottky.py              # Schottky diode (stub, unimplemented)
 ├── tap_contacts.py          # Substrate taps (ntap1, ptap1)
 ├── guardRing.py             # Multi-part p+ substrate guard ring
-└── nofiller_stack.py        # Filler exclusion marker
+└── nofiller_stack.py        # Filler exclusion marker (stub, unimplemented)
 ```
 
 ## Technology Parameters

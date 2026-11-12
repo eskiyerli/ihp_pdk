@@ -504,11 +504,10 @@ For questions or bug reports:
 
 ## License
 
-- **Apache License 2.0** - Core PDK code and layout definitions
-- **Commons Clause** - Commercial use restrictions for Revolution Semiconductor components
+- **Apache License 2.0** - All code and layout definitions in this repository
 - **IHP License** - Reference to IHP's original process design information
 
-See LICENSE files in the repository root for details.
+See LICENSE.txt in the repository root for details.
 
 ---
 

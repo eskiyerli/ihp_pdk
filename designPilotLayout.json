@@ -1,0 +1,377 @@
+{
+  "format": "designPilot.layout",
+  "version": 1,
+  "grid": {
+    "manufacturing_um": 0.005
+  },
+  "layers": {
+    "Metal1": {
+      "wide_line_width_um": 0.3,
+      "wide_line_spacing_um": 0.22,
+      "wide_line_run_um": 1.0
+    },
+    "Metal2": {
+      "wide_line_width_um": 0.39,
+      "wide_line_spacing_um": 0.24,
+      "wide_line_run_um": 1.0
+    },
+    "Metal3": {
+      "wide_line_width_um": 0.39,
+      "wide_line_spacing_um": 0.24,
+      "wide_line_run_um": 1.0
+    },
+    "Metal4": {
+      "wide_line_width_um": 0.39,
+      "wide_line_spacing_um": 0.24,
+      "wide_line_run_um": 1.0
+    },
+    "Metal5": {
+      "wide_line_width_um": 0.39,
+      "wide_line_spacing_um": 0.24,
+      "wide_line_run_um": 1.0
+    },
+    "TopMetal2": {
+      "wide_line_width_um": 5.0,
+      "wide_line_spacing_um": 5.0,
+      "wide_line_run_um": 50.0
+    }
+  },
+  "devices": {
+    "aliases": {},
+    "param_aliases": {
+      "nf": "ng"
+    },
+    "fixups": {
+      "rppd": {
+        "layer": "SalBlock",
+        "derive_from_layers": [
+          "PolyRes",
+          "GatPoly"
+        ],
+        "expand_um": 0.21
+      }
+    }
+  },
+  "taps": {
+    "nmos": {
+      "cell": "subtap",
+      "params": {
+        "width": "0.78u",
+        "length": "0.78u"
+      }
+    },
+    "pmos": {
+      "cell": "nwtap",
+      "params": {
+        "width": "0.78u",
+        "length": "0.78u"
+      }
+    },
+    "max_distance_um": 15.0
+  },
+  "wells": {
+    "pmos_layer": "NWell",
+    "enclosure_um": 0.31
+  },
+  "lvs": {
+    "switches": {
+      "no_net_names": true,
+      "spice_comments": true,
+      "top_lvl_pins": true,
+      "ignore_top_ports_mismatch": true,
+      "no_simplify": true,
+      "no_series_res": true,
+      "no_parallel_res": true,
+      "combine_devices": true,
+      "disable_tap_extraction": true,
+      "purge": true,
+      "purge_nets": true,
+      "purge_devices": true
+    }
+  },
+  "drc": {
+    "rule_set": "main",
+    "waived_rules": []
+  },
+  "rule_categories": {
+    "^DEN\\.": {
+      "cat": "density"
+    },
+    "^AFil\\.|^GFil\\.|^M\\d+Fil\\.|^TM\\d+Fil\\.|^MFil\\.|^Slt\\.|^LBE\\.|^Pas\\.": {
+      "cat": "density"
+    },
+    "_Offgrid$": {
+      "cat": "offgrid"
+    },
+    "^LU\\.": {
+      "cat": "latchup"
+    },
+    "^Ant\\.": {
+      "cat": "antenna"
+    },
+    "^NW\\.a": {
+      "cat": "width",
+      "layer": "NWell"
+    },
+    "^NW\\.b": {
+      "cat": "spacing",
+      "layer": "NWell"
+    },
+    "^NW\\.[cdef]": {
+      "cat": "enclosure",
+      "layer": "NWell"
+    },
+    "^pSD\\.": {
+      "cat": "enclosure",
+      "layer": "pSD"
+    },
+    "^CntB\\.a": {
+      "cat": "width",
+      "layer": "ContBar"
+    },
+    "^CntB\\.[b-h]": {
+      "cat": "spacing",
+      "layer": "ContBar"
+    },
+    "^Cnt\\.a": {
+      "cat": "width",
+      "layer": "Cont"
+    },
+    "^Cnt\\.b": {
+      "cat": "spacing",
+      "layer": "Cont"
+    },
+    "^Cnt\\.[cd]": {
+      "cat": "enclosure",
+      "layer": "Cont"
+    },
+    "^Cnt\\.[eg]": {
+      "cat": "spacing",
+      "layer": "Cont"
+    },
+    "^V(\\d)\\.a": {
+      "cat": "width",
+      "layer": "Via$1"
+    },
+    "^V(\\d)\\.b": {
+      "cat": "spacing",
+      "layer": "Via$1"
+    },
+    "^V(\\d)\\.c": {
+      "cat": "enclosure",
+      "layer": "Via$1"
+    },
+    "^TV(\\d)\\.a": {
+      "cat": "width",
+      "layer": "TopVia$1"
+    },
+    "^TV(\\d)\\.b": {
+      "cat": "spacing",
+      "layer": "TopVia$1"
+    },
+    "^TV(\\d)\\.[cd]": {
+      "cat": "enclosure",
+      "layer": "TopVia$1"
+    },
+    "^M(\\d)\\.[ag]\\w*$": {
+      "cat": "width",
+      "layer": "Metal$1"
+    },
+    "^M(\\d)\\.(b|e|f|i)\\w*$": {
+      "cat": "spacing",
+      "layer": "Metal$1"
+    },
+    "^TM(\\d)\\.a\\w*$": {
+      "cat": "width",
+      "layer": "TopMetal$1"
+    },
+    "^TM(\\d)\\.b\\w*$": {
+      "cat": "spacing",
+      "layer": "TopMetal$1"
+    },
+    "^Gat\\.[ag]": {
+      "cat": "width",
+      "layer": "GatPoly"
+    },
+    "^Gat\\.[bd]": {
+      "cat": "spacing",
+      "layer": "GatPoly"
+    },
+    "^Act\\.a": {
+      "cat": "width",
+      "layer": "Activ"
+    },
+    "^Act\\.b": {
+      "cat": "spacing",
+      "layer": "Activ"
+    },
+    "^Pin\\.": {
+      "cat": "other"
+    }
+  },
+  "knobs": {
+    "route.spacing_margin.Metal1": {
+      "value": 0.05,
+      "min": 0.0,
+      "max": 0.3,
+      "step": 0.05
+    },
+    "route.spacing_margin.Metal2": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.3,
+      "step": 0.05
+    },
+    "route.spacing_margin.Metal3": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.3,
+      "step": 0.05
+    },
+    "route.spacing_margin.Metal4": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.3,
+      "step": 0.05
+    },
+    "route.spacing_margin.Metal5": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.3,
+      "step": 0.05
+    },
+    "route.spacing_margin.TopMetal1": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.1
+    },
+    "route.spacing_margin.TopMetal2": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.1
+    },
+    "route.width_margin.Metal1": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05
+    },
+    "route.width_margin.Metal2": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05
+    },
+    "route.width_margin.Metal3": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05
+    },
+    "route.width_margin.Metal4": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05
+    },
+    "route.width_margin.Metal5": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05
+    },
+    "route.width_margin.TopMetal1": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.1
+    },
+    "route.width_margin.TopMetal2": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.1
+    },
+    "via.enclosure_margin.cont": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.2,
+      "step": 0.02
+    },
+    "via.enclosure_margin.via1": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.2,
+      "step": 0.02
+    },
+    "via.enclosure_margin.via2": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.2,
+      "step": 0.02
+    },
+    "via.enclosure_margin.via3": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.2,
+      "step": 0.02
+    },
+    "via.enclosure_margin.via4": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.2,
+      "step": 0.02
+    },
+    "via.enclosure_margin.topVia1": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.3,
+      "step": 0.05
+    },
+    "via.enclosure_margin.topVia2": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.3,
+      "step": 0.05
+    },
+    "taps.max_distance_um": {
+      "value": 15.0,
+      "min": 5.0,
+      "max": 19.5,
+      "step": 1.0
+    },
+    "wells.enclosure_margin_um": {
+      "value": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05
+    },
+    "place.device_gap_um": {
+      "value": 1.0,
+      "min": 0.2,
+      "max": 5.0,
+      "step": 0.1
+    },
+    "place.row_gap_um": {
+      "value": 2.5,
+      "min": 0.5,
+      "max": 10.0,
+      "step": 0.5
+    },
+    "place.origin_grid_um": {
+      "value": 0.05,
+      "min": 0.005,
+      "max": 1.0,
+      "step": 0.05
+    },
+    "route.ripup_rounds": {
+      "value": 3,
+      "min": 0,
+      "max": 8,
+      "step": 1
+    }
+  },
+  "lessons": []
+}
