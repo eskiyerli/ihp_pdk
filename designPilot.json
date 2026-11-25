@@ -2,12 +2,142 @@
   "format": "designPilot.paramSteps",
   "description": "Value grids and legal ranges for designPilot tunables in SG13G2. Keys: 'lib/cell', 'cell', or '*'. Values accept SI suffixes; null leaves a bound open. Limits follow the PDK techParams (sg13g2_tech.json min/max L, min W, max NG); total W is left open. A project-level designPilot.json in the project folder overrides these.",
   "steps": {
-    "*": {"w": "5n", "l": "5n"}
+    "*": {
+      "w": "5n",
+      "l": "5n"
+    }
   },
   "limits": {
-    "sg13_lv_nmos": {"w": ["0.15u", null], "l": ["0.13u", "10u"], "ng": [1, 100], "m": [1, null]},
-    "sg13_lv_pmos": {"w": ["0.15u", null], "l": ["0.13u", "10u"], "ng": [1, 100], "m": [1, null]},
-    "sg13_hv_nmos": {"w": ["0.30u", null], "l": ["0.45u", "10u"], "ng": [1, 100], "m": [1, null]},
-    "sg13_hv_pmos": {"w": ["0.30u", null], "l": ["0.40u", "10u"], "ng": [1, 100], "m": [1, null]}
-  }
+    "sg13_lv_nmos": {
+      "w": [
+        "0.15u",
+        null
+      ],
+      "l": [
+        "0.13u",
+        "10u"
+      ],
+      "ng": [
+        1,
+        100
+      ],
+      "m": [
+        1,
+        null
+      ]
+    },
+    "sg13_lv_pmos": {
+      "w": [
+        "0.15u",
+        null
+      ],
+      "l": [
+        "0.13u",
+        "10u"
+      ],
+      "ng": [
+        1,
+        100
+      ],
+      "m": [
+        1,
+        null
+      ]
+    },
+    "sg13_hv_nmos": {
+      "w": [
+        "0.30u",
+        null
+      ],
+      "l": [
+        "0.45u",
+        "10u"
+      ],
+      "ng": [
+        1,
+        100
+      ],
+      "m": [
+        1,
+        null
+      ]
+    },
+    "sg13_hv_pmos": {
+      "w": [
+        "0.30u",
+        null
+      ],
+      "l": [
+        "0.40u",
+        "10u"
+      ],
+      "ng": [
+        1,
+        100
+      ],
+      "m": [
+        1,
+        null
+      ]
+    }
+  },
+  "excitation": {
+    "source_cells": {
+      "vdc": [
+        "sg13g2_pr",
+        "vdc"
+      ],
+      "idc": [
+        "sg13g2_pr",
+        "idc"
+      ],
+      "vpulse": [
+        "sg13g2_pr",
+        "vpulse"
+      ],
+      "ipulse": [
+        "sg13g2_pr",
+        "ipulse"
+      ],
+      "vsin": [
+        "sg13g2_pr",
+        "vsin"
+      ],
+      "isin": [
+        "sg13g2_pr",
+        "isin"
+      ],
+      "gnd": [
+        "sg13g2_pr",
+        "gnd"
+      ],
+      "vdd": [
+        "sg13g2_pr",
+        "vdd"
+      ]
+    },
+    "load_cells": {
+      "res": [
+        "sg13g2_pr",
+        "res"
+      ],
+      "cap": [
+        "sg13g2_pr",
+        "cap"
+      ],
+      "ind": [
+        "sg13g2_pr",
+        "ind"
+      ],
+      "idc": [
+        "sg13g2_pr",
+        "idc"
+      ]
+    }
+  },
+  "nominal": {
+    "vth": 0.4,
+    "vdd": 1.2
+  },
+  "prompt_hint": "IHP SG13G2: nominal supply \u22481.2 V for sg13g2 low-voltage devices; source/load primitives live in library sg13g2_pr."
 }

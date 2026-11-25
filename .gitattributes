@@ -1,5 +1,8 @@
-# Normalize text files to LF in the repository.
 * text=auto
-
-# Shell scripts must keep LF endings even when checked out on Windows.
-*.sh text eol=lf
+*.so binary
+*.dll binary
+*.gds binary
+*.png binary
+*.pdf binary
+*.lib text
+*.vadata binary

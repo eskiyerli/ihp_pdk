@@ -14,6 +14,9 @@ techParams = importPDKModule("sg13_tech").SG13_Tech().techParams
 dbu = 1000  # distance between two points on the screen, 1um/1000=1n
 layoutScaler = 1e6 * dbu
 snapGrid = 0.05  # 0.05um (50nm)
+mfgGrid = 0.005  # manufacturing grid in um (5nm) — the canonical
+                 # process fact; layoutPilotTech and grid-snapping
+                 # consumers read it from here, never hardcode it
 majorGrid = 0.1  # 0.1um (100nm)
 gdsUnit = Quantity("1 nm")
 gdsPrecision = Quantity("1 nm")

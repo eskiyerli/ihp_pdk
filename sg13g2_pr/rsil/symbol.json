@@ -14,51 +14,11 @@
         "type": "line",
         "st": [
             -30,
-            -70
-        ],
-        "end": [
-            0,
-            -80
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -30,
-            -30
-        ],
-        "end": [
-            30,
-            -10
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -30,
             10
         ],
         "end": [
             30,
-            -10
+            30
         ],
         "loc": [
             0.0,
@@ -72,14 +32,58 @@
     },
     {
         "type": "line",
+        "st": [
+            -30,
+            -70
+        ],
+        "end": [
+            30,
+            -50
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            90,
+            30
+        ],
+        "nam": "@R",
+        "def": "R=R_parm",
+        "txt": "R=?",
+        "val": "?",
+        "vis": true,
+        "lt": "PyLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -20.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "pin",
         "st": [
             0,
             -120
         ],
-        "end": [
-            0,
-            -80
-        ],
+        "nam": "P",
+        "pd": "Inout",
+        "pt": "Signal",
         "loc": [
             0.0,
             0.0
@@ -91,15 +95,39 @@
         ]
     },
     {
-        "type": "line",
+        "type": "label",
         "st": [
-            -30,
-            -70
-        ],
-        "end": [
             30,
-            -50
+            -130
         ],
+        "nam": "@instName",
+        "def": "[@instName]",
+        "txt": "[@instName]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 16,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            30.0,
+            -130.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "pin",
+        "st": [
+            0,
+            120
+        ],
+        "nam": "M",
+        "pd": "Inout",
+        "pt": "Signal",
         "loc": [
             0.0,
             0.0
@@ -111,63 +139,53 @@
         ]
     },
     {
-        "type": "line",
+        "type": "label",
         "st": [
-            -30,
+            -10,
+            0
+        ],
+        "nam": "@modelName",
+        "def": "[@modelName]",
+        "txt": "[@modelName]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 8,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
+        "loc": [
+            -40.0,
+            80.0
+        ],
+        "fl": [
+            1,
+            1
+        ]
+    },
+    {
+        "type": "label",
+        "st": [
+            -20,
             -30
         ],
-        "end": [
-            30,
-            -50
-        ],
+        "nam": "@cellName",
+        "def": "[@cellName]",
+        "txt": "[@cellName]",
+        "val": "",
+        "vis": true,
+        "lt": "NLPLabel",
+        "ht": 12,
+        "al": "Left",
+        "or": "R0",
+        "use": "Normal",
         "loc": [
-            0.0,
+            -10.0,
             0.0
         ],
-        "ang": 0.0,
         "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -30,
-            10
-        ],
-        "end": [
-            30,
-            30
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "line",
-        "st": [
-            -30,
-            50
-        ],
-        "end": [
-            30,
-            30
-        ],
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
+            1,
+            1
         ]
     },
     {
@@ -366,6 +384,26 @@
         "pt": "Signal",
         "loc": [
             0.0,
+            -10.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            -30,
+            -30
+        ],
+        "end": [
+            30,
+            -50
+        ],
+        "loc": [
+            0.0,
             0.0
         ],
         "ang": 0.0,
@@ -375,83 +413,75 @@
         ]
     },
     {
-        "type": "label",
+        "type": "line",
         "st": [
-            90,
+            -30,
+            50
+        ],
+        "end": [
+            30,
             30
         ],
-        "nam": "@R",
-        "def": "R=R_parm",
-        "txt": "R=?",
-        "val": "?",
-        "vis": true,
-        "lt": "PyLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
         "loc": [
-            30.0,
-            -20.0
+            0.0,
+            0.0
         ],
+        "ang": 0.0,
         "fl": [
-            1,
-            1
+            1.0,
+            1.0
         ]
     },
     {
-        "type": "pin",
+        "type": "line",
+        "st": [
+            -30,
+            -30
+        ],
+        "end": [
+            30,
+            -10
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
+        "st": [
+            -30,
+            10
+        ],
+        "end": [
+            30,
+            -10
+        ],
+        "loc": [
+            0.0,
+            0.0
+        ],
+        "ang": 0.0,
+        "fl": [
+            1.0,
+            1.0
+        ]
+    },
+    {
+        "type": "line",
         "st": [
             0,
             -120
         ],
-        "nam": "P",
-        "pd": "Inout",
-        "pt": "Signal",
-        "loc": [
-            0.0,
-            0.0
-        ],
-        "ang": 0.0,
-        "fl": [
-            1.0,
-            1.0
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            30,
-            -130
-        ],
-        "nam": "@instName",
-        "def": "[@instName]",
-        "txt": "[@instName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 16,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            30.0,
-            -130.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "pin",
-        "st": [
+        "end": [
             0,
-            120
+            -80
         ],
-        "nam": "M",
-        "pd": "Inout",
-        "pt": "Signal",
         "loc": [
             0.0,
             0.0
@@ -463,53 +493,23 @@
         ]
     },
     {
-        "type": "label",
+        "type": "line",
         "st": [
-            -10,
-            0
+            -30,
+            -70
         ],
-        "nam": "@modelName",
-        "def": "[@modelName]",
-        "txt": "[@modelName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 8,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
+        "end": [
+            0,
+            -80
+        ],
         "loc": [
-            -40.0,
-            80.0
-        ],
-        "fl": [
-            1,
-            1
-        ]
-    },
-    {
-        "type": "label",
-        "st": [
-            -20,
-            -30
-        ],
-        "nam": "@cellName",
-        "def": "[@cellName]",
-        "txt": "[@cellName]",
-        "val": "",
-        "vis": true,
-        "lt": "NLPLabel",
-        "ht": 12,
-        "al": "Left",
-        "or": "R0",
-        "use": "Normal",
-        "loc": [
-            -10.0,
+            0.0,
             0.0
         ],
+        "ang": 0.0,
         "fl": [
-            1,
-            1
+            1.0,
+            1.0
         ]
     },
     {

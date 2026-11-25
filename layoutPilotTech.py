@@ -125,18 +125,6 @@ def _device(cell: str, kind: str, domain, terminals, param_map,
     return dev
 
 
-def _mfg_grid_um() -> float:
-    layout_json = _PKG / "designPilotLayout.json"
-    if layout_json.is_file():
-        try:
-            return float(json.loads(
-                layout_json.read_text(
-                    encoding="utf-8"))["grid"]["manufacturing_um"])
-        except (KeyError, ValueError, json.JSONDecodeError):
-            pass
-    return 0.005
-
-
 def get_layout_pilot_technology() -> dict:
     """Return the ``layoutPilotTech-v1`` snapshot for this PDK.
 
@@ -246,7 +234,7 @@ def get_layout_pilot_technology() -> dict:
                     _PKG / "config.json").get("pdk_version", ""))},
         "process": {"dbu": int(process.dbu),
                     "snap_grid_um": float(process.snapGrid),
-                    "mfg_grid_um": _mfg_grid_um()},
+                    "mfg_grid_um": float(process.mfgGrid)},
         "devices": devices,
         "layers": {"stack": {"conductors": list(_STACK_CONDUCTORS),
                              "cuts": dict(_STACK_CUTS)},

@@ -58,8 +58,10 @@ class baseCell(lshp.layoutPcell):
             shapes = []
         super().__init__(shapes)
         fontFamilies = QFontDatabase().families()
-        fontFamily = \
-            [font for font in fontFamilies if QFontDatabase().isFixedPitch(font)][0]
+        fontFamily = next(
+            (font for font in fontFamilies
+             if QFontDatabase().isFixedPitch(font)),
+            fontFamilies[0] if fontFamilies else "")
         self._fixedFont = QFont(fontFamily, 4)
         self._labelFontStyle = self._fixedFont.styleName()
         self._labelFontFamily = self._fixedFont.family()
