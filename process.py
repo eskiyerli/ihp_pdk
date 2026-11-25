@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MPL-2.0
 #
-# IHP PDK for Revolution EDA
+# Revolution EDA
 # Copyright (c) 2024-2026 Revolution Semiconductor
 
 import revedaEditor.backend.dataDefinitions as ddef
